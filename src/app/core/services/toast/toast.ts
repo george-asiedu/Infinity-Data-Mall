@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ToastOptions, ToastSeverity } from '../../models/utility.model';
 
@@ -6,7 +6,7 @@ import { ToastOptions, ToastSeverity } from '../../models/utility.model';
   providedIn: 'root',
 })
 export class Toast {
-  private messageService = Inject(MessageService);
+  private messageService = inject(MessageService);
 
   private show(severity: ToastSeverity, detail: string, options: ToastOptions = {}): void {
     const defaultSummaries: Record<ToastSeverity, string> = {
