@@ -53,11 +53,8 @@ export const getErrorMessage = (error: unknown): string => {
   return constants.error;
 };
 
-export const handleApiError = <T>(
-  actionCreator: (error: string) => unknown,
-  toast?: ToastHandler,
-) => {
-  return (source: Observable<T>) =>
+export const handleApiError = <T, R>(actionCreator: (error: string) => R, toast?: ToastHandler) => {
+  return (source: Observable<T>): Observable<T | R> =>
     source.pipe(
       catchError((error: HttpErrorResponse) => {
         const errorMessage = getErrorMessage(error);
