@@ -8,14 +8,14 @@
           [placeholder]="placeholder()"
           [disabled]="disabled()"
           [useGrouping]="useGrouping()"
-          [class]="customClass()"
+          [ngClass]="customClass()"
         >
         </p-inputNumber>
         <label [attr.for]="id() || label()">{{ label() }}</label>
       </p-floatLabel>
     }
     @case ('password') {
-      <p-floatLabel variant="on">
+      <p-floatLabel variant="on" class="w-full block">
         <p-password
           [inputId]="id() || label()"
           [(ngModel)]="value"
@@ -24,6 +24,8 @@
           [toggleMask]="toggleMask()"
           [feedback]="feedback()"
           [class]="customClass()"
+          styleClass="w-full"
+          inputStyleClass="w-full"
         >
         </p-password>
         <label [attr.for]="id() || label()">{{ label() }}</label>
@@ -39,7 +41,7 @@
           [disabled]="disabled()"
           [rows]="rows()"
           [autoResize]="autoResize()"
-          [class]="customClass()"
+          [ngClass]="customClass()"
         >
         </textarea>
         <label [attr.for]="id() || label()">{{ label() }}</label>
@@ -62,7 +64,7 @@
           [(ngModel)]="value"
           [placeholder]="placeholder()"
           [disabled]="disabled()"
-          [class]="customClass()"
+          [ngClass]="customClass()"
         />
         <label [attr.for]="id() || label()">{{ label() }}</label>
       </p-floatLabel>

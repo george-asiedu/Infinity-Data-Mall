@@ -1,4 +1,5 @@
 import { Component, input, model } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputOtpModule } from 'primeng/inputotp';
@@ -12,6 +13,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
   selector: 'app-input',
   imports: [
     FormsModule,
+    CommonModule,
     InputTextModule,
     InputNumberModule,
     PasswordModule,
