@@ -1,0 +1,21 @@
+<app-loader />
+<p-toast
+  position="top-right"
+  [breakpoints]="{ '768px': { width: '100%', right: '0', left: '0', top: '0', borderRadius: '0' } }"
+  class="idm-toast"
+>
+  <ng-template #message let-msg>
+    <div class="idm-toast__body">
+      <span class="idm-toast__icon" [attr.data-severity]="msg.severity">
+        <i [class]="severityIcon(msg.severity)"></i>
+      </span>
+
+      <div class="idm-toast__text">
+        <span class="idm-toast__summary">{{ msg.summary }}</span>
+        <span class="idm-toast__detail">{{ msg.detail }}</span>
+      </div>
+    </div>
+  </ng-template>
+</p-toast>
+
+<router-outlet />

@@ -1,0 +1,71 @@
+<div class="flex flex-col gap-1 w-full">
+  @switch (type()) {
+    @case ('number') {
+      <p-floatLabel variant="on">
+        <p-inputNumber
+          [inputId]="id() || label()"
+          [(ngModel)]="value"
+          [placeholder]="placeholder()"
+          [disabled]="disabled()"
+          [useGrouping]="useGrouping()"
+          [class]="customClass()"
+        >
+        </p-inputNumber>
+        <label [attr.for]="id() || label()">{{ label() }}</label>
+      </p-floatLabel>
+    }
+    @case ('password') {
+      <p-floatLabel variant="on">
+        <p-password
+          [inputId]="id() || label()"
+          [(ngModel)]="value"
+          [placeholder]="placeholder()"
+          [disabled]="disabled()"
+          [toggleMask]="toggleMask()"
+          [feedback]="feedback()"
+          [class]="customClass()"
+        >
+        </p-password>
+        <label [attr.for]="id() || label()">{{ label() }}</label>
+      </p-floatLabel>
+    }
+    @case ('textarea') {
+      <p-floatLabel variant="on">
+        <textarea
+          [id]="id() || label()"
+          pTextarea
+          [(ngModel)]="value"
+          [placeholder]="placeholder()"
+          [disabled]="disabled()"
+          [rows]="rows()"
+          [autoResize]="autoResize()"
+          [class]="customClass()"
+        >
+        </textarea>
+        <label [attr.for]="id() || label()">{{ label() }}</label>
+      </p-floatLabel>
+    }
+    @case ('otp') {
+      <div class="flex flex-col gap-2">
+        @if (label()) {
+          <span class="caption-text">{{ label() }}</span>
+        }
+        <p-inputOtp [(ngModel)]="value" [length]="otpLength()" [disabled]="disabled()">
+        </p-inputOtp>
+      </div>
+    }
+    @default {
+      <p-floatLabel variant="on">
+        <input
+          [id]="id() || label()"
+          pInputText
+          [(ngModel)]="value"
+          [placeholder]="placeholder()"
+          [disabled]="disabled()"
+          [class]="customClass()"
+        />
+        <label [attr.for]="id() || label()">{{ label() }}</label>
+      </p-floatLabel>
+    }
+  }
+</div>

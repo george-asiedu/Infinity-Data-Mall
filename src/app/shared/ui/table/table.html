@@ -1,0 +1,32 @@
+<p-table
+  [value]="data()"
+  [columns]="columns()"
+  [paginator]="paginator()"
+  [rows]="rows()"
+  [class]="customClass()"
+  (onRowSelect)="rowSelected.emit($any($event.data))"
+>
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      @for (col of columns; track col.field) {
+        <th class="body-base font-semibold text-text-secondary">{{ col.header }}</th>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr [pSelectableRow]="rowData">
+      @for (col of columns; track col.field) {
+        <td class="body-base">{{ rowData[col.field] }}</td>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="columns().length" class="text-center p-8 body-base text-muted">
+        No data available.
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

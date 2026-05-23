@@ -1,0 +1,15 @@
+<p-button
+  (onClick)="toggle()"
+  [rounded]="true"
+  [text]="true"
+  severity="secondary"
+  pTooltip="Toggle theme"
+  tooltipPosition="bottom"
+  class="theme-toggle-btn"
+  [class.dark]="isDark()"
+>
+  <span class="icon-wrapper">
+    <i class="pi pi-sun sun-icon"></i>
+    <i class="pi pi-moon moon-icon"></i>
+  </span>
+</p-button>
