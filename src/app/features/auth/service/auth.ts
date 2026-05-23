@@ -7,7 +7,7 @@ import {
   VerifyEmailModel,
   VerifyMfaModel,
 } from '../../../core/models/auth.model';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -24,8 +24,9 @@ export class Auth {
     return this.http.post(`${this.api}auth/check-email`, { email });
   }
 
-  public verifyEmail(model: VerifyEmailModel) {
-    return this.http.post(`${this.api}auth/verify-email`, model);
+  public verifyEmail(model: VerifyEmailModel, origin: string) {
+    const headers = new HttpHeaders().set('origin', origin);
+    return this.http.post(`${this.api}auth/verify-email`, model, { headers });
   }
 
   public verifyMfa(model: VerifyMfaModel) {
@@ -36,12 +37,14 @@ export class Auth {
     return this.http.post(`${this.api}auth/login`, model);
   }
 
-  public requestPasswordReset(email: string) {
-    return this.http.post(`${this.api}auth/request-password-reset`, { email });
+  public requestPasswordReset(email: string, origin: string) {
+    const headers = new HttpHeaders().set('origin', origin);
+    return this.http.post(`${this.api}auth/request-password-reset`, { email }, { headers });
   }
 
-  public resetPassword(model: ResetPasswordModel) {
-    return this.http.post(`${this.api}auth/reset-password`, model);
+  public resetPassword(model: ResetPasswordModel, token: string) {
+    const params = new HttpParams().set('token', token);
+    return this.http.post(`${this.api}auth/reset-password`, model, { params });
   }
 
   public verifyToken(token: string) {
