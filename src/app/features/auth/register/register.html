@@ -1,0 +1,243 @@
+<div class="flex w-full min-h-screen lg:h-screen lg:overflow-hidden bg-background">
+  <div class="w-full lg:w-[40%] flex flex-col h-full overflow-y-auto">
+    <div class="flex-1 flex flex-col justify-center items-center px-6 py-12 lg:px-12">
+      <div class="w-full max-w-105 flex flex-col items-center">
+        <div
+          class="w-12 h-12 bg-primary! rounded-xl flex items-center justify-center mb-6 shadow-sm"
+        >
+          <img src="iData_logo.png" alt="iData Logo" class="object-contain" />
+        </div>
+
+        <h1 class="text-2xl lg:text-3xl font-semibold text-text-primary! mb-2 text-center">
+          Create your Agent Account
+        </h1>
+        <p class="text-text-secondary! text-sm lg:text-base text-center mb-8">
+          Join <span class="font-bold text-primary!">Infinity Data Mall</span> and start selling
+          data bundles today.
+        </p>
+
+        <form
+          [formGroup]="registerForm"
+          class="w-full bg-surface border border-border rounded-card p-6 flex flex-col gap-5"
+        >
+          <div>
+            <app-input
+              label="Full Name"
+              type="text"
+              placeholder="Enter your full name"
+              [value]="registerForm.value.fullName"
+              (valueChange)="registerForm.patchValue({ fullName: $event })"
+            >
+            </app-input>
+            @if (errorMessage.shouldShowError(getControl('fullName'))) {
+              <small class="text-danger text-xs mt-1.5 font-medium block">
+                {{ getErrorMessage('fullName') }}
+              </small>
+            }
+          </div>
+
+          <div>
+            <app-input
+              label="Email Address"
+              type="text"
+              placeholder="example@email.com"
+              [value]="registerForm.value.email"
+              (valueChange)="registerForm.patchValue({ email: $event })"
+            >
+            </app-input>
+            @if (errorMessage.shouldShowError(getControl('email'))) {
+              <small class="text-danger text-xs mt-1.5 font-medium block">
+                {{ getErrorMessage('email') }}
+              </small>
+            }
+          </div>
+
+          <div>
+            <app-input
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              [feedback]="false"
+              [value]="registerForm.value.password"
+              (valueChange)="registerForm.patchValue({ password: $event })"
+            >
+            </app-input>
+            @if (errorMessage.shouldShowError(getControl('password'))) {
+              <small class="text-danger text-xs mt-1.5 font-medium block">
+                {{ getErrorMessage('password') }}
+              </small>
+            }
+
+            <div class="mt-3 bg-background border border-border rounded-lg p-3">
+              <p class="text-xs font-semibold text-text-secondary! mb-2">Password Requirements:</p>
+              <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-text-muted">
+                <div class="flex items-center gap-1.5" [class.text-success]="hasMinLength()">
+                  <i class="pi" [ngClass]="hasMinLength() ? 'pi-check-circle' : 'pi-circle'"></i> 8+
+                  Characters
+                </div>
+                <div class="flex items-center gap-1.5" [class.text-success]="hasUppercase()">
+                  <i class="pi" [ngClass]="hasUppercase() ? 'pi-check-circle' : 'pi-circle'"></i> 1
+                  Uppercase
+                </div>
+                <div class="flex items-center gap-1.5" [class.text-success]="hasLowercase()">
+                  <i class="pi" [ngClass]="hasLowercase() ? 'pi-check-circle' : 'pi-circle'"></i> 1
+                  Lowercase
+                </div>
+                <div class="flex items-center gap-1.5" [class.text-success]="hasNumber()">
+                  <i class="pi" [ngClass]="hasNumber() ? 'pi-check-circle' : 'pi-circle'"></i> 1
+                  Number
+                </div>
+                <div
+                  class="flex items-center gap-1.5 col-span-2"
+                  [class.text-success]="hasSymbol()"
+                >
+                  <i class="pi" [ngClass]="hasSymbol() ? 'pi-check-circle' : 'pi-circle'"></i> 1
+                  Special Character
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <app-input
+              label="Confirm Password"
+              type="password"
+              placeholder="••••••••"
+              [feedback]="false"
+              [value]="registerForm.value.confirmPassword"
+              (valueChange)="registerForm.patchValue({ confirmPassword: $event })"
+            >
+            </app-input>
+            @if (registerForm.errors?.['mismatch'] && registerForm.value.confirmPassword) {
+              <small class="text-danger text-xs mt-1.5 font-medium block">
+                Passwords do not match.
+              </small>
+            }
+          </div>
+
+          <app-button
+            label="Create Account"
+            [rounded]="false"
+            customClass="w-full mt-2 !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!border-primary-hover disabled:!opacity-100 transition-colors"
+            [disabled]="registerForm.invalid"
+            (clicked)="onSubmit()"
+          >
+          </app-button>
+
+          <div class="flex items-center my-1">
+            <div class="grow border-t border-border"></div>
+            <span class="px-3 text-xs text-text-muted font-medium uppercase tracking-wider"
+              >OR</span
+            >
+            <div class="grow border-t border-border"></div>
+          </div>
+
+          <app-button
+            label="Continue with Google"
+            icon="pi pi-google"
+            [outlined]="true"
+            [rounded]="false"
+            customClass="w-full mt-1 !bg-white !text-primary !border-border hover:!bg-gray-50 transition-colors shadow-sm"
+          >
+          </app-button>
+        </form>
+
+        <div class="mt-8 text-sm text-text-secondary">
+          Already have an account?
+          <a
+            routerLink="/login"
+            class="text-primary font-semibold hover:text-primary-hover transition-colors"
+            >Log in</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="hidden lg:flex w-[60%] bg-background-dark relative overflow-hidden flex-col justify-center items-center p-12"
+  >
+    <div
+      class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]"
+    ></div>
+
+    <div class="relative z-10 w-full max-w-xl flex flex-col">
+      <div class="mb-10 text-left">
+        <h2 class="text-4xl font-bold mb-4 text-white! tracking-tight">
+          Scale your data business faster.
+        </h2>
+        <p class="text-lg text-text-muted-dark! leading-relaxed">
+          Join our growing network of successful agents. Access premium wholesale rates, real-time
+          analytics, and instant bundle delivery.
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        @for (feature of features; track feature.title; let i = $index) {
+          <button
+            type="button"
+            (click)="setActiveFeature(i)"
+            class="w-full text-left p-4 rounded-xl border transition-all duration-300"
+            [ngStyle]="{
+              background: activeFeature === i ? 'rgba(79,70,229,0.12)' : 'rgba(255,255,255,0.02)',
+              'border-color':
+                activeFeature === i ? 'rgba(79,70,229,0.4)' : 'rgba(255,255,255,0.05)',
+            }"
+          >
+            <div class="flex items-start gap-4">
+              <div
+                class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-colors"
+                [ngStyle]="{
+                  background:
+                    activeFeature === i
+                      ? 'linear-gradient(135deg, #4F46E5, #7C3AED)'
+                      : 'rgba(255,255,255,0.05)',
+                }"
+              >
+                <i class="pi {{ feature.icon }} text-white text-lg"></i>
+              </div>
+
+              <div class="flex-1">
+                <div class="text-base font-semibold text-white">
+                  {{ feature.title }}
+                </div>
+                <div
+                  class="overflow-hidden transition-all duration-300 ease-in-out"
+                  [ngStyle]="{
+                    'max-height': activeFeature === i ? '100px' : '0px',
+                    opacity: activeFeature === i ? '1' : '0',
+                  }"
+                >
+                  <p class="mt-2 text-sm text-text-muted-dark! leading-relaxed">
+                    {{ feature.description }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </button>
+        }
+      </div>
+
+      <div class="flex items-center gap-6 mt-12 pt-8 border-t border-white/10">
+        <span class="text-xs text-text-muted-dark! uppercase tracking-wider font-semibold"
+          >Supported Networks</span
+        >
+        <div class="flex gap-4">
+          <span>
+            <img src="mtn.jpg" alt="MTN Logo" class="inline-block w-10 h-10 object-contain mr-1" />
+          </span>
+          <span>
+            <img
+              src="telecel.png"
+              alt="Telecel Logo"
+              class="inline-block w-10 h-10 object-contain mr-1"
+            />
+          </span>
+          <span>
+            <img src="airtel.png" alt="AT Logo" class="inline-block w-10 h-10 object-contain mr-1" />
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
