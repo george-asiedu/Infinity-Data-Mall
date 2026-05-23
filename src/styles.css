@@ -10,18 +10,15 @@
 }
 
 :root {
-    /* Brand Colors */
     --primary: #4F46E5;
     --primary-hover: #4338CA;
     --secondary: #0D9488;
 
-    /* Semantic Colors */
     --success: #10B981;
     --warning: #F59E0B;
     --danger: #EF4444;
     --info: #3B82F6;
 
-    /* Light Theme */
     --background: #F8FAFC;
     --surface: #FFFFFF;
     --border: #E2E8F0;
@@ -29,7 +26,6 @@
     --text-secondary: #475569;
     --text-muted: #94A3B8;
 
-    /* Dark Theme */
     --background-dark: #0F172A;
     --surface-dark: #1E293B;
     --border-dark: #334155;
@@ -41,18 +37,15 @@
 @theme {
     --font-family-sans: var(--font-family);
 
-    /* Brand Colors */
     --color-primary: var(--primary);
     --color-primary-hover: var(--primary-hover);
     --color-secondary: var(--secondary);
 
-    /* Semantic Colors */
     --color-success: var(--success);
     --color-warning: var(--warning);
     --color-danger: var(--danger);
     --color-info: var(--info);
 
-    /* Light Mode Colors */
     --color-background: var(--background);
     --color-surface: var(--surface);
     --color-border: var(--border);
@@ -60,7 +53,6 @@
     --color-text-secondary: var(--text-secondary);
     --color-text-muted: var(--text-muted);
 
-    /* Dark Mode Colors */
     --color-background-dark: var(--background-dark);
     --color-surface-dark: var(--surface-dark);
     --color-border-dark: var(--border-dark);
@@ -68,12 +60,10 @@
     --color-text-secondary-dark: var(--text-secondary-dark);
     --color-text-muted-dark: var(--text-muted-dark);
 
-    /* Border Radius */
     --radius-card: 8px;
     --radius-button: 6px;
     --radius-badge: 9999px;
 
-    /* Shadows */
     --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     --shadow-modal: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 }
@@ -110,7 +100,6 @@ body {
     border-color: var(--primary-hover) !important;
 }
 
-/* Inputs */
 .p-inputtext,
 .p-textarea,
 .p-select,
