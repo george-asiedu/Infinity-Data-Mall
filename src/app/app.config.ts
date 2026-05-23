@@ -5,12 +5,15 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 
 import { routes } from './app.routes';
 import { providePrimeNG } from 'primeng/config';
+import { MessageService } from 'primeng/api';
 import Aura from '@primeuix/themes/aura';
-import { provideStore } from '@ngrx/store';
+import { provideState, provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideSpinnerConfig } from 'ngx-spinner';
 import { loadingInterceptor } from './core/interceptors/loading-interceptor';
+import { authFeature } from './features/auth/store/auth.reducers';
+import * as AuthEffects from './features/auth/store/auth.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,20 +21,18 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([loadingInterceptor])),
+    MessageService,
     providePrimeNG({
       theme: {
         preset: Aura,
         options: {
-          cssLayer: {
-            name: 'primeng',
-            order: 'tailwind-base, primeng, tailwind-utilities',
-          },
           darkModeSelector: '.dark',
         },
       },
     }),
     provideStore(),
-    provideEffects(),
+    provideState(authFeature),
+    provideEffects(AuthEffects),
     provideSpinnerConfig({ type: 'line-scale-pulse-out' }),
     provideStoreDevtools({
       maxAge: 25,
