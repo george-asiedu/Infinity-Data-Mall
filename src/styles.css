@@ -7,35 +7,6 @@
   @import "primeicons/primeicons.css";
 }
 
-:root {
-    --font-family: 'Inter', system-ui, sans-serif;
-
-    --primary: #4F46E5;
-    --primary-hover: #4338CA;
-    --secondary: #0D9488;
-
-    --success: #10B981;
-    --warning: #F59E0B;
-    --danger: #EF4444;
-    --info: #3B82F6;
-
-    --background: #F8FAFC;
-    --surface: #FFFFFF;
-    --border: #E2E8F0;
-    --heading: #0F172A;
-    --paragraph: #475569;
-    --muted: #94A3B8;
-}
-
-.dark {
-    --background: #0F172A;
-    --surface: #1E293B;
-    --border: #334155;
-    --heading: #F8FAFC;
-    --paragraph: #94A3B8;
-    --muted: #64748B;
-}
-
 @theme {
     --font-family-sans: 'Inter', system-ui, sans-serif;
 
@@ -48,12 +19,19 @@
     --color-danger: #EF4444;
     --color-info: #3B82F6;
 
-    --color-background: var(--background);
-    --color-surface: var(--surface);
-    --color-border: var(--border);
-    --color-heading: var(--heading);
-    --color-paragraph: var(--paragraph);
-    --color-muted: var(--muted);
+    --color-background: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-border: #E2E8F0;
+    --color-heading: #0F172A;
+    --color-paragraph: #475569;
+    --color-muted: #94A3B8;
+
+    --color-background-dark: #0F172A;
+    --color-surface-dark: #1E293B;
+    --color-border-dark: #334155;
+    --color-heading-dark: #F8FAFC;
+    --color-paragraph-dark: #94A3B8;
+    --color-muted-dark: #64748B;
 
     --radius-card: 8px;
     --radius-button: 6px;
@@ -64,18 +42,16 @@
 }
 
 body {
-    font-family: var(--font-family);
-    background-color: var(--background);
-    color: var(--heading);
+    @apply bg-background dark:bg-background-dark text-heading dark:text-heading-dark min-h-screen;
+    font-family: var(--font-family-sans);
     line-height: 1.5;
-    min-height: 100vh;
 }
 
+/* --- PrimeNG Component Styling Overrides --- */
 .p-card {
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
-    border: 1px solid var(--border);
-    background-color: var(--surface);
+    @apply bg-surface dark:bg-surface-dark border border-border dark:border-border-dark;
 }
 
 .p-button {
@@ -86,8 +62,7 @@ body {
 
 .p-button.p-button-primary:hover,
 .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-link):hover {
-    background: var(--primary-hover) !important;
-    border-color: var(--primary-hover) !important;
+    @apply bg-primary-hover border-primary-hover;
 }
 
 .p-inputtext,
@@ -101,20 +76,18 @@ body {
 .p-autocomplete,
 .p-inputswitch {
     border-radius: var(--radius-button);
-    border-color: var(--border);
     font-size: 0.875rem !important;
-    color: var(--heading);
-    background-color: var(--surface);
+    @apply bg-surface dark:bg-surface-dark border border-border dark:border-border-dark text-heading dark:text-heading-dark;
 }
 
 .p.placeholder, .p-textarea::placeholder {
-    color: var(--muted);
+    @apply text-muted dark:text-muted-dark;
 }
 
 .p-inputtext:focus,
 .p-textarea:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent) !important;
+    @apply border-primary;
+    box-shadow: 0 0 0 3px color-mix(in srgb, #4F46E5 20%, transparent) !important;
 }
 
 .p-badge {
@@ -124,25 +97,21 @@ body {
 .p-dialog {
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-modal);
-    border: 1px solid var(--border);
-    background-color: var(--surface);
+    @apply bg-surface dark:bg-surface-dark border border-border dark:border-border-dark;
 }
 
 .p-fileupload {
     border-radius: var(--radius-button);
-    background-color: var(--surface);
-    color: #FFFFFF;
+    @apply bg-surface dark:bg-surface-dark text-heading dark:text-heading-dark;
 }
 
 .p.sidebar {
-    background-color: var(--surface);
-    border-right: 1px solid var(--border);
+    @apply bg-surface dark:bg-surface-dark border-r border-border dark:border-border-dark;
 }
 
 .p.checkbox .p-checkbox-box.p-highlight,
 .p-radiobutton .p-radiobutton-box.p-highlight {
-    border-color: var(--border);
-    background-color: var(--primary);
+    @apply bg-primary border-border dark:border-border-dark;
 }
 
 .p-toast .p-toast-message {
@@ -150,50 +119,19 @@ body {
     box-shadow: var(--shadow-card);
 }
 
-.bg-surface {
-    background-color: var(--surface);
-}
+.bg-surface { @apply bg-surface dark:bg-surface-dark; }
+.border-divider { @apply border-border dark:border-border-dark; }
 
-.bg-surface-dark {
-    background-color: var(--surface);
-}
+/* --- Global Typography --- */
+h1 { @apply text-3xl font-semibold tracking-tight text-heading dark:text-heading-dark; }
+h2 { @apply text-2xl font-semibold text-heading dark:text-heading-dark; }
+h3 { @apply text-[18px] font-medium text-heading dark:text-heading-dark; }
+h4 { @apply text-lg font-medium text-heading dark:text-heading-dark; }
+h5 { @apply text-base font-medium text-heading dark:text-heading-dark; }
+h6 { @apply text-sm font-medium text-heading dark:text-heading-dark; }
+p  { @apply text-base font-normal text-paragraph dark:text-paragraph-dark; }
 
-.border-divider {
-    border-color: var(--border);
-}
-
-.border-divider-dark {
-    border-color: var(--border);
-}
-
-h1 {
-    @apply text-3xl font-semibold tracking-tight text-heading; /* 30px with tighter letter spacing */
-}
-
-h2 {
-    @apply text-2xl font-semibold text-heading; /* 24px */
-}
-
-h3 {
-    @apply text-[18px] font-medium text-heading; /* 18px */
-}
-
-h4 {
-    @apply text-lg font-medium text-heading; /* 16px */
-}
-
-h5 {
-    @apply text-base font-medium text-heading; /* 14px */
-}
-
-h6 {
-    @apply text-sm font-medium text-heading; /* 12px */
-}
-
-p {
-    @apply text-base font-normal text-paragraph; /* 14px */
-}
-
+/* --- Custom IDM Toast Panels --- */
 .idm-toast.p-toast {
     width: 360px;
     z-index: 9999;
@@ -202,28 +140,16 @@ p {
 .idm-toast .p.toast-message {
     border-radius: var(--radius-card) !important;
     box-shadow: var(--shadow-card);
-    border: 1px solid var(--border);
-    background-color: var(--surface);
     padding: 0 !important;
     overflow: hidden;
     margin-bottom: 0.5rem;
+    @apply bg-surface dark:bg-surface-dark border border-border dark:border-border-dark;
 }
 
-.idm-toast .p-toast-message.p-toast-message-success {
-    border-left: 4px solid var(--success) !important;
-}
-
-.idm-toast .p-toast-message.p-toast-message-info {
-    border-left: 4px solid var(--info) !important;
-}
-
-.idm-toast .p-toast-message.p-toast-message-warn {
-    border-left: 4px solid var(--warning) !important;
-}
-
-.idm-toast .p-toast-message.p-toast-message-error {
-    border-left: 4px solid var(--danger) !important;
-}
+.idm-toast .p-toast-message.p-toast-message-success { @apply border-l-4 border-success; }
+.idm-toast .p-toast-message.p-toast-message-info    { @apply border-l-4 border-info; }
+.idm-toast .p-toast-message.p-toast-message-warn    { @apply border-l-4 border-warning; }
+.idm-toast .p-toast-message.p-toast-message-error   { @apply border-l-4 border-danger; }
 
 .idm-toast .p-toast-message-content {
     padding: 0 !important;
@@ -237,14 +163,14 @@ p {
     width: 1.25rem;
     height: 1.25rem;
     border-radius: 4px;
-    color: var(---muted) !important;
     opacity: 0.7;
     transition: opacity 0.15s, background 0.15s;
+    @apply text-muted dark:text-muted-dark;
 }
 
 .idm-toast .p-toast-icon-close:hover {
     opacity: 1;
-    background-color: color-mix(in srgb, var(--muted) 10%, transparent);
+    background-color: color-mix(in srgb, #94A3B8 10%, transparent);
 }
 
 .idm-toast__body {
@@ -266,30 +192,15 @@ p {
     font-size: 0.875rem;
 }
 
-.idm-toast__icon[data-severity="success"] {
-    background-color: color-mix(in srgb, var(--success) 12%, transparent);
-    color: var(--success);
-}
-
-.idm-toast__icon[data-severity="info"] {
-    background-color: color-mix(in srgb, var(--info) 12%, transparent);
-    color: var(--info);
-}
-
-.idm-toast__icon[data-severity="warn"] {
-    background-color: color-mix(in srgb, var(--warning) 12%, transparent);
-    color: var(--warning);
-}
-
-.idm-toast__icon[data-severity="error"] {
-    background-color: color-mix(in srgb, var(--danger) 12%, transparent);
-    color: var(--danger);
-}
+.idm-toast__icon[data-severity="success"] { background-color: color-mix(in srgb, #10B981 12%, transparent); @apply text-success; }
+.idm-toast__icon[data-severity="info"]    { background-color: color-mix(in srgb, #3B82F6 12%, transparent); @apply text-info; }
+.idm-toast__icon[data-severity="warn"]    { background-color: color-mix(in srgb, #F59E0B 12%, transparent); @apply text-warning; }
+.idm-toast__icon[data-severity="error"]   { background-color: color-mix(in srgb, #EF4444 12%, transparent); @apply text-danger; }
 
 .idm-toast__icon[data-severity="secondary"],
 .idm-toast__icon[data-severity="contrast"] {
-    background-color: color-mix(in srgb, var(--primary) 10%, transparent);
-    color: var(--primary);
+    background-color: color-mix(in srgb, #4F46E5 10%, transparent);
+    @apply text-primary;
 }
 
 .idm-toast__text {
@@ -302,30 +213,25 @@ p {
 .idm-toast__summary {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--heading);
     line-height: 1.3;
+    @apply text-heading dark:text-heading-dark;
 }
 
 .idm-toast__detail {
     font-size: 0.75rem;
-    color: var(--paragraph);
     line-height: 1.5;
     word-break: break-word;
+    @apply text-paragraph dark:text-paragraph-dark;
 }
 
 .dark .idm-toast .p-toast-message {
-    background-color: var(--surface) !important;
-    border-color: var(--border) !important;
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3) !important;
+    @apply bg-surface-dark border-border-dark;
 }
 
-.p-toast-message-enter-active {
-    animation: toast-slide-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+.p-toast-message-enter-active { animation: toast-slide-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.p-toast-message-leave-active { animation: toast-slide-out 0.18s ease-in forwards; }
 
-.p-toast-message-leave-active {
-    animation: toast-slide-out 0.18s ease-in forwards;
-}
 
 @keyframes toast-slide-in {
     from {
@@ -366,19 +272,19 @@ p {
     }
 
     .idm-toast .p-toast-message.p-toast-message-success {
-        border-bottom-color: var(--success) !important;
+        @apply border-b-4 border-success;
     }
 
     .idm-toast .p-toast-message.p-toast-message-info {
-        border-bottom-color: var(--info) !important;
+        @apply border-b-4 border-info;
     }
 
     .idm-toast .p-toast-message.p-toast-message-warn {
-        border-bottom-color: var(--warning) !important;
+        @apply border-b-4 border-warning;
     }
 
     .idm-toast .p-toast-message.p-toast-message-error {
-        border-bottom-color: var(--danger) !important;
+        @apply border-b-4 border-danger;
     }
 
     @keyframes toast-slide-in {
@@ -411,10 +317,10 @@ p {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--primary);
+    background: #4F46E5;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--primary);
+    background: #4F46E5;
     border-radius: 6px;
 }
