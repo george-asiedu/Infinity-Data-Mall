@@ -27,6 +27,10 @@ export const appConfig: ApplicationConfig = {
         preset: Aura,
         options: {
           darkModeSelector: '.dark',
+          cssLayer: {
+            name: 'primeng',
+            order: 'tailwind-base, primeng, tailwind-utilities',
+          },
         },
       },
     }),
