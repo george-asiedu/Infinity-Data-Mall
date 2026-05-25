@@ -9,27 +9,37 @@ import { ThemeMode } from '../../models/utility.model';
 export class Theme {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly THEME_KEY = constants.themeKey;
-  public readonly currentTheme = signal<ThemeMode>('light');
+  public readonly currentTheme = signal<ThemeMode>(this.getInitialTheme());
   public readonly isDark = () => this.currentTheme() === 'dark';
 
   constructor() {
-    this.initializeTheme();
+    this.setupThemeSync();
   }
 
-  private initializeTheme(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
+  private getInitialTheme(): ThemeMode {
+    if (!isPlatformBrowser(this.platformId)) return 'light';
 
     const savedTheme = localStorage.getItem(this.THEME_KEY) as ThemeMode | null;
-    let initialTheme: ThemeMode = 'light';
+    if (savedTheme) return savedTheme;
 
-    if (savedTheme) {
-      initialTheme = savedTheme;
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      initialTheme = 'dark';
-    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
 
-    this.currentTheme.set(initialTheme);
-    this.applyTheme(initialTheme);
+  private setupThemeSync(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    effect(() => {
+      const theme = this.currentTheme();
+      const html = document.documentElement;
+
+      if (theme === 'dark') {
+        html.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+      }
+
+      localStorage.setItem(this.THEME_KEY, theme);
+    });
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQuery.addEventListener('change', (e) => {
@@ -37,29 +47,10 @@ export class Theme {
         this.currentTheme.set(e.matches ? 'dark' : 'light');
       }
     });
-
-    effect(() => {
-      const theme = this.currentTheme();
-      this.applyTheme(theme);
-      localStorage.setItem(this.THEME_KEY, theme);
-    });
-  }
-
-  private applyTheme(theme: ThemeMode): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    const html = document.documentElement;
-
-    if (theme === 'dark') {
-      html.classList.add('dark');
-    } else {
-      html.classList.remove('dark');
-    }
   }
 
   public toggleTheme(): void {
-    const newTheme = this.currentTheme() === 'light' ? 'dark' : 'light';
-    this.currentTheme.set(newTheme);
+    this.currentTheme.update((prev) => (prev === 'light' ? 'dark' : 'light'));
   }
 
   public setTheme(theme: ThemeMode): void {
