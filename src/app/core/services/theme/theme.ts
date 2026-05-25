@@ -22,7 +22,12 @@ export class Theme {
     const savedTheme = localStorage.getItem(this.THEME_KEY) as ThemeMode | null;
     if (savedTheme) return savedTheme;
 
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const systemDefault = window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+
+    localStorage.setItem(this.THEME_KEY, systemDefault);
+    return systemDefault;
   }
 
   private setupThemeSync(): void {
@@ -55,10 +60,5 @@ export class Theme {
 
   public setTheme(theme: ThemeMode): void {
     this.currentTheme.set(theme);
-  }
-
-  public getSystemPreference(): ThemeMode {
-    if (!isPlatformBrowser(this.platformId)) return 'light';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 }
