@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Loader } from './shared/components/loader/loader';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { Theme } from './core/services/theme/theme';
 
 @Component({
   selector: 'app-root',
@@ -11,8 +12,13 @@ import { MessageService } from 'primeng/api';
   providers: [MessageService],
   styleUrl: './app.css',
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('infinity-data-mall');
+  private readonly themeService = inject(Theme);
+
+  ngOnInit(): void {
+    this.themeService.currentTheme();
+  }
 
   severityIcon(severity: string): string {
     const icons: Record<string, string> = {
