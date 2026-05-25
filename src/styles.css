@@ -7,9 +7,7 @@
 
 :root {
     --font-family: 'Inter', system-ui, sans-serif;
-}
 
-:root {
     --primary: #4F46E5;
     --primary-hover: #4338CA;
     --secondary: #0D9488;
@@ -25,7 +23,9 @@
     --text-primary: #0F172A;
     --text-secondary: #475569;
     --text-muted: #94A3B8;
+}
 
+.dark {
     --background-dark: #0F172A;
     --surface-dark: #1E293B;
     --border-dark: #334155;
@@ -35,16 +35,16 @@
 }
 
 @theme {
-    --font-family-sans: var(--font-family);
+    --font-family-sans: 'Inter', system-ui, sans-serif;
 
-    --color-primary: var(--primary);
-    --color-primary-hover: var(--primary-hover);
-    --color-secondary: var(--secondary);
+    --color-primary: #4F46E5;
+    --color-primary-hover: #4338CA;
+    --color-secondary: #0D9488;
 
-    --color-success: var(--success);
-    --color-warning: var(--warning);
-    --color-danger: var(--danger);
-    --color-info: var(--info);
+    --color-success: #10B981;
+    --color-warning: #F59E0B;
+    --color-danger: #EF4444;
+    --color-info: #3B82F6;
 
     --color-background: var(--background);
     --color-surface: var(--surface);
@@ -52,13 +52,6 @@
     --color-text-primary: var(--text-primary);
     --color-text-secondary: var(--text-secondary);
     --color-text-muted: var(--text-muted);
-
-    --color-background-dark: var(--background-dark);
-    --color-surface-dark: var(--surface-dark);
-    --color-border-dark: var(--border-dark);
-    --color-text-primary-dark: var(--text-primary-dark);
-    --color-text-secondary-dark: var(--text-secondary-dark);
-    --color-text-muted-dark: var(--text-muted-dark);
 
     --radius-card: 8px;
     --radius-button: 6px;
@@ -176,32 +169,8 @@ body {
     border-color: var(--border-dark);
 }
 
-.text-primary {
-    color: var(--text-primary);
-}
-
-.text-secondary {
-    color: var(--text-secondary);
-}
-
-.text-muted {
-    color: var(--text-muted);
-}
-
-.dark .text-primary {
-    color: var(--text-primary-dark);
-}
-
-.dark .text-secondary {
-    color: var(--text-secondary-dark);
-}
-
-.dark .text-muted {
-    color: var(--text-muted-dark);
-}
-
 h1 {
-    @apply text-3xl font-semibold tracking-[-0.025em] text-primary; /* 30px with tighter letter spacing */
+    @apply text-3xl font-semibold tracking-tight text-primary; /* 30px with tighter letter spacing */
 }
 
 h2 {
