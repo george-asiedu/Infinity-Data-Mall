@@ -4,6 +4,7 @@ export const {
   selectIsLoading,
   selectLoggedIn,
   selectRegistered,
+  selectRegistrationEmail,
   selectRefreshToken,
   selectError,
 } = authFeature;
