@@ -30,6 +30,7 @@ export interface AuthState {
   isLoading: boolean;
   loggedIn: any | null;
   registered: RegisterResponse | null;
+  registrationEmail: string | null;
   refreshToken: any | null;
   error: string | null;
 }
