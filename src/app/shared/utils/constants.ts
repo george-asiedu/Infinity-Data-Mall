@@ -1,6 +1,6 @@
 export const validationMessages: Record<string, Record<string, string>> = {
-  name: {
-    required: 'Name is required.',
+  fullName: {
+    required: 'Full name is required.',
     invalidName: 'Must contain only alphabets.',
   },
   email: {
@@ -11,6 +11,10 @@ export const validationMessages: Record<string, Record<string, string>> = {
     required: 'Password is required.',
     invalidPassword:
       'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+  },
+  confirmPassword: {
+    required: 'Confirm Password is required.',
+    mismatch: 'Passwords do not match.',
   },
 };
 
