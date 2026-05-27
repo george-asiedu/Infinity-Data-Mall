@@ -6,6 +6,7 @@ export const initialState: AuthState = {
   isLoading: false,
   loggedIn: null,
   registered: null,
+  registrationEmail: null,
   refreshToken: null,
   error: null,
 };
@@ -15,7 +16,6 @@ export const authFeature = createFeature({
   reducer: createReducer(
     initialState,
     on(
-      authActions.register,
       authActions.login,
       authActions.verifyEmail,
       authActions.verifyMfa,
@@ -28,6 +28,11 @@ export const authFeature = createFeature({
         isLoading: true,
       }),
     ),
+    on(authActions.register, (state, { model }) => ({
+      ...state,
+      isLoading: true,
+      registrationEmail: model.email,
+    })),
     on(authActions.registerSuccess, (state, { registered }) => ({
       ...state,
       isLoading: false,
@@ -42,6 +47,7 @@ export const authFeature = createFeature({
       ...state,
       isLoading: false,
       response,
+      registrationEmail: null,
     })),
     on(authActions.verifyMfaSuccess, (state, { response }) => ({
       ...state,
