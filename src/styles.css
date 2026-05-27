@@ -90,6 +90,10 @@ body {
     box-shadow: 0 0 0 3px color-mix(in srgb, #4F46E5 20%, transparent) !important;
 }
 
+.error {
+    @apply text-danger text-xs flex items-center justify-between mt-1 tracking-wide transition-all duration-200;
+}
+
 .p-badge {
     border-radius: var(--radius-badge);
 }
@@ -123,13 +127,13 @@ body {
 .border-divider { @apply border-border dark:border-border-dark; }
 
 /* --- Global Typography --- */
-h1 { @apply text-3xl font-semibold tracking-tight text-heading dark:text-heading-dark; }
-h2 { @apply text-2xl font-semibold text-heading dark:text-heading-dark; }
-h3 { @apply text-[18px] font-medium text-heading dark:text-heading-dark; }
-h4 { @apply text-lg font-medium text-heading dark:text-heading-dark; }
-h5 { @apply text-base font-medium text-heading dark:text-heading-dark; }
-h6 { @apply text-sm font-medium text-heading dark:text-heading-dark; }
-p  { @apply text-base font-normal text-paragraph dark:text-paragraph-dark; }
+h1 { @apply text-2xl lg:text-3xl font-semibold tracking-tight text-heading dark:text-heading-dark; }
+h2 { @apply text-xl lg:text-2xl font-semibold tracking-wide text-heading dark:text-heading-dark; }
+h3 { @apply text-[18px] lg:text-[20px] font-medium tracking-wide text-heading dark:text-heading-dark; }
+h4 { @apply text-base lg:text-[18px] font-medium tracking-wide text-heading dark:text-heading-dark; }
+h5 { @apply text-sm lg:text-base font-medium tracking-wide text-heading dark:text-heading-dark; }
+h6 { @apply text-xs lg:text-sm font-medium tracking-wide text-heading dark:text-heading-dark; }
+p  { @apply text-base font-normal tracking-wide text-paragraph dark:text-paragraph-dark; }
 
 /* --- Custom IDM Toast Panels --- */
 .idm-toast.p-toast {
