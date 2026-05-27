@@ -1,0 +1,62 @@
+<div
+  class="w-full min-h-screen flex items-center justify-center bg-background dark:bg-background-dark px-4 py-12"
+>
+  <div class="w-full max-w-md flex flex-col items-center">
+    <!-- Design-aligned Wrapper Card Box -->
+    <div
+      class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-8 flex flex-col items-center text-center shadow-xs"
+    >
+      @if (isVerifying()) {
+        <!-- Processing State Layout View -->
+        <div
+          class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 animate-pulse"
+        >
+          <i class="pi pi-spin pi-spinner text-2xl text-primary"></i>
+        </div>
+        <h1 class="text-2xl font-semibold mb-2 text-heading dark:text-heading-dark">
+          Verifying Payment
+        </h1>
+        <p class="text-sm text-paragraph dark:text-paragraph-dark">
+          Please wait while we confirm your registration fee with the payment gateway gateway...
+        </p>
+      } @else if (verificationFailed()) {
+        <!-- Failure State Error View Frame -->
+        <div class="w-16 h-16 rounded-full bg-danger/10 flex items-center justify-center mb-6">
+          <i class="pi pi-times-circle text-3xl text-danger"></i>
+        </div>
+        <h1 class="text-2xl font-semibold mb-2 text-heading dark:text-heading-dark">
+          Verification Failed
+        </h1>
+        <p class="text-sm text-paragraph dark:text-paragraph-dark mb-6">
+          We encountered an issue confirming your transaction reference tracking token.
+        </p>
+        <app-button
+          label="Try Log In Manually"
+          [rounded]="false"
+          customClass="w-full !bg-primary !border-primary text-white hover:!bg-primary-hover transition-colors"
+          (clicked)="goToLogin()"
+        ></app-button>
+      } @else {
+        <!-- Absolute Success Completion State Layout View -->
+        <div
+          class="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mb-6 dynamic-bounce"
+        >
+          <i class="pi pi-check-circle text-3xl text-success"></i>
+        </div>
+        <h1 class="text-2xl font-semibold mb-2 text-heading dark:text-heading-dark">
+          Account Activated!
+        </h1>
+        <p class="text-sm text-paragraph dark:text-paragraph-dark mb-6">
+          Thank you! Your registration fee has been successfully processed. Your agent account is
+          now fully active.
+        </p>
+        <app-button
+          label="Proceed to Login Dashboard"
+          [rounded]="false"
+          customClass="w-full !bg-primary !border-primary text-white hover:!bg-primary-hover transition-colors"
+          (clicked)="goToLogin()"
+        ></app-button>
+      }
+    </div>
+  </div>
+</div>
