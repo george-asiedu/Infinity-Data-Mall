@@ -42,6 +42,9 @@ export const authActions = createActionGroup({
     RefreshToken: emptyProps(),
     RefreshTokenSuccess: props<{ refreshToken: any }>(),
 
+    VerifyPayment: props<{ reference: string }>(),
+    VerifyPaymentSuccess: props<{ response: any }>(),
+
     AuthError: props<{ error: string }>(),
     GetStorage: props<AuthState>(),
     Logout: emptyProps(),
