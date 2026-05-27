@@ -2,14 +2,12 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Loader } from './shared/components/loader/loader';
 import { Toast } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 import { Theme } from './core/services/theme/theme';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, Loader, Toast],
   templateUrl: './app.html',
-  providers: [MessageService],
   styleUrl: './app.css',
 })
 export class App implements OnInit {
