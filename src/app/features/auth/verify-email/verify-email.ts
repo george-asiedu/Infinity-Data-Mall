@@ -67,7 +67,7 @@ export class VerifyEmail implements OnInit, OnDestroy {
   }
 
   protected onResendCode(): void {
-    console.log('add resend code logic here');
+    this.store.dispatch(authActions.resendEmailVerification({ email: this.emailEmail() }));
     this.startCountdown();
   }
 
