@@ -1,14 +1,20 @@
 import { inject, Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ToastOptions, ToastSeverity } from '../../models/utility.model';
+import { Utility } from '../utility/utility';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Toast {
   private messageService = inject(MessageService);
+  private utilityService = inject(Utility);
 
-  private show(severity: ToastSeverity, detail: string, options: ToastOptions = {}): void {
+  private async show(
+    severity: ToastSeverity,
+    detail: string,
+    options: ToastOptions = {},
+  ): Promise<void> {
     const defaultSummaries: Record<ToastSeverity, string> = {
       success: 'Success',
       info: 'Info',
@@ -17,6 +23,8 @@ export class Toast {
       secondary: 'Notice',
       contrast: 'Notice',
     };
+
+    await this.utilityService.delay(0);
 
     this.messageService.add({
       severity,
@@ -28,20 +36,20 @@ export class Toast {
     });
   }
 
-  public success(detail: string, options?: ToastOptions): void {
-    this.show('success', detail, options);
+  public async success(detail: string, options?: ToastOptions): Promise<void> {
+    await this.show('success', detail, options);
   }
 
-  public info(detail: string, options?: ToastOptions): void {
-    this.show('info', detail, options);
+  public async info(detail: string, options?: ToastOptions): Promise<void> {
+    await this.show('info', detail, options);
   }
 
-  public warn(detail: string, options?: ToastOptions): void {
-    this.show('warn', detail, options);
+  public async warn(detail: string, options?: ToastOptions): Promise<void> {
+    await this.show('warn', detail, options);
   }
 
-  public error(detail: string, options?: ToastOptions): void {
-    this.show('error', detail, { life: 6000, ...options });
+  public async error(detail: string, options?: ToastOptions): Promise<void> {
+    await this.show('error', detail, { life: 6000, ...options });
   }
 
   public httpError(err: unknown, fallback = 'An unexpected error occurred.'): void {
