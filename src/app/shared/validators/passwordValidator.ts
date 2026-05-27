@@ -12,6 +12,6 @@ export const passwordValidator = (): ValidatorFn => {
     const isValidLength = value.length >= 8;
 
     const isValid = hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && isValidLength;
-    return isValid ? null : { passwordStrength: true };
+    return isValid ? null : { invalidPassword: true };
   };
 };
