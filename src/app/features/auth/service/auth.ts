@@ -26,7 +26,7 @@ export class Auth {
   }
 
   public verifyEmail(model: VerifyEmailModel, origin: string) {
-    const headers = new HttpHeaders().set('origin', origin);
+    const headers = new HttpHeaders().set('X-App-Origin', origin);
     return this.http.post(`${this.api}auth/verify-email`, model, { headers });
   }
 
