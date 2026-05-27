@@ -16,6 +16,7 @@ import { emailValidator } from '../../../shared/validators/emailValidator';
 import { nameValidator } from '../../../shared/validators/nameValidator';
 import { authActions } from '../store/auth.actions';
 import { Utility } from '../../../core/services/utility/utility';
+import { delay } from '../../../shared/utils/helpers';
 
 @Component({
   selector: 'app-register',
@@ -83,7 +84,7 @@ export class Register implements OnInit, OnDestroy {
 
     if (this.registerForm.valid) {
       this.store.dispatch(authActions.register({ model }));
-      await this.utilityService.delay(500);
+      await delay(500);
       this.registerForm.reset();
     } else {
       this.registerForm.markAllAsTouched();

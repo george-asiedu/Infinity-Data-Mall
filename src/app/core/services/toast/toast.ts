@@ -1,14 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ToastOptions, ToastSeverity } from '../../models/utility.model';
-import { Utility } from '../utility/utility';
+import { delay } from '../../../shared/utils/helpers';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Toast {
   private messageService = inject(MessageService);
-  private utilityService = inject(Utility);
 
   private async show(
     severity: ToastSeverity,
@@ -24,7 +23,7 @@ export class Toast {
       contrast: 'Notice',
     };
 
-    await this.utilityService.delay(0);
+    await delay(0);
 
     this.messageService.add({
       severity,
