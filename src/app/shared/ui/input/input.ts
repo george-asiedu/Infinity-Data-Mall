@@ -1,6 +1,7 @@
-import { Component, input, model } from '@angular/core';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Component, forwardRef, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputOtpModule } from 'primeng/inputotp';
 import { InputTextModule } from 'primeng/inputtext';
@@ -23,16 +24,22 @@ import { FloatLabelModule } from 'primeng/floatlabel';
   ],
   templateUrl: './input.html',
   styleUrl: './input.css',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => Input),
+      multi: true,
+    },
+  ],
 })
-export class Input {
-  public value = model<string | number>('');
+export class Input implements ControlValueAccessor {
   public label = input<string>('');
   public id = input<string>('');
-
+  public required = input<boolean>(false);
   public type = input<InputVariant>('text');
   public placeholder = input<string>('');
-  public disabled = input<boolean>(false);
   public customClass = input<string>('w-full control-base');
+  public invalid = input<boolean>(false);
 
   public useGrouping = input<boolean>(true);
   public toggleMask = input<boolean>(true);
@@ -40,4 +47,32 @@ export class Input {
   public rows = input<number>(3);
   public autoResize = input<boolean>(true);
   public otpLength = input<number>(6);
+
+  protected innerValue: any = '';
+  protected isDisabled = signal<boolean>(false);
+  protected onChange: (value: any) => void = () => {
+    /* empty */
+  };
+  protected onTouched: () => void = () => {
+    /* empty */
+  };
+  public writeValue(value: any): void {
+    this.innerValue = value ?? '';
+  }
+  public registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  public registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  public setDisabledState?(isDisabled: boolean): void {
+    this.isDisabled.set(isDisabled);
+  }
+
+  protected handleValueChange(newValue: any): void {
+    this.innerValue = newValue;
+    this.onChange(newValue);
+  }
 }
