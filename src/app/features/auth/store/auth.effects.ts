@@ -20,9 +20,7 @@ export const registerEffect = createEffect(
       switchMap(({ model }) =>
         authService.register(model).pipe(
           map((registered) => {
-            toast.success(
-              'Registration successful! Please check your email to verify your account.',
-            );
+            toast.success(registered.message);
             router.navigate(['/verify-email']);
             return authActions.registerSuccess({ registered });
           }),
@@ -46,7 +44,7 @@ export const loginEffect = createEffect(
       switchMap(({ model }) =>
         authService.login(model).pipe(
           map((loggedIn: any) => {
-            toast.success('Login successful!');
+            toast.success(loggedIn.message);
             router.navigate(['/dashboard']);
             return authActions.loginSuccess({ loggedIn });
           }),
@@ -69,10 +67,28 @@ export const verifyEmailEffect = createEffect(
       ofType(authActions.verifyEmail),
       switchMap(({ model }) =>
         authService.verifyEmail(model, window.location.origin).pipe(
-          map((response: any) => {
-            toast.success('Email verified successfully! You can now log in.');
+          map((response) => {
+            toast.success(response.message);
             router.navigate(['/login']);
             return authActions.verifyEmailSuccess({ response });
+          }),
+          handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const resendVerificationEmailEffect = createEffect(
+  (actions$ = inject(Actions), authService = inject(Auth), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(authActions.resendEmailVerification),
+      switchMap(({ email }) =>
+        authService.resendVerificationEmail(email).pipe(
+          map((response) => {
+            toast.success(response.message);
+            return authActions.resendEmailVerificationSuccess({ response });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
         ),
@@ -94,7 +110,7 @@ export const verifyMfaEffect = createEffect(
       switchMap(({ model }) =>
         authService.verifyMfa(model).pipe(
           map((response: any) => {
-            toast.success('MFA verification successful!');
+            toast.success(response.message);
             router.navigate(['/dashboard']);
             return authActions.verifyMfaSuccess({ response });
           }),
@@ -113,7 +129,7 @@ export const requestPasswordResetEffect = createEffect(
       switchMap(({ email }) =>
         authService.requestPasswordReset(email, window.location.origin).pipe(
           map((response: any) => {
-            toast.success('If an account exists, a reset link has been sent to your email.');
+            toast.success(response.message);
             return authActions.requestPasswordResetSuccess({ response });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
@@ -136,7 +152,7 @@ export const resetPasswordEffect = createEffect(
       switchMap(({ model, token }) =>
         authService.resetPassword(model, token).pipe(
           map((response: any) => {
-            toast.success('Password updated successfully. Please log in.');
+            toast.success(response.message);
             router.navigate(['/login']);
             return authActions.resetPasswordSuccess({ response });
           }),

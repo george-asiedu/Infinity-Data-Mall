@@ -5,8 +5,10 @@ import {
   LoginModel,
   RegisterModel,
   RegisterResponse,
+  ResendVerificationEmailResponse,
   ResetPasswordModel,
   VerifyEmailModel,
+  VerifyEmailResponse,
   VerifyMfaModel,
 } from '../../../core/models/auth.model';
 
@@ -20,7 +22,10 @@ export const authActions = createActionGroup({
     LoginSuccess: props<{ loggedIn: any }>(),
 
     VerifyEmail: props<{ model: VerifyEmailModel }>(),
-    VerifyEmailSuccess: props<{ response: any }>(),
+    VerifyEmailSuccess: props<{ response: VerifyEmailResponse }>(),
+
+    ResendEmailVerification: props<{ email: string }>(),
+    ResendEmailVerificationSuccess: props<{ response: ResendVerificationEmailResponse }>(),
 
     VerifyMfa: props<{ model: VerifyMfaModel }>(),
     VerifyMfaSuccess: props<{ response: any }>(),

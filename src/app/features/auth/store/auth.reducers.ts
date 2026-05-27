@@ -18,6 +18,7 @@ export const authFeature = createFeature({
     on(
       authActions.login,
       authActions.verifyEmail,
+      authActions.resendEmailVerification,
       authActions.verifyMfa,
       authActions.requestPasswordReset,
       authActions.resetPassword,
@@ -43,18 +44,22 @@ export const authFeature = createFeature({
       isLoading: false,
       loggedIn,
     })),
-    on(authActions.verifyEmailSuccess, (state, { response }) => ({
-      ...state,
-      isLoading: false,
-      response,
-      registrationEmail: null,
-    })),
-    on(authActions.verifyMfaSuccess, (state, { response }) => {
+    on(authActions.verifyEmailSuccess, (state, { response }) => {
       if (response?.data?.authorizationUrl) {
         window.location.href = response.data.authorizationUrl;
       }
-      return { ...state, isLoading: false };
+      return { ...state, isLoading: false, response, registrationEmail: null };
     }),
+    on(authActions.resendEmailVerificationSuccess, (state, { response }) => ({
+      ...state,
+      isLoading: false,
+      response,
+    })),
+    on(authActions.verifyMfaSuccess, (state, { response }) => ({
+      ...state,
+      isLoading: false,
+      response,
+    })),
     on(authActions.requestPasswordResetSuccess, (state, { response }) => ({
       ...state,
       isLoading: false,
