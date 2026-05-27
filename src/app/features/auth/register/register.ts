@@ -58,7 +58,7 @@ export class Register implements OnInit, OnDestroy {
 
   registerForm: FormGroup = this.fb.group(
     {
-      fullName: ['', Validators.required, nameValidator()],
+      fullName: ['', [Validators.required, nameValidator()]],
       email: ['', [Validators.required, emailValidator()]],
       password: ['', [Validators.required, passwordValidator()]],
       confirmPassword: ['', Validators.required],
