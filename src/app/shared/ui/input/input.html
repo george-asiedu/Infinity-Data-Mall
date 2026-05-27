@@ -4,11 +4,15 @@
       <p-floatLabel variant="on">
         <p-inputNumber
           [inputId]="id() || label()"
-          [(ngModel)]="value"
+          [ngModel]="innerValue"
+          (ngModelChange)="handleValueChange($event)"
+          (onBlur)="onTouched()"
           [placeholder]="placeholder()"
-          [disabled]="disabled()"
+          [disabled]="isDisabled()"
+          [required]="required()"
           [useGrouping]="useGrouping()"
           [ngClass]="customClass()"
+          [invalid]="invalid()"
         >
         </p-inputNumber>
         <label [attr.for]="id() || label()">{{ label() }}</label>
@@ -18,13 +22,16 @@
       <p-floatLabel variant="on" class="w-full block">
         <p-password
           [inputId]="id() || label()"
-          [(ngModel)]="value"
+          [ngModel]="innerValue"
+          (ngModelChange)="handleValueChange($event)"
+          (onBlur)="onTouched()"
           [placeholder]="placeholder()"
-          [disabled]="disabled()"
+          [disabled]="isDisabled()"
+          [required]="required()"
           [toggleMask]="toggleMask()"
           [feedback]="feedback()"
           [class]="customClass()"
-          styleClass="w-full"
+          [invalid]="invalid()"
           inputStyleClass="w-full"
         >
         </p-password>
@@ -36,12 +43,16 @@
         <textarea
           [id]="id() || label()"
           pTextarea
-          [(ngModel)]="value"
+          [ngModel]="innerValue"
+          (ngModelChange)="handleValueChange($event)"
+          (blur)="onTouched()"
           [placeholder]="placeholder()"
-          [disabled]="disabled()"
+          [disabled]="isDisabled()"
+          [required]="required()"
           [rows]="rows()"
           [autoResize]="autoResize()"
           [ngClass]="customClass()"
+          [invalid]="invalid()"
         >
         </textarea>
         <label [attr.for]="id() || label()">{{ label() }}</label>
@@ -52,7 +63,14 @@
         @if (label()) {
           <span class="caption-text">{{ label() }}</span>
         }
-        <p-inputOtp [(ngModel)]="value" [length]="otpLength()" [disabled]="disabled()">
+        <p-inputOtp
+          [ngModel]="innerValue"
+          (ngModelChange)="handleValueChange($event)"
+          [length]="otpLength()"
+          [disabled]="isDisabled()"
+          [required]="required()"
+          [invalid]="invalid()"
+        >
         </p-inputOtp>
       </div>
     }
@@ -61,10 +79,13 @@
         <input
           [id]="id() || label()"
           pInputText
-          [(ngModel)]="value"
+          [ngModel]="innerValue"
+          (ngModelChange)="handleValueChange($event)"
+          (blur)="onTouched()"
           [placeholder]="placeholder()"
-          [disabled]="disabled()"
+          [disabled]="isDisabled()"
           [ngClass]="customClass()"
+          [invalid]="invalid()"
         />
         <label [attr.for]="id() || label()">{{ label() }}</label>
       </p-floatLabel>
