@@ -45,6 +45,11 @@ export class Toast {
   }
 
   public httpError(err: unknown, fallback = 'An unexpected error occurred.'): void {
+    if (fallback && fallback !== 'An unexpected error occurred.') {
+      this.error(fallback);
+      return;
+    }
+
     let message = fallback;
 
     if (err && typeof err === 'object') {
