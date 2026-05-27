@@ -71,7 +71,7 @@ export const verifyEmailEffect = createEffect(
             toast.success(response.message);
             if (response?.data?.authorizationUrl) {
               window.location.href = response.data.authorizationUrl;
-            } else { 
+            } else {
               router.navigate(['/login']);
             }
             return authActions.verifyEmailSuccess({ response });
