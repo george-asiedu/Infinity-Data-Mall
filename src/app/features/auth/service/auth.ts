@@ -4,8 +4,10 @@ import {
   LoginModel,
   RegisterModel,
   RegisterResponse,
+  ResendVerificationEmailResponse,
   ResetPasswordModel,
   VerifyEmailModel,
+  VerifyEmailResponse,
   VerifyMfaModel,
 } from '../../../core/models/auth.model';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
@@ -21,13 +23,15 @@ export class Auth {
     return this.http.post<RegisterResponse>(`${this.api}auth/register`, model);
   }
 
-  public checkEmail(email: string) {
-    return this.http.post(`${this.api}auth/check-email`, { email });
-  }
-
   public verifyEmail(model: VerifyEmailModel, origin: string) {
     const headers = new HttpHeaders().set('X-App-Origin', origin);
-    return this.http.post(`${this.api}auth/verify-email`, model, { headers });
+    return this.http.post<VerifyEmailResponse>(`${this.api}auth/verify-email`, model, { headers });
+  }
+
+  public resendVerificationEmail(email: string) {
+    return this.http.post<ResendVerificationEmailResponse>(`${this.api}auth/resend-verification`, {
+      email,
+    });
   }
 
   public verifyMfa(model: VerifyMfaModel) {
