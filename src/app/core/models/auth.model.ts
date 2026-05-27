@@ -42,3 +42,15 @@ export interface RegisterResponse {
     accountStatus: string;
   };
 }
+export interface VerifyEmailResponse {
+  message: string;
+  data: {
+    accountStatus: string;
+    authorizationUrl: string;
+    reference: string;
+  };
+}
+
+export interface ResendVerificationEmailResponse {
+  message: string;
+}
