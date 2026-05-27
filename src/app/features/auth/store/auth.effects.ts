@@ -23,7 +23,7 @@ export const registerEffect = createEffect(
             toast.success(
               'Registration successful! Please check your email to verify your account.',
             );
-            router.navigate(['/login']);
+            router.navigate(['/verify-email']);
             return authActions.registerSuccess({ registered });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
@@ -31,7 +31,7 @@ export const registerEffect = createEffect(
       ),
     );
   },
-  { functional: true },
+  { dispatch: true, functional: true },
 );
 
 export const loginEffect = createEffect(
@@ -55,7 +55,7 @@ export const loginEffect = createEffect(
       ),
     );
   },
-  { functional: true },
+  { dispatch: true, functional: true },
 );
 
 export const verifyEmailEffect = createEffect(
@@ -79,7 +79,7 @@ export const verifyEmailEffect = createEffect(
       ),
     );
   },
-  { functional: true },
+  { dispatch: true, functional: true },
 );
 
 export const verifyMfaEffect = createEffect(
@@ -103,7 +103,7 @@ export const verifyMfaEffect = createEffect(
       ),
     );
   },
-  { functional: true },
+  { dispatch: true, functional: true },
 );
 
 export const requestPasswordResetEffect = createEffect(
@@ -121,7 +121,7 @@ export const requestPasswordResetEffect = createEffect(
       ),
     );
   },
-  { functional: true },
+  { dispatch: true, functional: true },
 );
 
 export const resetPasswordEffect = createEffect(
@@ -145,7 +145,7 @@ export const resetPasswordEffect = createEffect(
       ),
     );
   },
-  { functional: true },
+  { dispatch: true, functional: true },
 );
 
 export const verifyTokenEffect = createEffect(
@@ -160,7 +160,7 @@ export const verifyTokenEffect = createEffect(
       ),
     );
   },
-  { functional: true },
+  { dispatch: true, functional: true },
 );
 
 export const refreshTokenEffect = createEffect(
@@ -175,5 +175,5 @@ export const refreshTokenEffect = createEffect(
       ),
     );
   },
-  { functional: true },
+  { dispatch: true, functional: true },
 );
