@@ -69,7 +69,11 @@ export const verifyEmailEffect = createEffect(
         authService.verifyEmail(model, window.location.origin).pipe(
           map((response) => {
             toast.success(response.message);
-            router.navigate(['/login']);
+            if (response?.data?.authorizationUrl) {
+              window.location.href = response.data.authorizationUrl;
+            } else { 
+              router.navigate(['/login']);
+            }
             return authActions.verifyEmailSuccess({ response });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
