@@ -26,7 +26,7 @@ import { Utility } from '../../../core/services/utility/utility';
 export class Register implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private store = inject(Store);
-  protected errorMessage = inject(Utility);
+  private utilityService = inject(Utility);
 
   protected activeFeature = 0;
   private featureInterval: any;
@@ -78,21 +78,24 @@ export class Register implements OnInit, OnDestroy {
     return pass === confirm ? null : { mismatch: true };
   }
 
-  onSubmit() {
+  async onSubmit() {
     const model = this.registerForm.value;
+
     if (this.registerForm.valid) {
       this.store.dispatch(authActions.register({ model }));
+      await this.utilityService.delay(500);
       this.registerForm.reset();
     } else {
       this.registerForm.markAllAsTouched();
     }
   }
+
   protected getControl(value: string) {
     return this.registerForm.get(value);
   }
 
   protected getErrorMessage(controlName: string): string {
-    return this.errorMessage.getErrorMessage(this.getControl(controlName), controlName);
+    return this.utilityService.getErrorMessage(this.getControl(controlName), controlName);
   }
 
   get passwordValue(): string {
