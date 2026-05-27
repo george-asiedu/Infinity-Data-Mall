@@ -197,3 +197,21 @@ export const refreshTokenEffect = createEffect(
   },
   { dispatch: true, functional: true },
 );
+
+export const verifyPaymentEffect = createEffect(
+  (actions$ = inject(Actions), authService = inject(Auth), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(authActions.verifyPayment),
+      switchMap(({ reference }) =>
+        authService.verifyPaymentTransaction(reference).pipe(
+          map((response: any) => {
+            toast.success(response.message || 'Payment transaction successfully verified!');
+            return authActions.verifyPaymentSuccess({ response });
+          }),
+          handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
