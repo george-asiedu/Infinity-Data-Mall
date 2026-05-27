@@ -49,11 +49,12 @@ export const authFeature = createFeature({
       response,
       registrationEmail: null,
     })),
-    on(authActions.verifyMfaSuccess, (state, { response }) => ({
-      ...state,
-      isLoading: false,
-      response,
-    })),
+    on(authActions.verifyMfaSuccess, (state, { response }) => {
+      if (response?.data?.authorizationUrl) {
+        window.location.href = response.data.authorizationUrl;
+      }
+      return { ...state, isLoading: false };
+    }),
     on(authActions.requestPasswordResetSuccess, (state, { response }) => ({
       ...state,
       isLoading: false,
