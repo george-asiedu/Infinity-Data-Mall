@@ -1,0 +1,85 @@
+<div
+  class="w-full min-h-screen flex items-center justify-center bg-background dark:bg-background-dark px-4 py-12"
+>
+  <div class="w-full max-w-md flex flex-col items-center">
+    <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-6 shadow-sm">
+      <img src="iData_logo.png" alt="iData Logo" class="object-contain" />
+    </div>
+
+    <h1
+      class="text-2xl lg:text-3xl font-semibold mb-2 text-center text-heading dark:text-heading-dark"
+    >
+      Verify your email
+    </h1>
+
+    <p class="text-sm lg:text-base text-center mb-8 text-paragraph dark:text-paragraph-dark">
+      We sent a verification code to
+      <span class="font-semibold text-heading dark:text-heading-dark">{{ emailEmail() }}</span
+      >. Enter the code below to secure your agent account.
+    </p>
+
+    <form
+      [formGroup]="verifyForm"
+      class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-6 flex flex-col gap-5 shadow-xs"
+    >
+      <div>
+        <app-input
+          label="Verification Code"
+          type="text"
+          formControlName="token"
+          [required]="true"
+          placeholder="Enter 12-digit alphanumeric code"
+          customClass="w-full tracking-widest font-mono text-center uppercase"
+          [invalid]="
+            !!verifyForm.get('token')?.invalid &&
+            !!(verifyForm.get('token')?.touched || verifyForm.get('token')?.dirty)
+          "
+        >
+        </app-input>
+
+        @if (verifyForm.get('token')?.invalid && verifyForm.get('token')?.touched) {
+          <small class="text-danger block mt-1 text-xs font-medium">
+            Verification code must be exactly 12 characters.
+          </small>
+        }
+      </div>
+
+      <app-button
+        label="Verify Email Account"
+        [rounded]="false"
+        customClass="w-full mt-2 !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!opacity-50 transition-colors"
+        [disabled]="verifyForm.invalid"
+        (clicked)="onSubmit()"
+      >
+      </app-button>
+
+      <div class="text-sm text-center text-paragraph dark:text-paragraph-dark mt-2">
+        Didn't receive the email notification code?
+        @if (resendCountdown() > 0) {
+          <span class="text-muted dark:text-muted-dark font-medium"
+            >Resend in {{ resendCountdown() }}s</span
+          >
+        } @else {
+          <button
+            type="button"
+            (click)="onResendCode()"
+            class="text-primary font-semibold hover:text-primary-hover transition-colors bg-transparent border-none cursor-pointer p-0"
+          >
+            Resend code
+          </button>
+        }
+      </div>
+    </form>
+
+    <div class="mt-8 text-sm text-paragraph dark:text-paragraph-dark text-center">
+      <a
+        routerLink="/login"
+        class="inline-flex items-center gap-2 text-primary font-semibold hover:text-primary-hover transition-colors"
+        aria-label="Back to login"
+      >
+        <i class="pi pi-arrow-left"></i>
+        Back to login
+      </a>
+    </div>
+  </div>
+</div>
