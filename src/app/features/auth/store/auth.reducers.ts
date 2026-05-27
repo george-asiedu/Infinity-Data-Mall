@@ -44,12 +44,12 @@ export const authFeature = createFeature({
       isLoading: false,
       loggedIn,
     })),
-    on(authActions.verifyEmailSuccess, (state, { response }) => {
-      if (response?.data?.authorizationUrl) {
-        window.location.href = response.data.authorizationUrl;
-      }
-      return { ...state, isLoading: false, response, registrationEmail: null };
-    }),
+    on(authActions.verifyEmailSuccess, (state, { response }) => ({
+      ...state,
+      isLoading: false,
+      response,
+      registrationEmail: null,
+    })),
     on(authActions.resendEmailVerificationSuccess, (state, { response }) => ({
       ...state,
       isLoading: false,
