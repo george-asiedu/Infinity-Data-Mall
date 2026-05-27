@@ -3,6 +3,7 @@ import { environment } from '../../../../environments/environment';
 import {
   LoginModel,
   RegisterModel,
+  RegisterResponse,
   ResetPasswordModel,
   VerifyEmailModel,
   VerifyMfaModel,
@@ -17,7 +18,7 @@ export class Auth {
   private http = inject(HttpClient);
 
   public register(model: RegisterModel) {
-    return this.http.post(`${this.api}auth/register`, model);
+    return this.http.post<RegisterResponse>(`${this.api}auth/register`, model);
   }
 
   public checkEmail(email: string) {

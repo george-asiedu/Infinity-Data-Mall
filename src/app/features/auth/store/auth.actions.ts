@@ -4,6 +4,7 @@ import {
   AuthState,
   LoginModel,
   RegisterModel,
+  RegisterResponse,
   ResetPasswordModel,
   VerifyEmailModel,
   VerifyMfaModel,
@@ -13,7 +14,7 @@ export const authActions = createActionGroup({
   source: 'Auth',
   events: {
     Register: props<{ model: RegisterModel }>(),
-    RegisterSuccess: props<{ registered: any }>(),
+    RegisterSuccess: props<{ registered: RegisterResponse }>(),
 
     Login: props<{ model: LoginModel }>(),
     LoginSuccess: props<{ loggedIn: any }>(),

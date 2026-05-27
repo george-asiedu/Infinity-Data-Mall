@@ -29,7 +29,15 @@ export interface VerifyMfaModel {
 export interface AuthState {
   isLoading: boolean;
   loggedIn: any | null;
-  registered: any | null;
+  registered: RegisterResponse | null;
   refreshToken: any | null;
   error: string | null;
+}
+
+export interface RegisterResponse {
+  message: string;
+  data: {
+    userId: string;
+    accountStatus: string;
+  };
 }
