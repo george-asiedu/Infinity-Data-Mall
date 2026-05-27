@@ -24,6 +24,7 @@ export const authFeature = createFeature({
       authActions.resetPassword,
       authActions.verifyToken,
       authActions.refreshToken,
+      authActions.verifyPayment,
       (state) => ({
         ...state,
         isLoading: true,
@@ -80,6 +81,11 @@ export const authFeature = createFeature({
       isLoading: false,
       refreshToken,
       error: null,
+    })),
+    on(authActions.verifyPaymentSuccess, (state, { response }) => ({
+      ...state,
+      isLoading: false,
+      response,
     })),
     on(authActions.authError, (state, { error }) => ({
       ...state,
