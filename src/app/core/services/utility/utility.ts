@@ -39,7 +39,7 @@ export class Utility {
       .then(() => {
         this.toast.info('Copied to clipboard!');
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         this.toast.error('Could not copy text to clipboard.');
         console.error('Could not copy text: ', err);
       });
