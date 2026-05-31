@@ -3,13 +3,17 @@ import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import {
   AuthState,
   LoginModel,
+  LoginResponse,
+  LoginViaCodeModel,
+  MessageResponse,
+  RefreshToken,
   RegisterModel,
   RegisterResponse,
-  ResendVerificationEmailResponse,
   ResetPasswordModel,
   VerifyEmailModel,
   VerifyEmailResponse,
   VerifyMfaModel,
+  VerifyMfaResponse,
 } from '../../../core/models/auth.model';
 
 export const authActions = createActionGroup({
@@ -19,28 +23,31 @@ export const authActions = createActionGroup({
     RegisterSuccess: props<{ registered: RegisterResponse }>(),
 
     Login: props<{ model: LoginModel }>(),
-    LoginSuccess: props<{ loggedIn: any }>(),
+    LoginSuccess: props<{ mfaToken: LoginResponse }>(),
+
+    LoginWithCode: props<{ model: LoginViaCodeModel }>(),
+    LoginWithCodeSuccess: props<{ loggedIn: VerifyMfaResponse }>(),
 
     VerifyEmail: props<{ model: VerifyEmailModel }>(),
     VerifyEmailSuccess: props<{ response: VerifyEmailResponse }>(),
 
     ResendEmailVerification: props<{ email: string }>(),
-    ResendEmailVerificationSuccess: props<{ response: ResendVerificationEmailResponse }>(),
+    ResendEmailVerificationSuccess: props<{ response: MessageResponse }>(),
 
     VerifyMfa: props<{ model: VerifyMfaModel }>(),
-    VerifyMfaSuccess: props<{ response: any }>(),
+    VerifyMfaSuccess: props<{ loggedIn: VerifyMfaResponse }>(),
 
     RequestPasswordReset: props<{ email: string }>(),
-    RequestPasswordResetSuccess: props<{ response: any }>(),
+    RequestPasswordResetSuccess: props<{ response: MessageResponse }>(),
 
     ResetPassword: props<{ model: ResetPasswordModel; token: string }>(),
-    ResetPasswordSuccess: props<{ response: any }>(),
+    ResetPasswordSuccess: props<{ response: MessageResponse }>(),
 
     VerifyToken: props<{ token: string }>(),
-    VerifyTokenSuccess: props<{ response: any }>(),
+    VerifyTokenSuccess: props<{ response: MessageResponse }>(),
 
     RefreshToken: emptyProps(),
-    RefreshTokenSuccess: props<{ refreshToken: any }>(),
+    RefreshTokenSuccess: props<{ refreshToken: RefreshToken }>(),
 
     VerifyPayment: props<{ reference: string }>(),
     VerifyPaymentSuccess: props<{ response: any }>(),
