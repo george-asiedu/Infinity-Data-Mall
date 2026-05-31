@@ -265,3 +265,69 @@
     </div>
   </div>
 </div>
+
+<p-dialog
+  [visible]="showBackupCodeDialog()"
+  [modal]="true"
+  [closable]="false"
+  [closeOnEscape]="false"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="w-[90vw] max-w-md mx-auto"
+  maskStyleClass="backdrop-blur-sm bg-black/40"
+>
+  <ng-template pTemplate="header">
+    <div class="flex flex-col gap-2 pt-2 w-full items-center text-center">
+      <div class="w-14 h-14 rounded-full bg-warning/10 flex items-center justify-center mb-1">
+        <i class="pi pi-shield text-warning text-2xl"></i>
+      </div>
+      <h2 class="text-xl font-bold text-heading dark:text-heading-dark">Save Your Backup Code</h2>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-col gap-5 py-2">
+    <p class="text-sm text-center text-paragraph dark:text-paragraph-dark leading-relaxed">
+      This code is your <span class="font-bold text-danger">only fail-safe</span> if you lose access
+      to your Two-Factor Authentication device. We will only show this once. Please copy or download
+      it and store it in a secure location.
+    </p>
+
+    <div
+      class="bg-background dark:bg-background-dark border border-border dark:border-border-dark rounded-xl p-4 flex items-center justify-between gap-4 shadow-inner"
+    >
+      <code class="text-2xl font-mono font-bold text-primary tracking-[0.25em] flex-1 text-center">
+        {{ backupCode() }}
+      </code>
+      <button
+        type="button"
+        class="p-2.5 rounded-lg bg-surface dark:bg-surface-dark border border-border dark:border-border-dark hover:border-primary dark:hover:border-primary transition-colors text-muted dark:text-muted-dark hover:text-primary shadow-sm"
+        (click)="this.utilityService.copyToClipboard(backupCode())"
+        title="Copy to clipboard"
+      >
+        <i class="pi pi-copy text-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex flex-col gap-3 w-full mt-4">
+      <app-button
+        label="Download as .txt"
+        icon="pi pi-download"
+        [outlined]="true"
+        [rounded]="false"
+        customClass="w-full bg-surface dark:bg-surface-dark text-heading dark:text-heading-dark border-border dark:border-border-dark hover:!bg-background dark:hover:!bg-background-dark transition-colors shadow-sm"
+        (clicked)="downloadBackupCode(backupCode())"
+      >
+      </app-button>
+
+      <app-button
+        label="I've saved it safely, continue"
+        [rounded]="false"
+        customClass="w-full !bg-primary !border-primary text-white hover:!bg-primary-hover transition-colors"
+        (clicked)="continueToVerifyEmail()"
+      >
+      </app-button>
+    </div>
+  </ng-template>
+</p-dialog>
