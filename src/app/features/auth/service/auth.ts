@@ -2,13 +2,17 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import {
   LoginModel,
+  LoginResponse,
+  LoginViaCodeModel,
+  MessageResponse,
+  RefreshToken,
   RegisterModel,
   RegisterResponse,
-  ResendVerificationEmailResponse,
   ResetPasswordModel,
   VerifyEmailModel,
   VerifyEmailResponse,
   VerifyMfaModel,
+  VerifyMfaResponse,
 } from '../../../core/models/auth.model';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
@@ -29,36 +33,44 @@ export class Auth {
   }
 
   public resendVerificationEmail(email: string) {
-    return this.http.post<ResendVerificationEmailResponse>(`${this.api}auth/resend-verification`, {
+    return this.http.post<MessageResponse>(`${this.api}auth/resend-verification`, {
       email,
     });
   }
 
   public verifyMfa(model: VerifyMfaModel) {
-    return this.http.post(`${this.api}auth/verify-mfa`, model);
+    return this.http.post<VerifyMfaResponse>(`${this.api}auth/verify-mfa`, model);
   }
 
   public login(model: LoginModel) {
-    return this.http.post(`${this.api}auth/login`, model);
+    return this.http.post<LoginResponse>(`${this.api}auth/login`, model);
+  }
+
+  public loginWithCode(model: LoginViaCodeModel) {
+    return this.http.post<VerifyMfaResponse>(`${this.api}auth/login-with-backup-code`, model);
   }
 
   public requestPasswordReset(email: string, origin: string) {
     const headers = new HttpHeaders().set('origin', origin);
-    return this.http.post(`${this.api}auth/request-password-reset`, { email }, { headers });
+    return this.http.post<MessageResponse>(
+      `${this.api}auth/request-password-reset`,
+      { email },
+      { headers },
+    );
   }
 
   public resetPassword(model: ResetPasswordModel, token: string) {
     const params = new HttpParams().set('token', token);
-    return this.http.post(`${this.api}auth/reset-password`, model, { params });
+    return this.http.post<MessageResponse>(`${this.api}auth/reset-password`, model, { params });
   }
 
   public verifyToken(token: string) {
     const params = new HttpParams().set('token', token);
-    return this.http.get(`${this.api}auth/verify-token`, { params });
+    return this.http.get<MessageResponse>(`${this.api}auth/verify-token`, { params });
   }
 
   public refreshToken() {
-    return this.http.get(`${this.api}auth/refresh-token`);
+    return this.http.get<RefreshToken>(`${this.api}auth/refresh-token`);
   }
 
   public verifyPaymentTransaction(reference: string) {
