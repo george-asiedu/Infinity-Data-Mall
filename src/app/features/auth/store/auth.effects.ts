@@ -37,10 +37,34 @@ export const loginEffect = createEffect(
       ofType(authActions.login),
       switchMap(({ model }) =>
         authService.login(model).pipe(
-          map((loggedIn: any) => {
+          map((mfaToken) => {
+            toast.success(mfaToken.message);
+            router.navigate(['/mfa']);
+            return authActions.loginSuccess({ mfaToken });
+          }),
+          handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const loginWithCodeEffect = createEffect(
+  (
+    actions$ = inject(Actions),
+    authService = inject(Auth),
+    router = inject(Router),
+    toast = inject(Toast),
+  ) => {
+    return actions$.pipe(
+      ofType(authActions.loginWithCode),
+      switchMap(({ model }) =>
+        authService.loginWithCode(model).pipe(
+          map((loggedIn) => {
             toast.success(loggedIn.message);
             router.navigate(['/dashboard']);
-            return authActions.loginSuccess({ loggedIn });
+            return authActions.loginWithCodeSuccess({ loggedIn });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
         ),
@@ -107,10 +131,10 @@ export const verifyMfaEffect = createEffect(
       ofType(authActions.verifyMfa),
       switchMap(({ model }) =>
         authService.verifyMfa(model).pipe(
-          map((response: any) => {
-            toast.success(response.message);
+          map((loggedIn) => {
+            toast.success(loggedIn.message);
             router.navigate(['/dashboard']);
-            return authActions.verifyMfaSuccess({ response });
+            return authActions.verifyMfaSuccess({ loggedIn });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
         ),
@@ -126,7 +150,7 @@ export const requestPasswordResetEffect = createEffect(
       ofType(authActions.requestPasswordReset),
       switchMap(({ email }) =>
         authService.requestPasswordReset(email, window.location.origin).pipe(
-          map((response: any) => {
+          map((response) => {
             toast.success(response.message);
             return authActions.requestPasswordResetSuccess({ response });
           }),
@@ -149,7 +173,7 @@ export const resetPasswordEffect = createEffect(
       ofType(authActions.resetPassword),
       switchMap(({ model, token }) =>
         authService.resetPassword(model, token).pipe(
-          map((response: any) => {
+          map((response) => {
             toast.success(response.message);
             router.navigate(['/login']);
             return authActions.resetPasswordSuccess({ response });
@@ -168,7 +192,7 @@ export const verifyTokenEffect = createEffect(
       ofType(authActions.verifyToken),
       switchMap(({ token }) =>
         authService.verifyToken(token).pipe(
-          map((response: any) => authActions.verifyTokenSuccess({ response })),
+          map((response) => authActions.verifyTokenSuccess({ response })),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
         ),
       ),
@@ -183,7 +207,7 @@ export const refreshTokenEffect = createEffect(
       ofType(authActions.refreshToken),
       switchMap(() =>
         authService.refreshToken().pipe(
-          map((refreshToken: any) => authActions.refreshTokenSuccess({ refreshToken })),
+          map((refreshToken) => authActions.refreshTokenSuccess({ refreshToken })),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
         ),
       ),
