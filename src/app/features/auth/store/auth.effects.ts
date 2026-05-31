@@ -9,19 +9,13 @@ import { authActions } from './auth.actions';
 import { handleApiError } from '../../../shared/utils/errorHandler';
 
 export const registerEffect = createEffect(
-  (
-    actions$ = inject(Actions),
-    authService = inject(Auth),
-    router = inject(Router),
-    toast = inject(Toast),
-  ) => {
+  (actions$ = inject(Actions), authService = inject(Auth), toast = inject(Toast)) => {
     return actions$.pipe(
       ofType(authActions.register),
       switchMap(({ model }) =>
         authService.register(model).pipe(
           map((registered) => {
             toast.success(registered.message);
-            router.navigate(['/verify-email']);
             return authActions.registerSuccess({ registered });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
