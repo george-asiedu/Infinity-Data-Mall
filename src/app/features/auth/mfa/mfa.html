@@ -3,62 +3,63 @@
 >
   <div class="w-full max-w-md flex flex-col items-center">
     <div
-      class="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center mb-6 shadow-xs"
+      class="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mb-6 shadow-sm"
     >
-      <i class="pi pi-shield text-xl text-primary font-bold"></i>
+      <i class="pi pi-lock text-3xl text-primary font-bold"></i>
     </div>
 
     <h1
-      class="text-2xl lg:text-3xl font-bold mb-2 text-center text-heading dark:text-heading-dark tracking-tight"
+      class="text-3xl font-bold mb-2 text-center text-heading dark:text-heading-dark tracking-tight"
     >
       Two-Factor Authentication
     </h1>
 
-    <p class="text-sm text-center mb-8 text-paragraph dark:text-paragraph-dark px-2">
-      Enter the 6-digit code from your authenticator app
+    <p class="text-base text-center mb-8 text-paragraph dark:text-paragraph-dark px-2">
+      Enter the 6-digit code sent to your email account
     </p>
 
     <form
       [formGroup]="mfaForm"
-      (ngSubmit)="onSubmit()"
-      class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-6 flex flex-col gap-6 items-center shadow-xs"
+      class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-8 flex flex-col gap-6 items-center shadow-sm"
     >
       <div class="flex flex-col gap-2 items-center w-full">
-        <p-inputOtp
+        <app-input
+          type="otp"
           formControlName="code"
-          [length]="6"
-          [integerOnly]="true"
+          [otpLength]="6"
+          [required]="true"
           [invalid]="
-            mfaForm.get('code')?.invalid &&
-            (mfaForm.get('code')?.touched || mfaForm.get('code')?.dirty)
+            !!mfaForm.get('code')?.invalid &&
+            !!(mfaForm.get('code')?.touched || mfaForm.get('code')?.dirty)
           "
-          styleClass="gap-3 flex justify-center w-full"
-        >
-          <ng-template #input let-token>
-            <input
-              type="text"
-              pInputText
-              [attr.placeholder]="token.placeholder"
-              class="w-12! h-14! text-center text-xl font-bold border border-border dark:border-border-dark bg-background dark:bg-background-dark text-heading dark:text-heading-dark rounded-xl transition-all focus:border-primary"
-            />
-          </ng-template>
-        </p-inputOtp>
+          class="w-full flex justify-center [&_.p-inputotp]:flex [&_.p-inputotp]:justify-center [&_.p-inputotp]:gap-2 sm:[&_.p-inputotp]:gap-4 [&_.p-inputotp-input]:w-12! [&_.p-inputotp-input]:h-14! [&_.p-inputotp-input]:text-xl!"
+        ></app-input>
 
-        @if (mfaForm.get('code')?.invalid && mfaForm.get('code')?.touched) {
-          <small class="text-danger block text-center mt-2 text-xs font-medium">
-            MFA code must be exactly 6 digits.
-          </small>
+        @if (
+          mfaForm.get('code')?.invalid &&
+          (mfaForm.get('code')?.touched || mfaForm.get('code')?.dirty)
+        ) {
+          <div class="error">
+            @if (mfaForm.get('code')?.hasError('required')) {
+              <span>MFA code is required.</span>
+            }
+            @if (mfaForm.get('code')?.hasError('pattern')) {
+              <span>MFA code must be exactly 6 numeric digits.</span>
+            }
+          </div>
         }
       </div>
 
       <app-button
         label="Verify"
         [rounded]="false"
-        customClass="w-full !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!opacity-50 transition-colors"
+        class="w-full block mt-2"
+        customClass="w-full py-3 !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!opacity-50 transition-colors text-base"
         [disabled]="mfaForm.invalid"
+        (clicked)="onSubmit()"
       ></app-button>
 
-      <div class="w-full text-center mt-1">
+      <div class="w-full text-center mt-2">
         <a
           routerLink="/auth/backup-code"
           class="text-sm font-semibold text-primary hover:text-primary-hover transition-colors"
@@ -68,12 +69,12 @@
       </div>
     </form>
 
-    <div class="mt-8">
+    <div class="mt-8 text-center">
       <a
         routerLink="/login"
-        class="flex items-center gap-2 text-sm font-semibold text-paragraph dark:text-paragraph-dark hover:text-primary transition-colors group"
+        class="flex items-center justify-center gap-2 text-sm font-semibold text-paragraph dark:text-paragraph-dark hover:text-primary transition-colors group"
       >
-        <i class="pi pi-arrow-left text-xs transition-transform group-hover:-translate-x-1"></i>
+        <i class="pi pi-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
         Back to login
       </a>
     </div>
