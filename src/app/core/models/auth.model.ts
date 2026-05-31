@@ -40,8 +40,10 @@ export interface RegisterResponse {
   data: {
     userId: string;
     accountStatus: string;
+    backupCode: string;
   };
 }
+
 export interface VerifyEmailResponse {
   message: string;
   data: {
