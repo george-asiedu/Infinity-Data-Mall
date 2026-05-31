@@ -3,11 +3,11 @@ import { Input } from '../../../shared/ui/input/input';
 import { Button } from '../../../shared/ui/button/button';
 import { CommonModule } from '@angular/common';
 import {
-  FormBuilder,
-  FormGroup,
+  AbstractControl,
   ReactiveFormsModule,
   ValidationErrors,
   Validators,
+  NonNullableFormBuilder,
 } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { passwordValidator } from '../../../shared/validators/passwordValidator';
@@ -15,7 +15,6 @@ import { emailValidator } from '../../../shared/validators/emailValidator';
 import { nameValidator } from '../../../shared/validators/nameValidator';
 import { authActions } from '../store/auth.actions';
 import { Utility } from '../../../core/services/utility/utility';
-import { delay } from '../../../shared/utils/helpers';
 import { Router, RouterLink } from '@angular/router';
 import { DialogModule } from 'primeng/dialog';
 import { Subject, takeUntil } from 'rxjs';
@@ -29,7 +28,7 @@ import { Actions, ofType } from '@ngrx/effects';
   styleUrl: './register.css',
 })
 export class Register implements OnInit, OnDestroy {
-  private fb = inject(FormBuilder);
+  private fb = inject(NonNullableFormBuilder);
   private store = inject(Store);
   protected utilityService = inject(Utility);
   private router = inject(Router);
@@ -68,14 +67,14 @@ export class Register implements OnInit, OnDestroy {
     },
   ];
 
-  registerForm: FormGroup = this.fb.group(
+  protected registerForm = this.fb.group(
     {
       fullName: ['', [Validators.required, nameValidator()]],
       email: ['', [Validators.required, emailValidator()]],
       password: ['', [Validators.required, passwordValidator()]],
       confirmPassword: ['', Validators.required],
     },
-    { validators: this.passwordMatchValidator },
+    { validators: [this.passwordMatchValidator] },
   );
 
   ngOnInit() {
@@ -90,20 +89,19 @@ export class Register implements OnInit, OnDestroy {
       });
   }
 
-  passwordMatchValidator(g: FormGroup): ValidationErrors | null {
-    const pass = g.get('password')?.value;
-    const confirm = g.get('confirmPassword')?.value;
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const pass = control.get('password')?.value as string | undefined;
+    const confirm = control.get('confirmPassword')?.value as string | undefined;
 
     if (!pass || !confirm) return null;
     return pass === confirm ? null : { mismatch: true };
   }
 
   async onSubmit() {
-    const model = this.registerForm.value;
+    const model = this.registerForm.getRawValue();
 
     if (this.registerForm.valid) {
       this.store.dispatch(authActions.register({ model }));
-      await delay(500);
     } else {
       this.registerForm.markAllAsTouched();
     }
