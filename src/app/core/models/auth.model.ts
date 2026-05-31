@@ -26,12 +26,18 @@ export interface VerifyMfaModel {
   code: string;
 }
 
+export interface LoginViaCodeModel {
+  email: string;
+  backupCode: string;
+}
+
 export interface AuthState {
   isLoading: boolean;
-  loggedIn: any | null;
+  mfaToken: LoginResponse | null;
+  loggedIn: VerifyMfaResponse | null;
   registered: RegisterResponse | null;
   registrationEmail: string | null;
-  refreshToken: any | null;
+  refreshToken: RefreshToken | null;
   error: string | null;
 }
 
@@ -53,6 +59,28 @@ export interface VerifyEmailResponse {
   };
 }
 
-export interface ResendVerificationEmailResponse {
+export interface LoginResponse {
+  message: string;
+  data: { mfaToken: string };
+}
+
+export interface VerifyMfaResponse {
+  message: string;
+  data: {
+    user: any;
+    token: {
+      accessToken: string;
+      refreshToken: string;
+    };
+  };
+}
+
+export interface RefreshToken {
+  data: {
+    token: string;
+  };
+}
+
+export interface MessageResponse {
   message: string;
 }
