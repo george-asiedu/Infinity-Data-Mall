@@ -1,0 +1,81 @@
+<div
+  class="w-full min-h-screen flex items-center justify-center bg-background dark:bg-background-dark px-4 py-12"
+>
+  <div class="w-full max-w-md flex flex-col items-center">
+    <div
+      class="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center mb-6 shadow-xs"
+    >
+      <i class="pi pi-shield text-xl text-primary font-bold"></i>
+    </div>
+
+    <h1
+      class="text-2xl lg:text-3xl font-bold mb-2 text-center text-heading dark:text-heading-dark tracking-tight"
+    >
+      Two-Factor Authentication
+    </h1>
+
+    <p class="text-sm text-center mb-8 text-paragraph dark:text-paragraph-dark px-2">
+      Enter the 6-digit code from your authenticator app
+    </p>
+
+    <form
+      [formGroup]="mfaForm"
+      (ngSubmit)="onSubmit()"
+      class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-6 flex flex-col gap-6 items-center shadow-xs"
+    >
+      <div class="flex flex-col gap-2 items-center w-full">
+        <p-inputOtp
+          formControlName="code"
+          [length]="6"
+          [integerOnly]="true"
+          [invalid]="
+            mfaForm.get('code')?.invalid &&
+            (mfaForm.get('code')?.touched || mfaForm.get('code')?.dirty)
+          "
+          styleClass="gap-3 flex justify-center w-full"
+        >
+          <ng-template #input let-token>
+            <input
+              type="text"
+              pInputText
+              [attr.placeholder]="token.placeholder"
+              class="w-12! h-14! text-center text-xl font-bold border border-border dark:border-border-dark bg-background dark:bg-background-dark text-heading dark:text-heading-dark rounded-xl transition-all focus:border-primary"
+            />
+          </ng-template>
+        </p-inputOtp>
+
+        @if (mfaForm.get('code')?.invalid && mfaForm.get('code')?.touched) {
+          <small class="text-danger block text-center mt-2 text-xs font-medium">
+            MFA code must be exactly 6 digits.
+          </small>
+        }
+      </div>
+
+      <app-button
+        label="Verify"
+        [rounded]="false"
+        customClass="w-full !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!opacity-50 transition-colors"
+        [disabled]="mfaForm.invalid"
+      ></app-button>
+
+      <div class="w-full text-center mt-1">
+        <a
+          routerLink="/auth/backup-code"
+          class="text-sm font-semibold text-primary hover:text-primary-hover transition-colors"
+        >
+          Use a backup code instead
+        </a>
+      </div>
+    </form>
+
+    <div class="mt-8">
+      <a
+        routerLink="/login"
+        class="flex items-center gap-2 text-sm font-semibold text-paragraph dark:text-paragraph-dark hover:text-primary transition-colors group"
+      >
+        <i class="pi pi-arrow-left text-xs transition-transform group-hover:-translate-x-1"></i>
+        Back to login
+      </a>
+    </div>
+  </div>
+</div>
