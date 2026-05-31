@@ -3,6 +3,10 @@ import { RouterOutlet } from '@angular/router';
 import { Loader } from './shared/components/loader/loader';
 import { Toast } from 'primeng/toast';
 import { Theme } from './core/services/theme/theme';
+import { Store } from '@ngrx/store';
+import { selectAuthState } from './features/auth/store/auth.selectors';
+import { constants } from './shared/utils/constants';
+import { authActions } from './features/auth/store/auth.actions';
 
 @Component({
   selector: 'app-root',
@@ -13,9 +17,32 @@ import { Theme } from './core/services/theme/theme';
 export class App implements OnInit {
   protected readonly title = signal('infinity-data-mall');
   private readonly themeService = inject(Theme);
+  private store = inject(Store);
+  private authState = this.store.selectSignal(selectAuthState);
+  private key: string = constants.storageKey;
+
+  public beforeunloadHandler(): void {
+    const combinedState = {
+      auth: this.authState(),
+    };
+    localStorage.setItem(this.key, JSON.stringify(combinedState));
+  }
 
   ngOnInit(): void {
     this.themeService.currentTheme();
+
+    const persistState = localStorage.getItem(this.key);
+    if (persistState) {
+      const storeData = JSON.parse(persistState);
+
+      if (storeData.auth && storeData.merchant) {
+        this.store.dispatch(authActions.getStorage(storeData.auth));
+      } else {
+        this.store.dispatch(authActions.getStorage(storeData));
+      }
+    }
+
+    localStorage.removeItem(this.key);
   }
 
   severityIcon(severity: string): string {
