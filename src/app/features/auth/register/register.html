@@ -228,7 +228,7 @@
           <app-button
             label="Create Account"
             [rounded]="false"
-            customClass="w-full mt-2 !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!border-primary-hover disabled:!opacity-100 transition-colors"
+            customClass="w-full mt-2 !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!border-primary-hover disabled:!opacity-50 transition-colors"
             [disabled]="registerForm.invalid"
             (clicked)="onSubmit()"
           >
@@ -257,7 +257,7 @@
           Already have an account?
           <a
             routerLink="/login"
-            class="text-primary font-semibold hover:text-primary-hover transition-colors"
+            class="text-primary cursor-pointer font-semibold hover:text-primary-hover transition-colors"
             >Log in</a
           >
         </div>
