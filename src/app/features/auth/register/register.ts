@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Input } from '../../../shared/ui/input/input';
 import { Button } from '../../../shared/ui/button/button';
 import { CommonModule } from '@angular/common';
@@ -17,21 +16,32 @@ import { nameValidator } from '../../../shared/validators/nameValidator';
 import { authActions } from '../store/auth.actions';
 import { Utility } from '../../../core/services/utility/utility';
 import { delay } from '../../../shared/utils/helpers';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { DialogModule } from 'primeng/dialog';
+import { Subject, takeUntil } from 'rxjs';
+import { Toast } from '../../../core/services/toast/toast';
+import { Actions, ofType } from '@ngrx/effects';
 
 @Component({
   selector: 'app-register',
-  imports: [Input, Button, CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [Input, Button, CommonModule, ReactiveFormsModule, RouterLink, DialogModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
 export class Register implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private store = inject(Store);
-  private utilityService = inject(Utility);
+  protected utilityService = inject(Utility);
+  private router = inject(Router);
+  private toast = inject(Toast);
+  private destroy$ = new Subject<void>();
+  private actions$ = inject(Actions);
 
   protected activeFeature = 0;
-  private featureInterval: any;
+  private featureInterval: ReturnType<typeof setInterval> | undefined;
+
+  public showBackupCodeDialog = signal<boolean>(false);
+  public backupCode = signal<string>('');
 
   features = [
     {
@@ -70,6 +80,14 @@ export class Register implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.startFeatureCycle();
+
+    this.actions$
+      .pipe(ofType(authActions.registerSuccess), takeUntil(this.destroy$))
+      .subscribe(({ registered }) => {
+        this.backupCode.set(registered.data.backupCode);
+        this.showBackupCodeDialog.set(true);
+        this.registerForm.reset();
+      });
   }
 
   passwordMatchValidator(g: FormGroup): ValidationErrors | null {
@@ -86,7 +104,6 @@ export class Register implements OnInit, OnDestroy {
     if (this.registerForm.valid) {
       this.store.dispatch(authActions.register({ model }));
       await delay(500);
-      this.registerForm.reset();
     } else {
       this.registerForm.markAllAsTouched();
     }
@@ -138,7 +155,28 @@ export class Register implements OnInit, OnDestroy {
     this.startFeatureCycle();
   }
 
+  public downloadBackupCode(code: string): void {
+    const textContent = `Infinity Data Mall - Backup Code\n\nCode: ${code}\n\nKeep this safe. If you lose access to your authenticator app, you can use this code to log in.`;
+    const blob = new Blob([textContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'idm-backup-code.txt';
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+    this.toast.success('Backup code downloaded successfully!');
+  }
+
+  public continueToVerifyEmail(): void {
+    this.showBackupCodeDialog.set(false);
+    this.router.navigate(['/verify-email']);
+  }
+
   ngOnDestroy() {
     this.stopFeatureCycle();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
