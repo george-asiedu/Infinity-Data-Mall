@@ -9,6 +9,7 @@ import { selectError } from '../../auth/store/auth.selectors';
 
 @Component({
   selector: 'app-payment-success',
+  standalone: true,
   imports: [CommonModule, Button],
   templateUrl: './payment-success.html',
   styleUrl: './payment-success.css',

@@ -12,6 +12,7 @@ import { selectRegistrationEmail } from '../store/auth.selectors';
 
 @Component({
   selector: 'app-verify-email',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, Input, Button, RouterLink],
   templateUrl: './verify-email.html',
   styleUrl: './verify-email.css',
