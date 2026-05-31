@@ -4,6 +4,7 @@ import { authActions } from './auth.actions';
 
 export const initialState: AuthState = {
   isLoading: false,
+  mfaToken: null,
   loggedIn: null,
   registered: null,
   registrationEmail: null,
@@ -17,6 +18,7 @@ export const authFeature = createFeature({
     initialState,
     on(
       authActions.login,
+      authActions.loginWithCode,
       authActions.verifyEmail,
       authActions.resendEmailVerification,
       authActions.verifyMfa,
@@ -40,7 +42,12 @@ export const authFeature = createFeature({
       isLoading: false,
       registered,
     })),
-    on(authActions.loginSuccess, (state, { loggedIn }) => ({
+    on(authActions.loginSuccess, (state, { mfaToken }) => ({
+      ...state,
+      isLoading: false,
+      mfaToken,
+    })),
+    on(authActions.loginWithCodeSuccess, (state, { loggedIn }) => ({
       ...state,
       isLoading: false,
       loggedIn,
@@ -56,10 +63,10 @@ export const authFeature = createFeature({
       isLoading: false,
       response,
     })),
-    on(authActions.verifyMfaSuccess, (state, { response }) => ({
+    on(authActions.verifyMfaSuccess, (state, { loggedIn }) => ({
       ...state,
       isLoading: false,
-      response,
+      loggedIn,
     })),
     on(authActions.requestPasswordResetSuccess, (state, { response }) => ({
       ...state,
