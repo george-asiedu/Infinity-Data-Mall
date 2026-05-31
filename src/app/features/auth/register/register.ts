@@ -17,10 +17,11 @@ import { nameValidator } from '../../../shared/validators/nameValidator';
 import { authActions } from '../store/auth.actions';
 import { Utility } from '../../../core/services/utility/utility';
 import { delay } from '../../../shared/utils/helpers';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  imports: [Input, Button, CommonModule, ReactiveFormsModule],
+  imports: [Input, Button, CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
