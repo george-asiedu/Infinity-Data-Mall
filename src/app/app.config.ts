@@ -11,16 +11,17 @@ import { provideState, provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideSpinnerConfig } from 'ngx-spinner';
-import { loadingInterceptor } from './core/interceptors/loading-interceptor';
+import { loadingInterceptor } from './core/interceptors/loading/loading-interceptor';
 import { authFeature } from './features/auth/store/auth.reducers';
 import * as AuthEffects from './features/auth/store/auth.effects';
+import { authInterceptor } from './core/interceptors/auth/auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimationsAsync(),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([loadingInterceptor])),
+    provideHttpClient(withInterceptors([loadingInterceptor, authInterceptor])),
     MessageService,
     providePrimeNG({
       theme: {
