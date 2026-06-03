@@ -4,8 +4,8 @@ import { Button } from '../../../shared/ui/button/button';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { delay } from 'rxjs';
-import { authActions } from '../../auth/store/auth.actions';
-import { selectError } from '../../auth/store/auth.selectors';
+import { paymentActions } from '../store/payment.actions';
+import { selectError } from '../store/payment.selectors';
 
 @Component({
   selector: 'app-payment-success',
@@ -36,7 +36,7 @@ export class PaymentSuccess implements OnInit {
       return;
     }
 
-    this.store.dispatch(authActions.verifyPayment({ reference }));
+    this.store.dispatch(paymentActions.verifyPaymentTransaction({ reference }));
 
     await delay(2500);
 
