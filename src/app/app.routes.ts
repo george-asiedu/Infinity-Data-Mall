@@ -37,4 +37,8 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/payment/payment-success/payment-success').then((m) => m.PaymentSuccess),
   },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+  },
 ];
