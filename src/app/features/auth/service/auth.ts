@@ -72,8 +72,4 @@ export class Auth {
   public refreshToken() {
     return this.http.get<RefreshToken>(`${this.api}auth/refresh-token`);
   }
-
-  public verifyPaymentTransaction(reference: string) {
-    return this.http.get(`${this.api}payment/verify/${reference}`);
-  }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import {
   AuthState,
@@ -48,9 +47,6 @@ export const authActions = createActionGroup({
 
     RefreshToken: emptyProps(),
     RefreshTokenSuccess: props<{ refreshToken: RefreshToken }>(),
-
-    VerifyPayment: props<{ reference: string }>(),
-    VerifyPaymentSuccess: props<{ response: any }>(),
 
     AuthError: props<{ error: string }>(),
     GetStorage: props<AuthState>(),
