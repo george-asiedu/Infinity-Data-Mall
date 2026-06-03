@@ -14,7 +14,9 @@ import { provideSpinnerConfig } from 'ngx-spinner';
 import { loadingInterceptor } from './core/interceptors/loading/loading-interceptor';
 import { authFeature } from './features/auth/store/auth.reducers';
 import * as AuthEffects from './features/auth/store/auth.effects';
+import * as paymentEffects from './features/payment/store/payment.effects';
 import { authInterceptor } from './core/interceptors/auth/auth-interceptor';
+import { paymentFeature } from './features/payment/store/payment.reducers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,7 +39,8 @@ export const appConfig: ApplicationConfig = {
     }),
     provideStore(),
     provideState(authFeature),
-    provideEffects(AuthEffects),
+    provideState(paymentFeature),
+    provideEffects(AuthEffects, paymentEffects),
     provideSpinnerConfig({ type: 'line-scale-pulse-out' }),
     provideStoreDevtools({
       maxAge: 25,
