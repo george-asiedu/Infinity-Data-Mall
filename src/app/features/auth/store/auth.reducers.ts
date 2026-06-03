@@ -46,6 +46,7 @@ export const authFeature = createFeature({
       ...state,
       isLoading: false,
       mfaToken,
+      registrationEmail: null,
     })),
     on(authActions.loginWithCodeSuccess, (state, { loggedIn }) => ({
       ...state,
@@ -56,7 +57,6 @@ export const authFeature = createFeature({
       ...state,
       isLoading: false,
       response,
-      registrationEmail: null,
     })),
     on(authActions.resendEmailVerificationSuccess, (state, { response }) => ({
       ...state,
