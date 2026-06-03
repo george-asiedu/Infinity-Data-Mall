@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -14,7 +15,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Toast } from '../../../core/services/toast/toast';
 import { environment } from '../../../../environments/environment';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const PaystackPop: any;
 
 @Component({
@@ -47,6 +47,7 @@ export class VerifyEmail implements OnInit, OnDestroy {
   });
 
   constructor() {
+    console.log('VerifyEmail component initialized with email:', this.emailEmail());
     this.actions$
       .pipe(ofType(authActions.verifyEmailSuccess), takeUntilDestroyed())
       .subscribe(({ response }) => {
@@ -54,6 +55,7 @@ export class VerifyEmail implements OnInit, OnDestroy {
         const reference = response?.data?.reference;
 
         if (accessCode) {
+          console.log('Access code received:', accessCode);
           this.loadPaystackModal(accessCode, reference);
         } else {
           this.router.navigate(['/login']);
@@ -97,11 +99,11 @@ export class VerifyEmail implements OnInit, OnDestroy {
       key: environment.paystackPublicKey,
       access_code: accessCode,
 
-      callback: () => {
+      callback: (response: any) => {
         this.toast.success('Registration fee paid successfully!');
 
         this.router.navigate(['/payment-success'], {
-          queryParams: { reference: reference },
+          queryParams: { reference: reference || response.reference },
         });
       },
       onClose: () => {
