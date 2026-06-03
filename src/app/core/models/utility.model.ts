@@ -13,8 +13,3 @@ export interface TableColumn {
   field: string;
   header: string;
 }
-
-export interface RegisterPaymentModel {
-  email: string;
-  amount: number;
-}
