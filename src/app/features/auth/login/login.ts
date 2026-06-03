@@ -10,6 +10,7 @@ import { emailValidator } from '../../../shared/validators/emailValidator';
 import { authActions } from '../store/auth.actions';
 import { delay } from '../../../shared/utils/helpers';
 import { passwordValidator } from '../../../shared/validators/passwordValidator';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -44,5 +45,9 @@ export class Login {
 
     await delay();
     this.loginForm.reset();
+  }
+
+  protected initiateGoogleLogin(): void {
+    window.location.href = `${environment.apiUrl}auth/google`;
   }
 }

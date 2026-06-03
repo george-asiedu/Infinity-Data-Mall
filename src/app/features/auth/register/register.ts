@@ -20,6 +20,7 @@ import { DialogModule } from 'primeng/dialog';
 import { Subject, takeUntil } from 'rxjs';
 import { Toast } from '../../../core/services/toast/toast';
 import { Actions, ofType } from '@ngrx/effects';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -176,5 +177,9 @@ export class Register implements OnInit, OnDestroy {
     this.stopFeatureCycle();
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  protected initiateGoogleLogin(): void {
+    window.location.href = `${environment.apiUrl}auth/google`;
   }
 }
