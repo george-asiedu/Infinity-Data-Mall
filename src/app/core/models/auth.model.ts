@@ -97,13 +97,7 @@ export interface User {
   imageShortUrl: string;
   imageLongUrl: string;
   parentAgentId: string;
-  apiKey: string;
   settlementBankAccount: string;
   accountNumber: string;
-  commissionPercentage: number;
-  backupCode: string;
-  lastLoginAt: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  lastLoginAt: string;
 }
