@@ -29,6 +29,10 @@ export const routes: Routes = [
       import('./features/auth/reset-password/reset-password').then((m) => m.ResetPassword),
   },
   {
+    path: 'google-callback',
+    loadComponent: () => import('./features/auth/google/google').then((m) => m.Google),
+  },
+  {
     path: 'payment-success',
     loadComponent: () =>
       import('./features/payment/payment-success/payment-success').then((m) => m.PaymentSuccess),
