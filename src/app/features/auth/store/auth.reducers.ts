@@ -26,6 +26,7 @@ export const authFeature = createFeature({
       authActions.resetPassword,
       authActions.verifyToken,
       authActions.refreshToken,
+      authActions.googleLogin,
       (state) => ({
         ...state,
         isLoading: true,
@@ -87,6 +88,11 @@ export const authFeature = createFeature({
       isLoading: false,
       refreshToken,
       error: null,
+    })),
+    on(authActions.googleLoginSuccess, (state, { loggedIn }) => ({
+      ...state,
+      isLoading: false,
+      loggedIn,
     })),
     on(authActions.authError, (state, { error }) => ({
       ...state,
