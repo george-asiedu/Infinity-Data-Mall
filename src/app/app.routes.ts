@@ -19,6 +19,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/mfa/mfa').then((m) => m.Mfa),
   },
   {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password').then((m) => m.ResetPassword),
+  },
+  {
     path: 'payment-success',
     loadComponent: () =>
       import('./features/payment/payment-success/payment-success').then((m) => m.PaymentSuccess),
