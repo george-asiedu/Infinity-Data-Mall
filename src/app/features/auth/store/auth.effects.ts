@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Auth } from '../service/auth';
 import { Router } from '@angular/router';
@@ -75,23 +74,13 @@ export const loginWithCodeEffect = createEffect(
 );
 
 export const verifyEmailEffect = createEffect(
-  (
-    actions$ = inject(Actions),
-    authService = inject(Auth),
-    router = inject(Router),
-    toast = inject(Toast),
-  ) => {
+  (actions$ = inject(Actions), authService = inject(Auth), toast = inject(Toast)) => {
     return actions$.pipe(
       ofType(authActions.verifyEmail),
       switchMap(({ model }) =>
         authService.verifyEmail(model, window.location.origin).pipe(
           map((response) => {
             toast.success(response.message);
-            if (response?.data?.authorizationUrl) {
-              window.location.href = response.data.authorizationUrl;
-            } else {
-              router.navigate(['/login']);
-            }
             return authActions.verifyEmailSuccess({ response });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
