@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface RegisterModel {
   fullName: string;
   email: string;
@@ -55,6 +54,7 @@ export interface VerifyEmailResponse {
   data: {
     accountStatus: string;
     authorizationUrl: string;
+    accessCode: string;
     reference: string;
   };
 }
@@ -67,7 +67,7 @@ export interface LoginResponse {
 export interface VerifyMfaResponse {
   message: string;
   data: {
-    user: any;
+    user: User;
     token: {
       accessToken: string;
       refreshToken: string;
@@ -83,4 +83,27 @@ export interface RefreshToken {
 
 export interface MessageResponse {
   message: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  phoneNumber: string;
+  role: string;
+  fullName: string;
+  accountStatus: string;
+  provider: string;
+  providerId: string;
+  imageShortUrl: string;
+  imageLongUrl: string;
+  parentAgentId: string;
+  apiKey: string;
+  settlementBankAccount: string;
+  accountNumber: string;
+  commissionPercentage: number;
+  backupCode: string;
+  lastLoginAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
 }
