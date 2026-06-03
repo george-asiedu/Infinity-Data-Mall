@@ -14,8 +14,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Toast } from '../../../core/services/toast/toast';
 import { environment } from '../../../../environments/environment';
-
-declare const PaystackPop: any;
+import PaystackPop from '@paystack/inline-js';
 
 @Component({
   selector: 'app-verify-email',
@@ -95,26 +94,26 @@ export class VerifyEmail implements OnInit, OnDestroy {
   }
 
   private loadPaystackModal(accessCode: string, reference: string): void {
-    const paystack = PaystackPop.setup({
+    const paystack = new PaystackPop();
+
+    const resumePayload = {
       key: environment.paystackPublicKey,
-      access_code: accessCode,
-
-      callback: (response: any) => {
+      accessCode,
+      onSuccess: (response: any) => {
         this.toast.success('Registration fee paid successfully!');
-
         this.router.navigate(['/payment-success'], {
           queryParams: { reference: reference || response.reference },
         });
       },
-      onClose: () => {
+      onCancel: () => {
         this.toast.info(
-          'Payment window closed. Please complete payment to fully activate your agent dashboard.',
+          'Payment window closed. Please complete payment to activate your dashboard.',
         );
         this.router.navigate(['/login']);
       },
-    });
+    } as any;
 
-    paystack.openIframe();
+    paystack.resumeTransaction(resumePayload);
   }
 
   protected onResendCode(): void {
