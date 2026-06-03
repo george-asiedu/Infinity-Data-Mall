@@ -72,6 +72,10 @@ export class VerifyEmail implements OnInit, OnDestroy {
     this.startCountdown();
   }
 
+  protected getControl(name: string) {
+    return this.verifyForm.get(name);
+  }
+
   ngOnDestroy(): void {
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval);

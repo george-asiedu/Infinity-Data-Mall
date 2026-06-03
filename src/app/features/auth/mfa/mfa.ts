@@ -55,4 +55,8 @@ export class Mfa {
     await delay();
     this.mfaForm.reset();
   }
+
+  protected getControl(name: string) {
+    return this.mfaForm.get(name);
+  }
 }
