@@ -46,7 +46,6 @@ export class VerifyEmail implements OnInit, OnDestroy {
   });
 
   constructor() {
-    console.log('VerifyEmail component initialized with email:', this.emailEmail());
     this.actions$
       .pipe(ofType(authActions.verifyEmailSuccess), takeUntilDestroyed())
       .subscribe(({ response }) => {
@@ -54,7 +53,6 @@ export class VerifyEmail implements OnInit, OnDestroy {
         const reference = response?.data?.reference;
 
         if (accessCode) {
-          console.log('Access code received:', accessCode);
           this.loadPaystackModal(accessCode, reference);
         } else {
           this.router.navigate(['/login']);
@@ -96,9 +94,7 @@ export class VerifyEmail implements OnInit, OnDestroy {
   private loadPaystackModal(accessCode: string, reference: string): void {
     const paystack = new PaystackPop();
 
-    const resumePayload = {
-      key: environment.paystackPublicKey,
-      accessCode,
+    const paymentCallbacks = {
       onSuccess: (response: any) => {
         this.toast.success('Registration fee paid successfully!');
         this.router.navigate(['/payment-success'], {
@@ -111,9 +107,9 @@ export class VerifyEmail implements OnInit, OnDestroy {
         );
         this.router.navigate(['/login']);
       },
-    } as any;
+    };
 
-    paystack.resumeTransaction(resumePayload);
+    paystack.resumeTransaction(accessCode, paymentCallbacks);
   }
 
   protected onResendCode(): void {
