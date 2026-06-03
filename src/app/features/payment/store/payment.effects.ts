@@ -67,9 +67,13 @@ export const verifyPaymentTransactionEffect = createEffect(
       ofType(paymentActions.verifyPaymentTransaction),
       switchMap(({ reference }) =>
         paymentService.verifyPaymentTransaction(reference).pipe(
-          map((response: any) => {
+          switchMap((response: any) => {
             toast.success(response.message || 'Transaction successfully processed and cleared!');
-            return paymentActions.verifyPaymentTransactionSuccess({ response });
+
+            return [
+              paymentActions.verifyPaymentTransactionSuccess({ response }),
+              paymentActions.clearPaymentState(),
+            ];
           }),
           handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
         ),

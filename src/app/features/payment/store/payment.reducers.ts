@@ -39,10 +39,10 @@ export const paymentFeature = createFeature({
       isLoading: false,
       setup: response.data || response,
     })),
-    on(paymentActions.verifyPaymentTransactionSuccess, (state, { response }) => ({
+    on(paymentActions.verifyPaymentTransactionSuccess, (state) => ({
       ...state,
       isLoading: false,
-      reference: response.data?.reference || null,
+      reference: null,
     })),
     on(paymentActions.paymentError, (state, { error }) => ({
       ...state,
