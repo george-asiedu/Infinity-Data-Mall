@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Input } from '../../../shared/ui/input/input';
 import { authActions } from '../store/auth.actions';
 import { delay } from '../../../shared/utils/helpers';
@@ -9,6 +9,13 @@ import { Store } from '@ngrx/store';
 import { Button } from '../../../shared/ui/button/button';
 import { VerifyEmailModel } from '../../../core/models/auth.model';
 import { selectRegistrationEmail } from '../store/auth.selectors';
+import { Actions, ofType } from '@ngrx/effects';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Toast } from '../../../core/services/toast/toast';
+import { environment } from '../../../../environments/environment';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const PaystackPop: any;
 
 @Component({
   selector: 'app-verify-email',
@@ -21,6 +28,9 @@ export class VerifyEmail implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(Store);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly actions$ = inject(Actions);
+  private readonly toast = inject(Toast);
 
   private readonly storeEmail = this.store.selectSignal(selectRegistrationEmail);
   private readonly queryEmail = signal<string>(this.route.snapshot.queryParams['email'] || '');
@@ -35,6 +45,21 @@ export class VerifyEmail implements OnInit, OnDestroy {
   protected verifyForm: FormGroup = this.fb.group({
     token: ['', [Validators.required, Validators.minLength(12), Validators.maxLength(12)]],
   });
+
+  constructor() {
+    this.actions$
+      .pipe(ofType(authActions.verifyEmailSuccess), takeUntilDestroyed())
+      .subscribe(({ response }) => {
+        const accessCode = response?.data?.accessCode;
+        const reference = response?.data?.reference;
+
+        if (accessCode) {
+          this.loadPaystackModal(accessCode, reference);
+        } else {
+          this.router.navigate(['/login']);
+        }
+      });
+  }
 
   ngOnInit(): void {
     this.startCountdown();
@@ -65,6 +90,29 @@ export class VerifyEmail implements OnInit, OnDestroy {
 
     await delay();
     this.verifyForm.reset();
+  }
+
+  private loadPaystackModal(accessCode: string, reference: string): void {
+    const paystack = PaystackPop.setup({
+      key: environment.paystackPublicKey,
+      access_code: accessCode,
+
+      callback: () => {
+        this.toast.success('Registration fee paid successfully!');
+
+        this.router.navigate(['/payment-success'], {
+          queryParams: { reference: reference },
+        });
+      },
+      onClose: () => {
+        this.toast.info(
+          'Payment window closed. Please complete payment to fully activate your agent dashboard.',
+        );
+        this.router.navigate(['/login']);
+      },
+    });
+
+    paystack.openIframe();
   }
 
   protected onResendCode(): void {
