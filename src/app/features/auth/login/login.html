@@ -32,7 +32,7 @@
           "
         ></app-input>
         @if (getErrorMessage('email'); as errorMsg) {
-          <small class="text-danger block mt-1 text-xs font-medium">{{ errorMsg }}</small>
+          <small class="error">{{ errorMsg }}</small>
         }
       </div>
 
@@ -52,7 +52,7 @@
           ></app-input>
         </div>
         @if (getErrorMessage('password'); as errorMsg) {
-          <small class="text-danger block mt-1 text-xs font-medium">{{ errorMsg }}</small>
+          <small class="error">{{ errorMsg }}</small>
         }
       </div>
 

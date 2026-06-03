@@ -31,13 +31,13 @@
           placeholder="Enter 12-digit alphanumeric code"
           customClass="w-full tracking-widest font-mono text-center uppercase"
           [invalid]="
-            !!verifyForm.get('token')?.invalid &&
-            !!(verifyForm.get('token')?.touched || verifyForm.get('token')?.dirty)
+            !!getControl('token')?.invalid &&
+            !!(getControl('token')?.touched || getControl('token')?.dirty)
           "
         >
         </app-input>
 
-        @if (verifyForm.get('token')?.invalid && verifyForm.get('token')?.touched) {
+        @if (getControl('token')?.invalid && getControl('token')?.touched) {
           <small class="text-danger block mt-1 text-xs font-medium">
             Verification code must be exactly 12 characters.
           </small>

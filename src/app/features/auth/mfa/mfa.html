@@ -29,21 +29,20 @@
           [otpLength]="6"
           [required]="true"
           [invalid]="
-            !!mfaForm.get('code')?.invalid &&
-            !!(mfaForm.get('code')?.touched || mfaForm.get('code')?.dirty)
+            !!getControl('code')?.invalid &&
+            !!(getControl('code')?.touched || getControl('code')?.dirty)
           "
           class="w-full flex justify-center [&_.p-inputotp]:flex [&_.p-inputotp]:justify-center [&_.p-inputotp]:gap-2 sm:[&_.p-inputotp]:gap-4 [&_.p-inputotp-input]:w-12! [&_.p-inputotp-input]:h-14! [&_.p-inputotp-input]:text-xl!"
         ></app-input>
 
         @if (
-          mfaForm.get('code')?.invalid &&
-          (mfaForm.get('code')?.touched || mfaForm.get('code')?.dirty)
+          getControl('code')?.invalid && (getControl('code')?.touched || getControl('code')?.dirty)
         ) {
           <div class="error">
-            @if (mfaForm.get('code')?.hasError('required')) {
+            @if (getControl('code')?.hasError('required')) {
               <span>MFA code is required.</span>
             }
-            @if (mfaForm.get('code')?.hasError('pattern')) {
+            @if (getControl('code')?.hasError('pattern')) {
               <span>MFA code must be exactly 6 numeric digits.</span>
             }
           </div>
