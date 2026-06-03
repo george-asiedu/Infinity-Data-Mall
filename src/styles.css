@@ -156,8 +156,31 @@ p  { @apply text-base font-normal tracking-wide text-paragraph dark:text-paragra
 .idm-toast .p-toast-message.p-toast-message-error   { @apply border-l-4 border-danger; }
 
 .idm-toast .p-toast-message-content {
+    display: flex !important;
+    align-items: center !important;
     padding: 0 !important;
     gap: 0 !important;
+}
+
+.idm-toast .p-toast-close-button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important; 
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.idm-toast .p-toast-close-button:focus,
+.idm-toast .p-toast-close-button:focus-visible,
+.idm-toast .p-toast-close-button:active,
+.idm-toast .p-toast-close-button:hover {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .idm-toast .p-toast-icon-close {
