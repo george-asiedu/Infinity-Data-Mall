@@ -110,5 +110,11 @@ export const authFeature = createFeature({
       loggedIn: loggedIn,
       refreshToken: refreshToken,
     })),
+    on(authActions.clearAuthState, (state) => ({
+      ...state,
+      mfaToken: null,
+      registrationEmail: null,
+      registered: null,
+    })),
   ),
 });
