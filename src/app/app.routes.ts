@@ -39,6 +39,13 @@ export const routes: Routes = [
       import('./features/payment/payment-success/payment-success').then((m) => m.PaymentSuccess),
   },
   {
+    path: 'complete-registration',
+    loadComponent: () =>
+      import('./features/payment/complete-registration/complete-registration').then(
+        (m) => m.CompleteRegistration,
+      ),
+  },
+  {
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
     canActivate: [authGuard],
