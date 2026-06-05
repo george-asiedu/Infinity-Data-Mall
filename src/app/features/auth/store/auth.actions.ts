@@ -52,6 +52,7 @@ export const authActions = createActionGroup({
     GoogleLoginSuccess: props<{ loggedIn: VerifyMfaResponse }>(),
 
     AuthError: props<{ error: string }>(),
+    clearAuthState: emptyProps(),
     GetStorage: props<AuthState>(),
     Logout: emptyProps(),
   },
