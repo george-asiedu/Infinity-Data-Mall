@@ -13,7 +13,6 @@ import { selectRegistrationEmail } from '../store/auth.selectors';
 import { Actions, ofType } from '@ngrx/effects';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Toast } from '../../../core/services/toast/toast';
-import { environment } from '../../../../environments/environment';
 import PaystackPop from '@paystack/inline-js';
 
 @Component({
