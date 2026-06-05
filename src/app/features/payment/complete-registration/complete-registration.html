@@ -1,0 +1,23 @@
+<div class="flex flex-col items-center justify-center min-h-screen">
+  @if (!paymentFailed) {
+    <div class="text-center">
+      <h2 class="text-xl font-semibold mb-2">Initializing secure payment...</h2>
+      <p class="text-gray-500 text-sm">Please wait while we connect to the payment gateway.</p>
+    </div>
+  } @else {
+    <div class="text-center max-w-sm px-4">
+      <h2 class="text-lg font-bold text-red-600 mb-2">Payment Interrupted</h2>
+      <p class="text-gray-600 mb-4">
+        It looks like the payment window was closed or blocked by your browser layout.
+      </p>
+
+      <app-button
+        label="Click here to Pay GHS 1"
+        (clicked)="loadPaystackModal(accessCode, reference)"
+        class="bg-primary mt-4 text-white hover:bg-primary-hover transition-colors"
+        [rounded]="false"
+      >
+      </app-button>
+    </div>
+  }
+</div>
