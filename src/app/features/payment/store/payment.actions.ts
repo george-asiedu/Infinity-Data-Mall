@@ -3,6 +3,7 @@ import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import {
   CompleteSetupModel,
   InitializePaymentModel,
+  PaymentState,
   VerifyBankAccountModel,
 } from '../../../core/models/payment.model';
 
@@ -22,6 +23,7 @@ export const paymentActions = createActionGroup({
     VerifyPaymentTransactionSuccess: props<{ response: any }>(),
 
     PaymentError: props<{ error: string }>(),
+    GetStorage: props<PaymentState>(),
     ClearPaymentState: emptyProps(),
   },
 });
