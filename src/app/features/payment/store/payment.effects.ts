@@ -82,3 +82,13 @@ export const verifyPaymentTransactionEffect = createEffect(
   },
   { dispatch: true, functional: true },
 );
+
+export const clearReferenceEffect = createEffect(
+  (actions$ = inject(Actions)) => {
+    return actions$.pipe(
+      ofType(paymentActions.verifyPaymentTransactionSuccess),
+      map(() => paymentActions.clearPaymentState()),
+    );
+  },
+  { dispatch: true, functional: true },
+);
