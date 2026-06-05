@@ -23,7 +23,7 @@ export class App implements OnInit {
   private readonly themeService = inject(Theme);
   private store = inject(Store);
   private authState = this.store.selectSignal(selectAuthState);
-  private paymentState = this.store.selectSignal(selectPaymentState)
+  private paymentState = this.store.selectSignal(selectPaymentState);
   private key: string = constants.storageKey;
 
   public beforeunloadHandler(): void {
