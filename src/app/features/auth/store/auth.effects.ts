@@ -2,7 +2,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Auth } from '../service/auth';
 import { Router } from '@angular/router';
 import { Toast } from '../../../core/services/toast/toast';
-import { map, switchMap } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs';
 import { inject } from '@angular/core';
 import { authActions } from './auth.actions';
 import { handleApiError } from '../../../shared/utils/errorHandler';
@@ -224,6 +224,26 @@ export const googleLoginEffect = createEffect(
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
         ),
       ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const logoutRouteEffects = createEffect(
+  (actions$ = inject(Actions), route = inject(Router)) => {
+    return actions$.pipe(
+      ofType(authActions.logout),
+      tap(() => route.navigateByUrl('')),
+    );
+  },
+  { functional: true, dispatch: false },
+);
+
+export const clearAuthStateEffect = createEffect(
+  (actions$ = inject(Actions)) => {
+    return actions$.pipe(
+      ofType(authActions.verifyMfaSuccess),
+      map(() => authActions.clearAuthState()),
     );
   },
   { dispatch: true, functional: true },
