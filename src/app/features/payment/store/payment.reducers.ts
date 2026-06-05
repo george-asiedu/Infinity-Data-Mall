@@ -52,5 +52,9 @@ export const paymentFeature = createFeature({
     on(paymentActions.clearPaymentState, () => ({
       ...initialState,
     })),
+    on(paymentActions.getStorage, (state, response) => ({
+      ...state,
+      ...response,
+    })),
   ),
 });
