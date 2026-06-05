@@ -13,6 +13,9 @@ import { authActions } from './features/auth/store/auth.actions';
   imports: [RouterOutlet, Loader, Toast],
   templateUrl: './app.html',
   styleUrl: './app.css',
+  host: {
+    '(window:beforeunload)': 'beforeunloadHandler()',
+  },
 })
 export class App implements OnInit {
   protected readonly title = signal('infinity-data-mall');
