@@ -1,3 +1,4 @@
 import { paymentFeature } from './payment.reducers';
 
-export const { selectIsLoading, selectError, selectReference, selectSetup } = paymentFeature;
+export const { selectPaymentState, selectIsLoading, selectError, selectReference, selectSetup } =
+  paymentFeature;

@@ -7,6 +7,7 @@ import { Store } from '@ngrx/store';
 import { selectAuthState } from './features/auth/store/auth.selectors';
 import { constants } from './shared/utils/constants';
 import { authActions } from './features/auth/store/auth.actions';
+import { selectPaymentState } from './features/payment/store/payment.selectors';
 
 @Component({
   selector: 'app-root',
@@ -22,11 +23,13 @@ export class App implements OnInit {
   private readonly themeService = inject(Theme);
   private store = inject(Store);
   private authState = this.store.selectSignal(selectAuthState);
+  private paymentState = this.store.selectSignal(selectPaymentState)
   private key: string = constants.storageKey;
 
   public beforeunloadHandler(): void {
     const combinedState = {
       auth: this.authState(),
+      payment: this.paymentState(),
     };
     localStorage.setItem(this.key, JSON.stringify(combinedState));
   }
