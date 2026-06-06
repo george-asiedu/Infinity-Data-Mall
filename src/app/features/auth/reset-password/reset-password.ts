@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Input } from '../../../shared/ui/input/input';
 import { Button } from '../../../shared/ui/button/button';
 import { CommonModule } from '@angular/common';
@@ -9,17 +9,19 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Toast } from '../../../core/services/toast/toast';
 import { Store } from '@ngrx/store';
 import { authActions } from '../store/auth.actions';
 import { delay } from '../../../shared/utils/helpers';
 import { ResetPasswordModel } from '../../../core/models/auth.model';
+import { Actions, ofType } from '@ngrx/effects';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Input, Button, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, Input, Button],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.css',
 })
@@ -29,8 +31,10 @@ export class ResetPassword implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly toast = inject(Toast);
+  private readonly actions$ = inject(Actions);
 
   private token: string | null = null;
+  protected readonly isSuccess = signal<boolean>(false);
 
   protected resetPasswordForm = this.fb.group(
     {
@@ -39,6 +43,14 @@ export class ResetPassword implements OnInit {
     },
     { validators: this.passwordMatchValidator },
   );
+
+  constructor() {
+    this.actions$
+      .pipe(ofType(authActions.resetPasswordSuccess), takeUntilDestroyed())
+      .subscribe(() => {
+        this.isSuccess.set(true);
+      });
+  }
 
   ngOnInit(): void {
     this.token = this.route.snapshot.queryParams['token'] || this.route.snapshot.params['token'];
@@ -96,5 +108,9 @@ export class ResetPassword implements OnInit {
 
     await delay(500);
     this.resetPasswordForm.reset();
+  }
+
+  protected goToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }

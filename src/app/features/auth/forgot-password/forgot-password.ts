@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Input } from '../../../shared/ui/input/input';
 import { Button } from '../../../shared/ui/button/button';
@@ -9,6 +9,8 @@ import { authActions } from '../store/auth.actions';
 import { delay } from '../../../shared/utils/helpers';
 import { emailValidator } from '../../../shared/validators/emailValidator';
 import { Utility } from '../../../core/services/utility/utility';
+import { Actions, ofType } from '@ngrx/effects';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-forgot-password',
@@ -21,10 +23,22 @@ export class ForgotPassword {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly store = inject(Store);
   protected utilityService = inject(Utility);
+  private readonly actions$ = inject(Actions);
+
+  protected readonly isSuccess = signal<boolean>(false);
+  protected readonly emailSentTo = signal<string>('');
 
   protected forgotPasswordForm = this.fb.group({
     email: ['', [Validators.required, emailValidator()]],
   });
+
+  constructor() {
+    this.actions$
+      .pipe(ofType(authActions.requestPasswordResetSuccess), takeUntilDestroyed())
+      .subscribe(() => {
+        this.isSuccess.set(true);
+      });
+  }
 
   protected async onSubmit(): Promise<void> {
     if (this.forgotPasswordForm.invalid) {
@@ -33,6 +47,7 @@ export class ForgotPassword {
     }
 
     const email = this.forgotPasswordForm.getRawValue().email;
+    this.emailSentTo.set(email);
 
     this.store.dispatch(authActions.requestPasswordReset({ email }));
 
