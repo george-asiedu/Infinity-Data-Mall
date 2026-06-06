@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Loader } from './shared/components/loader/loader';
 import { Toast } from 'primeng/toast';
@@ -8,6 +8,7 @@ import { selectAuthState } from './features/auth/store/auth.selectors';
 import { constants } from './shared/utils/constants';
 import { authActions } from './features/auth/store/auth.actions';
 import { selectPaymentState } from './features/payment/store/payment.selectors';
+import { paymentActions } from './features/payment/store/payment.actions';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,6 @@ import { selectPaymentState } from './features/payment/store/payment.selectors';
   },
 })
 export class App implements OnInit {
-  protected readonly title = signal('infinity-data-mall');
   private readonly themeService = inject(Theme);
   private store = inject(Store);
   private authState = this.store.selectSignal(selectAuthState);
@@ -35,20 +35,19 @@ export class App implements OnInit {
   }
 
   ngOnInit(): void {
-    this.themeService.currentTheme();
-
     const persistState = localStorage.getItem(this.key);
     if (persistState) {
       const storeData = JSON.parse(persistState);
-
-      if (storeData.auth && storeData.merchant) {
+      if (storeData.auth && storeData.payment) {
         this.store.dispatch(authActions.getStorage(storeData.auth));
+        this.store.dispatch(paymentActions.getStorage(storeData.payment));
       } else {
         this.store.dispatch(authActions.getStorage(storeData));
       }
     }
 
     localStorage.removeItem(this.key);
+    this.themeService.currentTheme();
   }
 
   severityIcon(severity: string): string {
