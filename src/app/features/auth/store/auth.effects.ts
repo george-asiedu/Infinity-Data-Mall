@@ -152,19 +152,13 @@ export const requestPasswordResetEffect = createEffect(
 );
 
 export const resetPasswordEffect = createEffect(
-  (
-    actions$ = inject(Actions),
-    authService = inject(Auth),
-    router = inject(Router),
-    toast = inject(Toast),
-  ) => {
+  (actions$ = inject(Actions), authService = inject(Auth), toast = inject(Toast)) => {
     return actions$.pipe(
       ofType(authActions.resetPassword),
       switchMap(({ model, token }) =>
         authService.resetPassword(model, token).pipe(
           map((response) => {
             toast.success(response.message);
-            router.navigate(['/login']);
             return authActions.resetPasswordSuccess({ response });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
