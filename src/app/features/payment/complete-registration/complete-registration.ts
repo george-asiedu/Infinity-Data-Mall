@@ -28,7 +28,7 @@ export class CompleteRegistration implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
-      this.accessCode = params['accessCode'];
+      this.accessCode = params['accessCode'] || params['access_code'];
       this.reference = params['reference'];
       this.email = params['email'];
 
