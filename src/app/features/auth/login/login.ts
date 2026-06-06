@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Input } from '../../../shared/ui/input/input';
 import { Button } from '../../../shared/ui/button/button';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -15,7 +15,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Input, Button, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, Input, Button, RouterLink, NgOptimizedImage],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

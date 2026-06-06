@@ -1,7 +1,7 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Input } from '../../../shared/ui/input/input';
 import { Button } from '../../../shared/ui/button/button';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import {
   AbstractControl,
   ReactiveFormsModule,
@@ -24,7 +24,15 @@ import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-register',
-  imports: [Input, Button, CommonModule, ReactiveFormsModule, RouterLink, DialogModule],
+  imports: [
+    Input,
+    Button,
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    DialogModule,
+    NgOptimizedImage,
+  ],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
