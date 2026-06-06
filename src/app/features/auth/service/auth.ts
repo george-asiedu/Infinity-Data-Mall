@@ -72,9 +72,4 @@ export class Auth {
   public refreshToken() {
     return this.http.get<RefreshToken>(`${this.api}auth/refresh-token`);
   }
-
-  public googleLoginCallback(code: string) {
-    const params = new HttpParams().set('code', code);
-    return this.http.get<VerifyMfaResponse>(`${this.api}auth/google/callback`, { params });
-  }
 }
