@@ -27,7 +27,7 @@ const checkAuth = (route: ActivatedRouteSnapshot) => {
 
   if (urlAccessToken && urlRefreshToken) {
     const oauthPayload: VerifyMfaResponse = {
-      message: 'Successfully authenticated via Google OAuth',
+      message: 'Successfully authenticated via Google',
       data: {
         user: {} as User,
         token: {
