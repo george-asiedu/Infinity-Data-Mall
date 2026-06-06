@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -6,4 +7,18 @@ import { Component } from '@angular/core';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {}
+export class Dashboard implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  ngOnInit(): void {
+    const hashTokens = this.route.snapshot.queryParamMap.has('access_token');
+
+    if (hashTokens) {
+      this.router.navigate([], {
+        queryParams: { access_token: null, refresh_token: null, is_new: null },
+        queryParamsHandling: 'merge',
+      });
+    }
+  }
+}
