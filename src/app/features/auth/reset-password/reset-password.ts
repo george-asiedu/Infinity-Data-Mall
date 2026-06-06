@@ -18,6 +18,7 @@ import { ResetPasswordModel } from '../../../core/models/auth.model';
 
 @Component({
   selector: 'app-reset-password',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, Input, Button, RouterLink],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.css',
@@ -40,11 +41,11 @@ export class ResetPassword implements OnInit {
   );
 
   ngOnInit(): void {
-    this.token = this.route.snapshot.queryParamMap.get('token');
+    this.token = this.route.snapshot.queryParams['token'] || this.route.snapshot.params['token'];
 
     if (!this.token) {
       this.toast.error('Invalid or missing password reset token.');
-      this.router.navigate(['/auth/forgot-password']);
+      this.router.navigate(['/forgot-password']);
     }
   }
 
