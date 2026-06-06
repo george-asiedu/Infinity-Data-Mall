@@ -205,30 +205,6 @@ export const refreshTokenEffect = createEffect(
   { dispatch: true, functional: true },
 );
 
-export const googleLoginEffect = createEffect(
-  (
-    actions$ = inject(Actions),
-    authService = inject(Auth),
-    router = inject(Router),
-    toast = inject(Toast),
-  ) => {
-    return actions$.pipe(
-      ofType(authActions.googleLogin),
-      switchMap(({ code }) =>
-        authService.googleLoginCallback(code).pipe(
-          map((loggedIn) => {
-            toast.success(loggedIn.message || 'Successfully authenticated with Google!');
-            router.navigate(['/dashboard']);
-            return authActions.googleLoginSuccess({ loggedIn });
-          }),
-          handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
-        ),
-      ),
-    );
-  },
-  { dispatch: true, functional: true },
-);
-
 export const logoutRouteEffects = createEffect(
   (actions$ = inject(Actions), route = inject(Router)) => {
     return actions$.pipe(
