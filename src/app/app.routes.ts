@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { resetPasswordGuard } from './core/guards/reset-password.guard';
 
 export const routes: Routes = [
   {
@@ -28,6 +29,7 @@ export const routes: Routes = [
     path: 'reset-password',
     loadComponent: () =>
       import('./features/auth/reset-password/reset-password').then((m) => m.ResetPassword),
+    canActivate: [resetPasswordGuard],
   },
   {
     path: 'google-callback',
