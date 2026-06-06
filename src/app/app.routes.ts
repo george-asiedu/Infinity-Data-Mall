@@ -32,10 +32,6 @@ export const routes: Routes = [
     canActivate: [resetPasswordGuard],
   },
   {
-    path: 'google-callback',
-    loadComponent: () => import('./features/auth/google/google').then((m) => m.Google),
-  },
-  {
     path: 'payment-success',
     loadComponent: () =>
       import('./features/payment/payment-success/payment-success').then((m) => m.PaymentSuccess),
