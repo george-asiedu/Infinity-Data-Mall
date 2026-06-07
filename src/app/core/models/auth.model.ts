@@ -61,7 +61,7 @@ export interface VerifyEmailResponse {
 
 export interface LoginResponse {
   message: string;
-  data: { mfaToken: string };
+  data: { mfaToken: string; email: string };
 }
 
 export interface VerifyMfaResponse {
