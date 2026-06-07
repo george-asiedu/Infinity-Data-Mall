@@ -1,0 +1,242 @@
+<div
+  class="w-full min-h-screen flex flex-col items-center justify-center bg-background dark:bg-background-dark px-4 py-12"
+>
+  <div class="w-full max-w-xl flex flex-col">
+    @if (apiError()) {
+      <div
+        class="w-full mb-6 p-4 rounded-card bg-danger/10 border border-danger text-danger flex items-center gap-3 animate-fade-in"
+      >
+        <i class="pi pi-exclamation-circle text-lg"></i>
+        <span class="text-sm font-medium">{{ apiError() }}</span>
+      </div>
+    } @else if (setupSuccess()) {
+      <div
+        class="w-full mb-6 p-4 rounded-card bg-success/10 border border-success text-success flex items-center gap-3 animate-fade-in"
+      >
+        <i class="pi pi-check-circle text-lg"></i>
+        <span class="text-sm font-medium"
+          >Business profile configurations successfully authenticated.</span
+        >
+      </div>
+    }
+
+    <div class="w-full text-center mb-8">
+      <h1 class="text-3xl font-bold tracking-tight text-heading dark:text-heading-dark mb-3">
+        Set up your business profile
+      </h1>
+      <p class="text-base text-paragraph dark:text-paragraph-dark max-w-lg mx-auto leading-relaxed">
+        Connect your settlement wallet to activate your account and start receiving automatic
+        payouts.
+        <span
+          class="block mt-2 text-sm text-muted dark:text-muted-dark font-medium bg-surface dark:bg-surface-dark border border-border dark:border-border-dark p-2.5 rounded-lg"
+        >
+          💡 Note: The platform receives a commission fee of 10% on every subagent registration. The
+          setup configuration fee remains completely at the agent's discretion.
+        </span>
+      </p>
+    </div>
+
+    @if (isLoading() && banks().length === 0) {
+      <div
+        class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-8 flex flex-col gap-6 shadow-sm"
+      >
+        <div class="flex flex-col gap-2 w-full">
+          <app-skeleton width="40%" height="1.25rem"></app-skeleton>
+          <app-skeleton width="100%" height="3rem" borderRadius="6px"></app-skeleton>
+        </div>
+
+        <div class="flex flex-col gap-2 w-full">
+          <app-skeleton width="45%" height="1.25rem"></app-skeleton>
+          <app-skeleton width="100%" height="3rem" borderRadius="6px"></app-skeleton>
+        </div>
+
+        <div class="flex flex-col gap-2 w-full">
+          <app-skeleton width="35%" height="1.25rem"></app-skeleton>
+          <app-skeleton width="100%" height="3rem" borderRadius="6px"></app-skeleton>
+        </div>
+
+        <hr class="border-border dark:border-border-dark my-1" />
+
+        <div
+          class="w-full bg-background dark:bg-background-dark p-4 rounded-lg border border-border dark:border-border-dark flex flex-col gap-3"
+        >
+          <div class="flex items-center justify-between w-full">
+            <div class="flex flex-col gap-1.5 w-2/3">
+              <app-skeleton width="60%" height="1.1rem"></app-skeleton>
+              <app-skeleton width="90%" height="0.85rem"></app-skeleton>
+            </div>
+            <app-skeleton width="80px" height="2rem" borderRadius="4px"></app-skeleton>
+          </div>
+        </div>
+
+        <app-skeleton
+          width="100%"
+          height="3.5rem"
+          borderRadius="6px"
+          customClass="mt-2"
+        ></app-skeleton>
+      </div>
+    } @else {
+      <form
+        [formGroup]="setupForm"
+        class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-8 flex flex-col gap-6 shadow-sm animate-fade-in"
+      >
+        <div class="flex flex-col gap-1 w-full">
+          <app-input
+            type="text"
+            label="Business Name"
+            formControlName="businessName"
+            placeholder="e.g. Apex Ventures"
+            [required]="true"
+            [invalid]="
+              !!getControl('businessName')?.invalid &&
+              !!(getControl('businessName')?.touched || getControl('businessName')?.dirty)
+            "
+          ></app-input>
+          @if (
+            getControl('businessName')?.invalid &&
+            (getControl('businessName')?.touched || getControl('businessName')?.dirty)
+          ) {
+            <small class="error">A valid unique profile registration name is required.</small>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1 w-full">
+          <app-select
+            label="Select Settlement Bank / Mobile Money Provider"
+            [options]="banks()"
+            optionLabel="name"
+            optionValue="code"
+            [filter]="true"
+            filterBy="name"
+            customClass="w-full control-base min-h-[46px]"
+            (selectionChanged)="
+              setupForm.get('bankCode')?.setValue($event);
+              setupForm.get('bankCode')?.markAsTouched()
+            "
+          ></app-select>
+          @if (getControl('bankCode')?.invalid && getControl('bankCode')?.touched) {
+            <small class="error">Selecting a clearing bank network entity is required.</small>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1 w-full relative">
+          <div class="relative w-full">
+            <app-input
+              type="text"
+              label="Account Number"
+              formControlName="accountNumber"
+              placeholder="e.g., 0123456789"
+              [required]="true"
+              maxLength="13"
+              [invalid]="
+                !!getControl('accountNumber')?.invalid &&
+                !!(getControl('accountNumber')?.touched || getControl('accountNumber')?.dirty)
+              "
+            ></app-input>
+
+            @if (verifiedAccountName()) {
+              <div
+                class="absolute right-3 top-9.5 flex items-center justify-center text-success animate-fade-in"
+                title="Verified Account"
+              >
+                <i class="pi pi-check-circle text-xl"></i>
+              </div>
+            }
+          </div>
+
+          @if (verifiedAccountName()) {
+            <div
+              class="text-xs text-success font-semibold flex items-center gap-1.5 mt-1 bg-success/5 border border-success/20 p-2 rounded animate-slide-down"
+            >
+              <i class="pi pi-user text-xs"></i>
+              <span>Account Name: {{ verifiedAccountName() }}</span>
+            </div>
+          }
+
+          @if (
+            getControl('accountNumber')?.invalid &&
+            (getControl('accountNumber')?.touched || getControl('accountNumber')?.dirty)
+          ) {
+            <small class="error">Please enter a valid (10-13 digits) account structure.</small>
+          }
+        </div>
+
+        <hr class="border-border dark:border-border-dark my-1" />
+
+        <div
+          class="w-full flex flex-col gap-3 bg-background dark:bg-background-dark p-4 rounded-lg border border-border dark:border-border-dark"
+        >
+          <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="w-full flex items-center justify-between">
+              <h5>Have a vendor API key?</h5>
+              <div
+                class="flex items-center gap-2 bg-surface dark:bg-surface-dark p-1 rounded-md border border-border dark:border-border-dark w-fit self-end sm:self-auto"
+              >
+                <button
+                  type="button"
+                  (click)="toggleVendorKeyOption(true)"
+                  class="px-3 py-1 text-xs font-semibold rounded transition-colors"
+                  [ngClass]="
+                    hasVendorKey()
+                      ? 'bg-primary text-white'
+                      : 'text-paragraph dark:text-paragraph-dark hover:bg-background dark:hover:bg-background-dark'
+                  "
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  (click)="toggleVendorKeyOption(false)"
+                  class="px-3 py-1 text-xs font-semibold rounded transition-colors"
+                  [ngClass]="
+                    !hasVendorKey()
+                      ? 'bg-primary text-white'
+                      : 'text-paragraph dark:text-paragraph-dark hover:bg-background dark:hover:bg-background-dark'
+                  "
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
+
+          @if (hasVendorKey()) {
+            <div class="w-full mt-2 animate-slide-down">
+              <app-input
+                type="password"
+                label="Vendor Api Key"
+                formControlName="vendorApiKey"
+                placeholder="Enter your vendor api key"
+                [required]="true"
+                [toggleMask]="true"
+                [invalid]="
+                  !!getControl('vendorApiKey')?.invalid && !!getControl('vendorApiKey')?.touched
+                "
+              ></app-input>
+            </div>
+          } @else {
+            <div
+              class="w-full mt-1 p-3 bg-info/5 border border-info/20 text-info rounded flex items-start gap-2.5 animate-fade-in"
+            >
+              <i class="pi pi-info-circle text-sm mt-0.5"></i>
+              <span class="text-xs font-medium leading-relaxed">
+                The platform's vendor (verdeaccess) will be automatically leveraged for purchasing
+                of data bundles.
+              </span>
+            </div>
+          }
+        </div>
+
+        <app-button
+          label="Complete Onboarding"
+          [rounded]="false"
+          class="w-full block mt-2"
+          customClass="w-full py-3.5 !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!opacity-50 font-semibold transition-colors text-base"
+          [disabled]="setupForm.invalid || isLoading()"
+          (clicked)="onSubmit()"
+        ></app-button>
+      </form>
+    }
+  </div>
+</div>
