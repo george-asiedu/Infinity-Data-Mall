@@ -85,13 +85,9 @@ export const verifyPaymentTransactionEffect = createEffect(
       ofType(paymentActions.verifyPaymentTransaction),
       switchMap(({ reference }) =>
         paymentService.verifyPaymentTransaction(reference).pipe(
-          switchMap((response: any) => {
+          map((response: any) => {
             toast.success(response.message || 'Transaction successfully processed!');
-
-            return [
-              paymentActions.verifyPaymentTransactionSuccess({ response }),
-              paymentActions.clearPaymentState(),
-            ];
+            return paymentActions.verifyPaymentTransactionSuccess({ response });
           }),
           handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
         ),
@@ -139,7 +135,12 @@ export const getAccountsEffect = createEffect(
 export const clearReferenceEffect = createEffect(
   (actions$ = inject(Actions)) => {
     return actions$.pipe(
-      ofType(paymentActions.verifyPaymentTransactionSuccess),
+      ofType(
+        paymentActions.verifyPaymentTransactionSuccess,
+        paymentActions.completeSetupSuccess,
+        paymentActions.updateSetupSuccess,
+        paymentActions.verifyBankAccountSuccess,
+      ),
       map(() => paymentActions.clearPaymentState()),
     );
   },
