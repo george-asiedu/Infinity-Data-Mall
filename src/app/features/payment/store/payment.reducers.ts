@@ -7,6 +7,8 @@ export const initialState: PaymentState = {
   error: null,
   reference: null,
   setup: null,
+  banks: [],
+  accounts: [],
 };
 
 export const paymentFeature = createFeature({
@@ -18,6 +20,9 @@ export const paymentFeature = createFeature({
       paymentActions.verifyBankAccount,
       paymentActions.completeSetup,
       paymentActions.verifyPaymentTransaction,
+      paymentActions.updateSetup,
+      paymentActions.getBanks,
+      paymentActions.getAccounts,
       (state) => ({
         ...state,
         isLoading: true,
@@ -39,6 +44,11 @@ export const paymentFeature = createFeature({
       isLoading: false,
       setup: response.data || response,
     })),
+    on(paymentActions.updateSetupSuccess, (state, { response }) => ({
+      ...state,
+      isLoading: false,
+      setup: response.data || response,
+    })),
     on(paymentActions.verifyPaymentTransactionSuccess, (state) => ({
       ...state,
       isLoading: false,
@@ -48,6 +58,16 @@ export const paymentFeature = createFeature({
       ...state,
       isLoading: false,
       error,
+    })),
+    on(paymentActions.getBanksSuccess, (state, { banks }) => ({
+      ...state,
+      isLoading: false,
+      banks,
+    })),
+    on(paymentActions.getAccountsSuccess, (state, { accounts }) => ({
+      ...state,
+      isLoading: false,
+      accounts,
     })),
     on(paymentActions.clearPaymentState, () => ({
       ...initialState,

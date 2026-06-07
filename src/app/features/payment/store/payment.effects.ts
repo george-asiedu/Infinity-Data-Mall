@@ -61,6 +61,24 @@ export const completeSetupEffect = createEffect(
   { dispatch: true, functional: true },
 );
 
+export const updateSetupEffect = createEffect(
+  (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(paymentActions.updateSetup),
+      switchMap(({ model }) =>
+        paymentService.updateSetup(model).pipe(
+          map((response: any) => {
+            toast.success(response.message || 'Financial setup configuration updated!');
+            return paymentActions.updateSetupSuccess({ response });
+          }),
+          handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
 export const verifyPaymentTransactionEffect = createEffect(
   (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
     return actions$.pipe(
@@ -74,6 +92,41 @@ export const verifyPaymentTransactionEffect = createEffect(
               paymentActions.verifyPaymentTransactionSuccess({ response }),
               paymentActions.clearPaymentState(),
             ];
+          }),
+          handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const getBanksEffect = createEffect(
+  (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(paymentActions.getBanks),
+      switchMap(() =>
+        paymentService.getBankList().pipe(
+          map((response: any) => {
+            return paymentActions.getBanksSuccess({ banks: response.data || [] });
+          }),
+          handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const getAccountsEffect = createEffect(
+  (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(paymentActions.getAccounts),
+      switchMap(() =>
+        paymentService.getAccounts().pipe(
+          map((response: any) => {
+            toast.success('Sub-accounts retrieved successfully!');
+            return paymentActions.getAccountsSuccess({ accounts: response.data || [] });
           }),
           handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
         ),

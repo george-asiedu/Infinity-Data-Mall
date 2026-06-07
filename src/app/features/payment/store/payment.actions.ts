@@ -19,8 +19,17 @@ export const paymentActions = createActionGroup({
     CompleteSetup: props<{ model: CompleteSetupModel }>(),
     CompleteSetupSuccess: props<{ response: any }>(),
 
+    UpdateSetup: props<{ model: CompleteSetupModel }>(),
+    UpdateSetupSuccess: props<{ response: any }>(),
+
     VerifyPaymentTransaction: props<{ reference: string }>(),
     VerifyPaymentTransactionSuccess: props<{ response: any }>(),
+
+    GetBanks: emptyProps(),
+    GetBanksSuccess: props<{ banks: any[] }>(),
+
+    GetAccounts: emptyProps(),
+    GetAccountsSuccess: props<{ accounts: any[] }>(),
 
     PaymentError: props<{ error: string }>(),
     GetStorage: props<PaymentState>(),
