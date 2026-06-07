@@ -65,7 +65,7 @@
             type="text"
             label="Backup Recovery Token"
             formControlName="backupCode"
-            placeholder="e.g. AG-PQX0YH"
+            placeholder="e.g. IDM-PQX0YH"
             [required]="true"
             customClass="w-full text-center tracking-wider font-mono uppercase"
             [invalid]="
@@ -83,7 +83,7 @@
                 <span>Backup code is required.</span>
               }
               @if (getControl('backupCode')?.hasError('pattern')) {
-                <span>Format must match code layout exactly (e.g., AG-FCD8YH).</span>
+                <span>Format must match code layout exactly (e.g. IDM-PQX0YH).</span>
               }
             </div>
           }
