@@ -69,12 +69,12 @@ export const paymentFeature = createFeature({
       isLoading: false,
       accounts,
     })),
-    on(paymentActions.clearPaymentState, () => ({
-      ...initialState,
-    })),
     on(paymentActions.getStorage, (state, response) => ({
       ...state,
       ...response,
+    })),
+    on(paymentActions.clearPaymentState, () => ({
+      ...initialState,
     })),
   ),
 });
