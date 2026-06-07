@@ -40,6 +40,7 @@
             formControlName="code"
             [otpLength]="6"
             [required]="true"
+            size="large"
             [invalid]="
               !!getControl('code')?.invalid &&
               !!(getControl('code')?.touched || getControl('code')?.dirty)
@@ -100,7 +101,24 @@
         (clicked)="onSubmit()"
       ></app-button>
 
-      <div class="w-full text-center mt-2">
+      <div class="text-sm text-center text-paragraph dark:text-paragraph-dark">
+        Didn't receive the email?
+        @if (resendCountdown() > 0) {
+          <span class="text-muted dark:text-muted-dark font-medium"
+            >Resend in {{ resendCountdown() }}s</span
+          >
+        } @else {
+          <button
+            type="button"
+            (click)="onResendCode()"
+            class="text-primary font-semibold hover:text-primary-hover transition-colors bg-transparent border-none cursor-pointer p-0"
+          >
+            Resend code
+          </button>
+        }
+      </div>
+
+      <div class="w-full text-center">
         <button
           type="button"
           (click)="toggleVerificationMode()"
