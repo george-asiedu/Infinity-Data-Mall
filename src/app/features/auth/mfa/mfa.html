@@ -5,17 +5,28 @@
     <div
       class="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mb-6 shadow-sm"
     >
-      <i class="pi pi-lock text-3xl text-primary font-bold"></i>
+      <i
+        class="pi text-3xl text-primary font-bold"
+        [ngClass]="isBackupMode() ? 'pi-shield' : 'pi-lock'"
+      ></i>
     </div>
 
     <h1
       class="text-3xl font-bold mb-2 text-center text-heading dark:text-heading-dark tracking-tight"
     >
-      Two-Factor Authentication
+      @if (isBackupMode()) {
+        Backup Verification Code
+      } @else {
+        Two-Factor Authentication
+      }
     </h1>
 
     <p class="text-base text-center mb-8 text-paragraph dark:text-paragraph-dark px-2">
-      Enter the 6-digit code sent to your email account
+      @if (isBackupMode()) {
+        Enter your emergency recovery backup code
+      } @else {
+        Enter the 6-digit code sent to your email account
+      }
     </p>
 
     <form
@@ -23,29 +34,58 @@
       class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-8 flex flex-col gap-6 items-center shadow-sm"
     >
       <div class="flex flex-col gap-2 items-center w-full">
-        <app-input
-          type="otp"
-          formControlName="code"
-          [otpLength]="6"
-          [required]="true"
-          [invalid]="
-            !!getControl('code')?.invalid &&
-            !!(getControl('code')?.touched || getControl('code')?.dirty)
-          "
-          class="w-full flex justify-center [&_.p-inputotp]:flex [&_.p-inputotp]:justify-center [&_.p-inputotp]:gap-2 sm:[&_.p-inputotp]:gap-4 [&_.p-inputotp-input]:w-12! [&_.p-inputotp-input]:h-14! [&_.p-inputotp-input]:text-xl!"
-        ></app-input>
+        @if (!isBackupMode()) {
+          <app-input
+            type="otp"
+            formControlName="code"
+            [otpLength]="6"
+            [required]="true"
+            [invalid]="
+              !!getControl('code')?.invalid &&
+              !!(getControl('code')?.touched || getControl('code')?.dirty)
+            "
+          ></app-input>
 
-        @if (
-          getControl('code')?.invalid && (getControl('code')?.touched || getControl('code')?.dirty)
-        ) {
-          <div class="error">
-            @if (getControl('code')?.hasError('required')) {
-              <span>MFA code is required.</span>
-            }
-            @if (getControl('code')?.hasError('pattern')) {
-              <span>MFA code must be exactly 6 numeric digits.</span>
-            }
-          </div>
+          @if (
+            getControl('code')?.invalid &&
+            (getControl('code')?.touched || getControl('code')?.dirty)
+          ) {
+            <div class="error text-left w-full pl-1 mt-1">
+              @if (getControl('code')?.hasError('required')) {
+                <span>MFA code is required.</span>
+              }
+              @if (getControl('code')?.hasError('pattern')) {
+                <span>MFA code must be exactly 6 numeric digits.</span>
+              }
+            </div>
+          }
+        } @else {
+          <app-input
+            type="text"
+            label="Backup Recovery Token"
+            formControlName="backupCode"
+            placeholder="e.g. AG-PQX0YH"
+            [required]="true"
+            customClass="w-full text-center tracking-wider font-mono uppercase"
+            [invalid]="
+              !!getControl('backupCode')?.invalid &&
+              !!(getControl('backupCode')?.touched || getControl('backupCode')?.dirty)
+            "
+          ></app-input>
+
+          @if (
+            getControl('backupCode')?.invalid &&
+            (getControl('backupCode')?.touched || getControl('backupCode')?.dirty)
+          ) {
+            <div class="error text-left w-full pl-1 mt-1">
+              @if (getControl('backupCode')?.hasError('required')) {
+                <span>Backup code is required.</span>
+              }
+              @if (getControl('backupCode')?.hasError('pattern')) {
+                <span>Format must match code layout exactly (e.g., AG-FCD8YH).</span>
+              }
+            </div>
+          }
         }
       </div>
 
@@ -54,17 +94,24 @@
         [rounded]="false"
         class="w-full block mt-2"
         customClass="w-full py-3 !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!opacity-50 transition-colors text-base"
-        [disabled]="mfaForm.invalid"
+        [disabled]="
+          isBackupMode() ? !!getControl('backupCode')?.invalid : !!getControl('code')?.invalid
+        "
         (clicked)="onSubmit()"
       ></app-button>
 
       <div class="w-full text-center mt-2">
-        <a
-          routerLink="/auth/backup-code"
-          class="text-sm font-semibold text-primary hover:text-primary-hover transition-colors"
+        <button
+          type="button"
+          (click)="toggleVerificationMode()"
+          class="text-sm font-semibold text-primary hover:text-primary-hover transition-colors bg-transparent border-none cursor-pointer p-0"
         >
-          Use a backup code instead
-        </a>
+          @if (isBackupMode()) {
+            Use OTP verification code instead
+          } @else {
+            Use a backup code instead
+          }
+        </button>
       </div>
     </form>
 
@@ -74,7 +121,7 @@
         class="flex items-center justify-center gap-2 text-sm font-semibold text-paragraph dark:text-paragraph-dark hover:text-primary transition-colors group"
       >
         <i class="pi pi-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
-        Back to login
+        <span>Back to login</span>
       </a>
     </div>
   </div>
