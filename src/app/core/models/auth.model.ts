@@ -97,6 +97,7 @@ export interface User {
   imageShortUrl: string;
   imageLongUrl: string;
   parentAgentId: string;
+  businessName: string;
   settlementBankAccount: string;
   accountNumber: string;
   lastLoginAt: string;
