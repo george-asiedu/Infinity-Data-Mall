@@ -31,4 +31,16 @@ export class Payment {
   public completeSetup(model: CompleteSetupModel) {
     return this.http.post(`${this.api}payment/complete-financial-setup`, model);
   }
+
+  public updateSetup(model: CompleteSetupModel) {
+    return this.http.post(`${this.api}payment/update-financial-setup`, model);
+  }
+
+  public getBankList() {
+    return this.http.get(`${this.api}payment/banks`);
+  }
+
+  public getAccounts() {
+    return this.http.get(`${this.api}payment/admin/subaccounts`);
+  }
 }
