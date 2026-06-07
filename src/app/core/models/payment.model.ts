@@ -20,4 +20,6 @@ export interface PaymentState {
   error: string | null;
   reference: string | null;
   setup: unknown | null;
+  banks: any[];
+  accounts: any[];
 }
