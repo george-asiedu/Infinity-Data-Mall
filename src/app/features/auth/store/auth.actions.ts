@@ -33,6 +33,9 @@ export const authActions = createActionGroup({
     ResendEmailVerification: props<{ email: string }>(),
     ResendEmailVerificationSuccess: props<{ response: MessageResponse }>(),
 
+    ResendMfaCode: props<{ email: string }>(),
+    ResendMfaCodeSuccess: props<{ response: MessageResponse }>(),
+
     VerifyMfa: props<{ model: VerifyMfaModel }>(),
     VerifyMfaSuccess: props<{ loggedIn: VerifyMfaResponse }>(),
 

@@ -109,6 +109,24 @@ export const resendVerificationEmailEffect = createEffect(
   { dispatch: true, functional: true },
 );
 
+export const resendMfaCodeEffect = createEffect(
+  (actions$ = inject(Actions), authService = inject(Auth), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(authActions.resendMfaCode),
+      switchMap(({ email }) =>
+        authService.resendMfaCode(email).pipe(
+          map((response) => {
+            toast.success(response.message);
+            return authActions.resendMfaCodeSuccess({ response });
+          }),
+          handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
 export const verifyMfaEffect = createEffect(
   (
     actions$ = inject(Actions),
@@ -212,7 +230,7 @@ export const logoutRouteEffects = createEffect(
 export const clearAuthStateEffect = createEffect(
   (actions$ = inject(Actions)) => {
     return actions$.pipe(
-      ofType(authActions.verifyMfaSuccess),
+      ofType(authActions.verifyMfaSuccess, authActions.loginWithCodeSuccess),
       map(() => authActions.clearAuthState()),
     );
   },

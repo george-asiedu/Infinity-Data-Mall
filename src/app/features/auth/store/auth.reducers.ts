@@ -26,6 +26,7 @@ export const authFeature = createFeature({
       authActions.resetPassword,
       authActions.verifyToken,
       authActions.refreshToken,
+      authActions.resendMfaCode,
       (state) => ({
         ...state,
         isLoading: true,
@@ -58,6 +59,11 @@ export const authFeature = createFeature({
       response,
     })),
     on(authActions.resendEmailVerificationSuccess, (state, { response }) => ({
+      ...state,
+      isLoading: false,
+      response,
+    })),
+    on(authActions.resendMfaCodeSuccess, (state, { response }) => ({
       ...state,
       isLoading: false,
       response,

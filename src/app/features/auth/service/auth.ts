@@ -38,6 +38,12 @@ export class Auth {
     });
   }
 
+  public resendMfaCode(email: string) {
+    return this.http.post<MessageResponse>(`${this.api}auth/resend-mfa-code`, {
+      email,
+    });
+  }
+
   public verifyMfa(model: VerifyMfaModel) {
     return this.http.post<VerifyMfaResponse>(`${this.api}auth/verify-mfa`, model);
   }
