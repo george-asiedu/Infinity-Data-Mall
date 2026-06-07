@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import {
+  Banks,
   CompleteSetupModel,
   InitializePaymentModel,
   PaymentState,
+  VerifyAccountResponse,
   VerifyBankAccountModel,
 } from '../../../core/models/payment.model';
 
@@ -14,7 +16,7 @@ export const paymentActions = createActionGroup({
     InitializeTransactionSuccess: props<{ response: any }>(),
 
     VerifyBankAccount: props<{ model: VerifyBankAccountModel }>(),
-    VerifyBankAccountSuccess: props<{ response: any }>(),
+    VerifyBankAccountSuccess: props<{ response: VerifyAccountResponse }>(),
 
     CompleteSetup: props<{ model: CompleteSetupModel }>(),
     CompleteSetupSuccess: props<{ response: any }>(),
@@ -26,13 +28,13 @@ export const paymentActions = createActionGroup({
     VerifyPaymentTransactionSuccess: props<{ response: any }>(),
 
     GetBanks: emptyProps(),
-    GetBanksSuccess: props<{ banks: any[] }>(),
+    GetBanksSuccess: props<{ banks: Banks[] }>(),
 
     GetAccounts: emptyProps(),
     GetAccountsSuccess: props<{ accounts: any[] }>(),
 
     PaymentError: props<{ error: string }>(),
+    clearPaymentState: emptyProps(),
     GetStorage: props<PaymentState>(),
-    ClearPaymentState: emptyProps(),
   },
 });
