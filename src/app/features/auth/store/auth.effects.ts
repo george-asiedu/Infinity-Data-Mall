@@ -6,6 +6,7 @@ import { map, switchMap, tap } from 'rxjs';
 import { inject } from '@angular/core';
 import { authActions } from './auth.actions';
 import { handleApiError } from '../../../shared/utils/errorHandler';
+import { paymentActions } from '../../payment/store/payment.actions';
 
 export const registerEffect = createEffect(
   (actions$ = inject(Actions), authService = inject(Auth), toast = inject(Toast)) => {
@@ -62,7 +63,13 @@ export const loginWithCodeEffect = createEffect(
         authService.loginWithCode(model).pipe(
           map((loggedIn) => {
             toast.success(loggedIn.message);
-            router.navigate(['/dashboard']);
+
+            if (loggedIn.data.user.settlementBankAccount) {
+              router.navigate(['/dashboard']);
+            } else {
+              router.navigate(['/onboarding']);
+            }
+
             return authActions.loginWithCodeSuccess({ loggedIn });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
@@ -140,7 +147,13 @@ export const verifyMfaEffect = createEffect(
         authService.verifyMfa(model).pipe(
           map((loggedIn) => {
             toast.success(loggedIn.message);
-            router.navigate(['/dashboard']);
+
+            if (loggedIn.data.user.settlementBankAccount) {
+              router.navigate(['/dashboard']);
+            } else {
+              router.navigate(['/onboarding']);
+            }
+
             return authActions.verifyMfaSuccess({ loggedIn });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
@@ -232,6 +245,16 @@ export const clearAuthStateEffect = createEffect(
     return actions$.pipe(
       ofType(authActions.verifyMfaSuccess, authActions.loginWithCodeSuccess),
       map(() => authActions.clearAuthState()),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const loadBanksEffect = createEffect(
+  (actions$ = inject(Actions)) => {
+    return actions$.pipe(
+      ofType(authActions.verifyMfaSuccess, authActions.loginWithCodeSuccess),
+      map(() => paymentActions.getBanks()),
     );
   },
   { dispatch: true, functional: true },
