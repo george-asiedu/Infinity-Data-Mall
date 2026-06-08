@@ -20,22 +20,6 @@
       </div>
     }
 
-    <div class="w-full text-center mb-8">
-      <h1 class="text-3xl font-bold tracking-tight text-heading dark:text-heading-dark mb-3">
-        Set up your business profile
-      </h1>
-      <p class="text-base text-paragraph dark:text-paragraph-dark max-w-lg mx-auto leading-relaxed">
-        Connect your settlement wallet to activate your account and start receiving automatic
-        payouts.
-        <span
-          class="block mt-2 text-sm text-muted dark:text-muted-dark font-medium bg-surface dark:bg-surface-dark border border-border dark:border-border-dark p-2.5 rounded-lg"
-        >
-          💡 Note: The platform receives a commission fee of 10% on every subagent registration. The
-          setup configuration fee remains completely at the agent's discretion.
-        </span>
-      </p>
-    </div>
-
     @if (isLoading() && banks().length === 0) {
       <div
         class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-8 flex flex-col gap-6 shadow-sm"
@@ -77,6 +61,24 @@
         ></app-skeleton>
       </div>
     } @else {
+      <div class="w-full text-center mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-heading dark:text-heading-dark mb-3">
+          Set up your business profile
+        </h1>
+        <p
+          class="text-base text-paragraph dark:text-paragraph-dark max-w-lg mx-auto leading-relaxed"
+        >
+          Connect your settlement wallet to activate your account and start receiving automatic
+          payouts.
+          <span
+            class="block mt-2 text-sm text-muted dark:text-muted-dark font-medium bg-surface dark:bg-surface-dark border border-border dark:border-border-dark p-2.5 rounded-lg"
+          >
+            💡 Note: The platform receives a commission fee of 10% on every subagent registration.
+            The setup configuration fee remains completely at the agent's discretion.
+          </span>
+        </p>
+      </div>
+
       <form
         [formGroup]="setupForm"
         class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-8 flex flex-col gap-6 shadow-sm animate-fade-in"
@@ -233,7 +235,7 @@
           [rounded]="false"
           class="w-full block mt-2"
           customClass="w-full py-3.5 !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!opacity-50 font-semibold transition-colors text-base"
-          [disabled]="setupForm.invalid || isLoading()"
+          [disabled]="setupForm.invalid || isLoading() || !verifiedAccountName()"
           (clicked)="onSubmit()"
         ></app-button>
       </form>
