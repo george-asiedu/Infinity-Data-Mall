@@ -13,3 +13,15 @@ export interface TableColumn {
   field: string;
   header: string;
 }
+
+export interface NavItem {
+  label: string;
+  icon: string;
+  route: string;
+  badge?: number;
+}
+
+export interface NavGroup {
+  category: string;
+  items: NavItem[];
+}
