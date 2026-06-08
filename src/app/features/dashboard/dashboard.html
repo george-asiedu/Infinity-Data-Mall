@@ -1,1 +1,15 @@
-<p>dashboard works!</p>
+<div class="min-h-screen bg-background dark:bg-background-dark">
+  <app-sidebar
+    [(visible)]="isSidebarOpen"
+    [subscription]="activeSub()"
+    (logout)="handleLogoutAction()"
+  ></app-sidebar>
+
+  <div class="lg:pl-72 min-h-screen flex flex-col">
+    <app-header [user]="user()" />
+
+    <main class="flex-1 p-6 overflow-y-auto">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
