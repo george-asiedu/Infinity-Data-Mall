@@ -6,7 +6,6 @@ import { map, switchMap, tap } from 'rxjs';
 import { inject } from '@angular/core';
 import { authActions } from './auth.actions';
 import { handleApiError } from '../../../shared/utils/errorHandler';
-import { paymentActions } from '../../payment/store/payment.actions';
 
 export const registerEffect = createEffect(
   (actions$ = inject(Actions), authService = inject(Auth), toast = inject(Toast)) => {
@@ -245,16 +244,6 @@ export const clearAuthStateEffect = createEffect(
     return actions$.pipe(
       ofType(authActions.verifyMfaSuccess, authActions.loginWithCodeSuccess),
       map(() => authActions.clearAuthState()),
-    );
-  },
-  { dispatch: true, functional: true },
-);
-
-export const loadBanksEffect = createEffect(
-  (actions$ = inject(Actions)) => {
-    return actions$.pipe(
-      ofType(authActions.verifyMfaSuccess, authActions.loginWithCodeSuccess),
-      map(() => paymentActions.getBanks()),
     );
   },
   { dispatch: true, functional: true },
