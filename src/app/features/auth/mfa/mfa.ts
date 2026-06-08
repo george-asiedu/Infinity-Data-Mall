@@ -73,7 +73,7 @@ export class Mfa implements OnInit, OnDestroy {
 
     if (!token) {
       this.toast.error('Authentication session expired. Please log in again.');
-      this.router.navigate(['/login']);
+      this.router.navigate(['']);
       return;
     }
 

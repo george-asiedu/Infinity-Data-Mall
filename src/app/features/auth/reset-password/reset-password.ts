@@ -111,6 +111,6 @@ export class ResetPassword implements OnInit {
   }
 
   protected goToLogin(): void {
-    this.router.navigate(['/login']);
+    this.router.navigate(['']);
   }
 }

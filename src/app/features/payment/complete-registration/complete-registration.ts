@@ -35,7 +35,7 @@ export class CompleteRegistration implements OnInit {
       if (this.accessCode) {
         this.loadPaystackModal(this.accessCode, this.reference);
       } else {
-        this.router.navigate(['/login']);
+        this.router.navigate(['']);
       }
     });
   }

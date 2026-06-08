@@ -56,7 +56,7 @@ export class VerifyEmail implements OnInit, OnDestroy {
             },
           });
         } else {
-          this.router.navigate(['/login']);
+          this.router.navigate(['']);
         }
       });
   }

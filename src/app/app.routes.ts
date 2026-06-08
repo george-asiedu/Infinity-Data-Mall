@@ -5,7 +5,8 @@ import { resetPasswordGuard } from './core/guards/reset-password.guard';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
+    title: 'Infinity Data Mall | Login',
+    loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
   },
   {
     path: 'verify-email',
@@ -14,9 +15,9 @@ export const routes: Routes = [
       import('./features/auth/verify-email/verify-email').then((m) => m.VerifyEmail),
   },
   {
-    path: 'login',
-    title: 'Infinity Data Mall | Login',
-    loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
+    path: 'register',
+    title: 'Infinity Data Mall | Register',
+    loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
   },
   {
     path: 'mfa',
