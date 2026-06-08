@@ -9,49 +9,47 @@
   </ng-template>
 </p-drawer>
 
-<aside
-  class="hidden lg:flex fixed top-0 left-0 h-screen w-72 flex-col z-40 border-r border-border-dark"
->
+<aside class="hidden lg:flex fixed top-0 left-0 h-screen w-72 flex-col z-40 border-r border-border">
   <ng-container *ngTemplateOutlet="sidebarContentTemplate"></ng-container>
 </aside>
 
 <ng-template #sidebarContentTemplate>
   <div class="flex flex-col h-full w-full p-4 overflow-hidden select-none bg-primary">
     <div class="flex items-center gap-3 px-2 py-3 mb-4">
-      <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-6 shadow-sm">
+      <div class="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
         <img
           ngSrc="iData_logo.png"
-          width="32"
-          height="32"
+          width="36"
+          height="36"
           alt="iData Logo"
           class="object-contain"
         />
       </div>
       <div class="flex flex-col">
-        <span class="text-sm font-bold tracking-wide text-heading"> Infinity Data Mall </span>
-        <span class="text-xs text-paragraph font-medium"> Agent Portal </span>
+        <span class="text-sm font-bold tracking-wide text-white"> Infinity Data Mall </span>
+        <span class="text-xs text-white/70 font-medium"> Agent Portal </span>
       </div>
     </div>
 
     <nav class="flex-1 flex flex-col gap-5 progress-nav-scroller">
       @for (group of menuGroups(); track group.category) {
         <div class="flex flex-col gap-1.5">
-          <p class="px-3 text-xxs font-bold tracking-wider uppercase text-mute">
+          <span class="px-3 text-xs tracking-wider uppercase text-white/50">
             {{ group.category }}
-          </p>
+          </span>
 
           @for (item of group.items; track item.label) {
             <a
               [routerLink]="item.route"
               routerLinkActive="active-link"
               (click)="closeSidebar()"
-              class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-card text-paragraph transition-all group"
+              class="flex items-center gap-3 px-3 py-2.5 text-sm rounded-card text-white/70 transition-all group"
             >
-              <i [class]="item.icon + ' text-base transition-colors group-hover:text-primary'"></i>
+              <i [class]="item.icon + ' text-base transition-colors group-hover:text-accent'"></i>
               <span class="flex-1">{{ item.label }}</span>
 
               @if (item.badge) {
-                <span class="px-2 py-0.5 text-xxs font-bold rounded-full text-white bg-danger">
+                <span class="px-2 py-0.5 text-xxs rounded-full text-white bg-danger">
                   {{ item.badge }}
                 </span>
               }
@@ -61,18 +59,18 @@
       }
     </nav>
 
-    <div class="mt-auto flex flex-col gap-4 pt-4 border-t border-border">
+    <div class="mt-auto flex flex-col gap-4 pt-4 border-t border-border/50">
       @if (subscription()) {
-        <div class="p-4 border border-border bg-white/5 rounded-card">
-          <p class="text-xxs font-bold tracking-wider uppercase text-primary">SUBSCRIPTION</p>
-          <div class="flex items-center justify-between text-xs font-semibold mt-1 mb-2">
-            <span class="text-heading">{{ subscription().planName }}</span>
-            <span class="text-xxs font-normal text-muted">{{ subscription().timeLeftStr }}</span>
+        <div class="p-4 border border-border bg-[#f7c12c4e] rounded-card">
+          <span class="text-xxs font-bold tracking-wide uppercase text-accent">SUBSCRIPTION</span>
+          <div class="flex items-center justify-between text-xs mt-1 mb-2">
+            <span class="text-white">{{ subscription().planName }}</span>
+            <span class="text-xxs font-normal text-white/50">{{ subscription().timeLeftStr }}</span>
           </div>
 
-          <div class="w-full h-1.5 rounded-full overflow-hidden bg-border">
+          <div class="w-full h-1.5 rounded-full overflow-hidden bg-primary/40">
             <div
-              class="h-full rounded-full transition-all duration-500 bg-primary"
+              class="h-full rounded-full transition-all duration-500 bg-accent"
               [style.width.%]="subscription().percentageLeft"
             ></div>
           </div>
@@ -82,10 +80,10 @@
       <button
         type="button"
         (click)="triggerLogout()"
-        class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-card border border-danger/30 bg-danger/10 text-danger hover:bg-danger hover:text-white transition-all cursor-pointer"
+        class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-card border border-danger/30 bg-danger/10 text-danger hover:bg-danger hover:text-white transition-all cursor-pointer"
       >
         <i class="pi pi-sign-out text-sm"></i>
-        <span>Logout</span>
+        <span class="text-lg">Logout</span>
       </button>
     </div>
   </div>

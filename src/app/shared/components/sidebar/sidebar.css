@@ -1,26 +1,16 @@
-:host ::ng-deep .p-drawer {
-  background-color: var(--color-surface-dark) !important;
-  border-color: var(--color-border-dark) !important;
-}
-
-/* Base custom text transformations for tiny typography indicators */
 .text-xxs {
   font-size: 0.65rem;
   line-height: 1rem;
 }
 
-/* Hover and Focus Active Interaction States using variables */
 a:hover {
-  background-color: rgba(255, 255, 255, 0.03);
-  color: var(--color-heading-dark) !important;
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.85)
 }
 
 a.active-link {
-  background-color: rgba(79, 70, 229, 0.1) !important; /* Soft Primary background */
-  color: var(--color-heading-dark) !important;
-  font-weight: 600;
+  background: rgba(255,255,255,.10); color: #fff; font-weight: 500;
 }
 
 a.active-link i {
-  color: var(--color-primary) !important;
+  color: var(--color-accent) !important;
 }

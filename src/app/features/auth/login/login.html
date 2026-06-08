@@ -4,12 +4,12 @@
       <img ngSrc="iData_logo.png" width="48" height="48" alt="iData Logo" class="object-contain" />
     </div>
 
-    <h1 class="text-3xl font-bold mb-2 text-center text-heading tracking-tight">Welcome Back</h1>
-    <p class="text-sm text-center mb-8 text-paragraph">Login to access your dashboard</p>
+    <h1 class="text-3xl font-bold mb-2 text-center tracking-tight">Welcome Back</h1>
+    <p class="text-sm text-center mb-8">Login to access your dashboard</p>
 
     <form
       [formGroup]="loginForm"
-      class="w-full bg-surface border border-border rounded-card p-6 flex flex-col gap-5 shadow-xs"
+      class="w-full bg-surface rounded-card p-6 flex flex-col gap-5 shadow-lg"
     >
       <div>
         <app-input
@@ -81,7 +81,9 @@
 
     <div class="mt-8 text-sm text-paragraph text-center">
       Don't have an account yet?
-      <a routerLink="" class="text-primary font-semibold hover:text-primary-hover transition-colors"
+      <a
+        routerLink="/register"
+        class="text-primary font-semibold hover:text-primary-hover transition-colors"
         >Create an account</a
       >
     </div>
