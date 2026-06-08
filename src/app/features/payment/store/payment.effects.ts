@@ -139,7 +139,6 @@ export const clearReferenceEffect = createEffect(
         paymentActions.verifyPaymentTransactionSuccess,
         paymentActions.completeSetupSuccess,
         paymentActions.updateSetupSuccess,
-        paymentActions.verifyBankAccountSuccess,
       ),
       map(() => paymentActions.clearPaymentState()),
     );
