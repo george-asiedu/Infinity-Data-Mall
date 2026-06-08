@@ -13,6 +13,7 @@ export interface CompleteSetupModel {
   businessName: string;
   bankCode: string;
   accountNumber: string;
+  accountName: string;
   vendorApiKey: string;
 }
 
