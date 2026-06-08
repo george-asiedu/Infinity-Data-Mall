@@ -1,0 +1,98 @@
+<p-drawer
+  [(visible)]="visible"
+  [modal]="true"
+  styleClass="w-72 border-none"
+  [showCloseIcon]="false"
+>
+  <ng-template #headless>
+    <ng-container *ngTemplateOutlet="sidebarContentTemplate"></ng-container>
+  </ng-template>
+</p-drawer>
+
+<aside
+  class="hidden lg:flex fixed top-0 left-0 h-screen w-72 flex-col z-40 border-r border-border-dark"
+>
+  <ng-container *ngTemplateOutlet="sidebarContentTemplate"></ng-container>
+</aside>
+
+<ng-template #sidebarContentTemplate>
+  <div class="flex flex-col h-full w-full p-4 overflow-hidden select-none bg-surface-dark">
+    <div class="flex items-center gap-3 px-2 py-3 mb-4">
+      <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-6 shadow-sm">
+        <img
+          ngSrc="iData_logo.png"
+          width="32"
+          height="32"
+          alt="iData Logo"
+          class="object-contain"
+        />
+      </div>
+      <div class="flex flex-col">
+        <span class="text-sm font-bold tracking-wide text-heading dark:text-white">
+          Infinity Data Mall
+        </span>
+        <span class="text-xs text-paragraph dark:text-paragraph-dark font-medium">
+          Agent Portal
+        </span>
+      </div>
+    </div>
+
+    <nav class="flex-1 flex flex-col gap-5 progress-nav-scroller">
+      @for (group of menuGroups(); track group.category) {
+        <div class="flex flex-col gap-1.5">
+          <p class="px-3 text-xxs font-bold tracking-wider uppercase text-muted dark:text-zinc-400">
+            {{ group.category }}
+          </p>
+
+          @for (item of group.items; track item.label) {
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="active-link"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-card text-paragraph dark:text-zinc-300 transition-all group"
+            >
+              <i [class]="item.icon + ' text-base transition-colors group-hover:text-primary'"></i>
+              <span class="flex-1">{{ item.label }}</span>
+
+              @if (item.badge) {
+                <span class="px-2 py-0.5 text-xxs font-bold rounded-full text-white bg-danger">
+                  {{ item.badge }}
+                </span>
+              }
+            </a>
+          }
+        </div>
+      }
+    </nav>
+
+    <div class="mt-auto flex flex-col gap-4 pt-4 border-t dark:border-border-dark border-border">
+      @if (subscription()) {
+        <div class="p-4 border border-border dark:border-zinc-800 bg-white/5 rounded-card">
+          <p class="text-xxs font-bold tracking-wider uppercase text-primary">SUBSCRIPTION</p>
+          <div class="flex items-center justify-between text-xs font-semibold mt-1 mb-2">
+            <span class="text-heading dark:text-white">{{ subscription().planName }}</span>
+            <span class="text-xxs font-normal text-muted dark:text-zinc-400">{{
+              subscription().timeLeftStr
+            }}</span>
+          </div>
+
+          <div class="w-full h-1.5 rounded-full overflow-hidden bg-border dark:bg-zinc-800">
+            <div
+              class="h-full rounded-full transition-all duration-500 bg-primary"
+              [style.width.%]="subscription().percentageLeft"
+            ></div>
+          </div>
+        </div>
+      }
+
+      <button
+        type="button"
+        (click)="triggerLogout()"
+        class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-card border border-danger/30 bg-danger/10 text-danger hover:bg-danger hover:text-white transition-all cursor-pointer"
+      >
+        <i class="pi pi-sign-out text-sm"></i>
+        <span>Logout</span>
+      </button>
+    </div>
+  </div>
+</ng-template>
