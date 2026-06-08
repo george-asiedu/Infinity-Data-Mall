@@ -17,3 +17,5 @@ export const selectAccessToken = createSelector(
   selectRefreshToken,
   (loggedIn, refreshToken) => refreshToken?.data.token ?? loggedIn?.data.token.accessToken ?? null,
 );
+
+export const selectUser = createSelector(selectLoggedIn, (loggedIn) => loggedIn?.data.user ?? null);
