@@ -40,8 +40,12 @@ export class Onboarding implements OnInit {
   protected readonly verifiedAccountName = computed(() => {
     const state = this.paymentState() as any;
     const currentInputNumber = this.setupForm?.get('accountNumber')?.value?.trim();
+    const currentBank = this.setupForm?.get('bankCode')?.value;
 
-    if (state?.response?.data?.account_number === currentInputNumber) {
+    if (
+      state?.response?.data?.account_number === currentInputNumber &&
+      state?.response?.data?.bank_code === currentBank
+    ) {
       return state?.response?.data?.account_name || null;
     }
     return null;
@@ -50,7 +54,7 @@ export class Onboarding implements OnInit {
   protected setupForm: FormGroup = this.fb.group({
     businessName: ['', [Validators.required, Validators.minLength(3)]],
     bankCode: ['', [Validators.required]],
-    accountNumber: ['', [Validators.required, Validators.pattern('^[0-9]{9,13}$')]],
+    accountNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,13}$')]],
     vendorApiKey: [''],
   });
 
@@ -82,7 +86,6 @@ export class Onboarding implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(paymentActions.clearPaymentState());
     this.store.dispatch(paymentActions.getBanks());
     this.trackAccountNumberVerification();
   }
@@ -90,10 +93,10 @@ export class Onboarding implements OnInit {
   private trackAccountNumberVerification(): void {
     this.setupForm.valueChanges
       .pipe(
-        debounceTime(600),
+        debounceTime(800),
         map((values) => ({
-          accountNumber: values.accountNumber?.trim(),
-          bankCode: values.bankCode,
+          accountNumber: values.accountNumber?.trim() || '',
+          bankCode: values.bankCode || '',
         })),
         distinctUntilChanged(
           (prev, curr) =>
@@ -103,14 +106,20 @@ export class Onboarding implements OnInit {
       )
       .subscribe(({ accountNumber, bankCode }) => {
         const accountControl = this.setupForm.get('accountNumber');
+        if (!bankCode || !accountNumber || accountControl?.invalid) return;
 
-        if (
-          accountNumber &&
-          accountNumber.length >= 9 &&
-          accountNumber.length <= 13 &&
-          accountControl?.valid &&
-          bankCode
-        ) {
+        const selectedBankList = this.banks();
+        const activeBankDetails = selectedBankList?.find(
+          (b: any) => b.code === bankCode || b.id === bankCode,
+        );
+
+        const isMobileMoney = activeBankDetails?.type === 'mobile_money';
+
+        const meetsLengthRequirement = isMobileMoney
+          ? accountNumber.length === 10
+          : accountNumber.length >= 10 && accountNumber.length <= 13;
+
+        if (meetsLengthRequirement) {
           const model = {
             accountNumber: accountNumber,
             bankCode: bankCode,
@@ -130,11 +139,16 @@ export class Onboarding implements OnInit {
       return;
     }
 
+    if (!this.verifiedAccountName()) {
+      return;
+    }
+
     const rawValues = this.setupForm.getRawValue();
     const model = {
       businessName: rawValues.businessName.trim(),
       bankCode: rawValues.bankCode,
       accountNumber: rawValues.accountNumber.trim(),
+      accountName: this.verifiedAccountName(),
       vendorApiKey: this.hasVendorKey() ? rawValues.vendorApiKey.trim() : null,
     };
 
