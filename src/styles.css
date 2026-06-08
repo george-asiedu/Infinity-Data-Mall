@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @plugin "tailwindcss-primeui";
 
@@ -8,42 +7,48 @@
 }
 
 @theme {
-    --font-family-sans: 'Inter', system-ui, sans-serif;
+    --font: 'DM Sans', system-ui, sans-serif;
+    --mono: 'DM Mono', monospace;
 
-    --color-primary: #4F46E5;
-    --color-primary-hover: #4338CA;
-    --color-secondary: #0D9488;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 500;
+    --font-weight-bold: 500;
+
+    --color-primary: #0D4F3C;
+    --color-primary-hover: #0A3D2E;
+    --color-accent: #E6A800;
+    --color-accent-hover: #CC9600;
+    
+    --color-secondary: #E6A800;
 
     --color-success: #10B981;
-    --color-warning: #F59E0B;
+    --color-warning: #EA580C;
     --color-danger: #EF4444;
-    --color-info: #3B82F6;
+    --color-info: #2563EB;
 
-    --color-background: #F8FAFC;
+    --color-net-mtn: #E6A800;
+    --color-net-telecel: #DC2626;
+    --color-net-at: #7C3AED;
+
+    --color-background: #F5F9F7;
     --color-surface: #FFFFFF;
-    --color-border: #E2E8F0;
-    --color-heading: #0F172A;
-    --color-paragraph: #475569;
-    --color-muted: #94A3B8;
-
-    --color-background-dark: #0F172A;
-    --color-surface-dark: #1E293B;
-    --color-border-dark: #334155;
-    --color-heading-dark: #F8FAFC;
-    --color-paragraph-dark: #94A3B8;
-    --color-muted-dark: #64748B;
+    --color-border: #E0EDE8;
+    --color-heading: #091A15;
+    --color-paragraph: #3A4D46;
+    --color-muted: #7A8F85;
 
     --radius-card: 8px;
-    --radius-button: 6px;
     --radius-badge: 9999px;
+    --radius-control: 8px;
 
     --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     --shadow-modal: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 }
 
 body {
-    @apply bg-background dark:bg-background-dark text-heading dark:text-heading-dark min-h-screen;
-    font-family: var(--font-family-sans);
+    @apply bg-background text-heading min-h-screen;
+    font-family: var(--font);
     line-height: 1.5;
 }
 
@@ -51,7 +56,7 @@ body {
 .p-card {
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
-    @apply bg-surface dark:bg-surface-dark border border-border dark:border-border-dark;
+    @apply bg-surface border border-border;
 }
 
 .p-button {
@@ -77,11 +82,11 @@ body {
 .p-inputswitch {
     border-radius: var(--radius-button);
     font-size: 0.875rem !important;
-    @apply bg-surface dark:bg-surface-dark border border-border dark:border-border-dark text-heading dark:text-heading-dark;
+    @apply bg-surface border border-border text-heading;
 }
 
 .p.placeholder, .p-textarea::placeholder {
-    @apply text-muted dark:text-muted-dark;
+    @apply text-muted;
 }
 
 .p-inputtext:focus,
@@ -101,21 +106,21 @@ body {
 .p-dialog {
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-modal);
-    @apply bg-surface dark:bg-surface-dark border border-border dark:border-border-dark;
+    @apply bg-surface border border-border;
 }
 
 .p-fileupload {
     border-radius: var(--radius-button);
-    @apply bg-surface dark:bg-surface-dark text-heading dark:text-heading-dark;
+    @apply bg-surface text-heading;
 }
 
 .p.sidebar {
-    @apply bg-surface dark:bg-surface-dark border-r border-border dark:border-border-dark;
+    @apply bg-surface border-r border-border;
 }
 
 .p.checkbox .p-checkbox-box.p-highlight,
 .p-radiobutton .p-radiobutton-box.p-highlight {
-    @apply bg-primary border-border dark:border-border-dark;
+    @apply bg-primary border-border;
 }
 
 .p-toast .p-toast-message {
@@ -123,17 +128,17 @@ body {
     box-shadow: var(--shadow-card);
 }
 
-.bg-surface { @apply bg-surface dark:bg-surface-dark; }
-.border-divider { @apply border-border dark:border-border-dark; }
+.bg-surface { @apply bg-surface; }
+.border-divider { @apply border-border; }
 
 /* --- Global Typography --- */
-h1 { @apply text-2xl lg:text-3xl font-semibold tracking-tight text-heading dark:text-heading-dark; }
-h2 { @apply text-xl lg:text-2xl font-semibold tracking-wide text-heading dark:text-heading-dark; }
-h3 { @apply text-[18px] lg:text-[20px] font-medium tracking-wide text-heading dark:text-heading-dark; }
-h4 { @apply text-base lg:text-[18px] font-medium tracking-wide text-heading dark:text-heading-dark; }
-h5 { @apply text-sm lg:text-base font-medium tracking-wide text-heading dark:text-heading-dark; }
-h6 { @apply text-xs lg:text-sm font-medium tracking-wide text-heading dark:text-heading-dark; }
-p  { @apply text-base font-normal tracking-wide text-paragraph dark:text-paragraph-dark; }
+h1 { @apply text-2xl lg:text-3xl font-semibold tracking-tight text-heading; }
+h2 { @apply text-xl lg:text-2xl font-semibold tracking-wide text-heading; }
+h3 { @apply text-[18px] lg:text-[20px] font-medium tracking-wide text-heading; }
+h4 { @apply text-base lg:text-[18px] font-medium tracking-wide text-heading; }
+h5 { @apply text-sm lg:text-base font-medium tracking-wide text-heading; }
+h6 { @apply text-xs lg:text-sm font-medium tracking-wide text-heading; }
+p  { @apply text-base font-normal tracking-wide text-paragraph; }
 
 /* --- Custom IDM Toast Panels --- */
 .idm-toast.p-toast {
@@ -147,7 +152,7 @@ p  { @apply text-base font-normal tracking-wide text-paragraph dark:text-paragra
     padding: 0 !important;
     overflow: hidden;
     margin-bottom: 0.5rem;
-    @apply bg-surface dark:bg-surface-dark border border-border dark:border-border-dark;
+    @apply bg-surface border border-border;
 }
 
 .idm-toast .p-toast-message.p-toast-message-success { @apply border-l-4 border-success; }
@@ -192,7 +197,7 @@ p  { @apply text-base font-normal tracking-wide text-paragraph dark:text-paragra
     border-radius: 4px;
     opacity: 0.7;
     transition: opacity 0.15s, background 0.15s;
-    @apply text-muted dark:text-muted-dark;
+    @apply text-muted;
 }
 
 .idm-toast .p-toast-icon-close:hover {
@@ -241,19 +246,14 @@ p  { @apply text-base font-normal tracking-wide text-paragraph dark:text-paragra
     font-size: 0.8125rem;
     font-weight: 600;
     line-height: 1.3;
-    @apply text-heading dark:text-heading-dark;
+    @apply text-heading;
 }
 
 .idm-toast__detail {
     font-size: 0.75rem;
     line-height: 1.5;
     word-break: break-word;
-    @apply text-paragraph dark:text-paragraph-dark;
-}
-
-.dark .idm-toast .p-toast-message {
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3) !important;
-    @apply bg-surface-dark border-border-dark;
+    @apply text-paragraph;
 }
 
 .p-toast-message-enter-active { animation: toast-slide-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }

@@ -1,9 +1,7 @@
-<div
-  class="w-full min-h-screen flex items-center justify-center bg-background dark:bg-background-dark px-4 py-12"
->
+<div class="w-full min-h-screen flex items-center justify-center bg-background px-4 py-12">
   <div class="w-full max-w-md flex flex-col items-center">
     <div
-      class="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mb-6 shadow-sm"
+      class="w-16 h-16 bg-primary/1 rounded-full flex items-center justify-center mb-6 shadow-sm"
     >
       <i
         class="pi text-3xl text-primary font-bold"
@@ -11,9 +9,7 @@
       ></i>
     </div>
 
-    <h1
-      class="text-3xl font-bold mb-2 text-center text-heading dark:text-heading-dark tracking-tight"
-    >
+    <h1 class="text-3xl font-bold mb-2 text-center text-heading tracking-tight">
       @if (isBackupMode()) {
         Backup Verification Code
       } @else {
@@ -21,7 +17,7 @@
       }
     </h1>
 
-    <p class="text-base text-center mb-8 text-paragraph dark:text-paragraph-dark px-2">
+    <p class="text-base text-center mb-8 text-paragraph px-2">
       @if (isBackupMode()) {
         Enter your emergency recovery backup code
       } @else {
@@ -31,7 +27,7 @@
 
     <form
       [formGroup]="mfaForm"
-      class="w-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-card p-8 flex flex-col gap-6 items-center shadow-sm"
+      class="w-full bg-surface border border-border rounded-card p-8 flex flex-col gap-6 items-center shadow-sm"
     >
       <div class="flex flex-col gap-2 items-center w-full">
         @if (!isBackupMode()) {
@@ -101,12 +97,10 @@
         (clicked)="onSubmit()"
       ></app-button>
 
-      <div class="text-sm text-center text-paragraph dark:text-paragraph-dark">
+      <div class="text-sm text-center text-paragraph">
         Didn't receive the email?
         @if (resendCountdown() > 0) {
-          <span class="text-muted dark:text-muted-dark font-medium"
-            >Resend in {{ resendCountdown() }}s</span
-          >
+          <span class="text-muted font-medium">Resend in {{ resendCountdown() }}s</span>
         } @else {
           <button
             type="button"
@@ -136,7 +130,7 @@
     <div class="mt-8 text-center">
       <a
         routerLink=""
-        class="flex items-center justify-center gap-2 text-sm font-semibold text-paragraph dark:text-paragraph-dark hover:text-primary transition-colors group"
+        class="flex items-center justify-center gap-2 text-sm font-semibold text-paragraph hover:text-primary transition-colors group"
       >
         <i class="pi pi-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
         <span>Back to login</span>

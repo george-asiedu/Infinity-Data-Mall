@@ -1,5 +1,5 @@
 <header
-  class="w-full h-16 flex items-center justify-between px-6 border-b border-border dark:border-zinc-800 bg-surface dark:bg-zinc-900 sticky top-0 z-30 transition-colors"
+  class="w-full h-16 flex items-center justify-between px-6 border-b border-border bg-surface sticky top-0 z-30 transition-colors shadow-2xs"
 >
   <div class="flex items-center">
     <p-breadcrumb
@@ -8,14 +8,11 @@
     >
       <ng-template #item let-item>
         @if (item.routerLink) {
-          <a
-            [routerLink]="item.routerLink"
-            class="hover:text-primary text-paragraph dark:text-white transition-colors cursor-pointer"
-          >
+          <a [routerLink]="item.routerLink" class="text-primary transition-colors cursor-pointer">
             {{ item.label }}
           </a>
         } @else {
-          <span class="text-heading dark:text-white font-semibold">
+          <span class="text-heading font-semibold">
             {{ item.label }}
           </span>
         }
@@ -27,7 +24,7 @@
     <button
       type="button"
       (click)="profilePopover.toggle($event)"
-      class="flex items-center justify-center p-0.5 rounded-full border border-border dark:border-zinc-800 hover:border-primary/40 focus:outline-none transition-all cursor-pointer"
+      class="flex items-center justify-center p-0.5 rounded-full border border-border hover:border-primary/40 focus:outline-none transition-all cursor-pointer"
     >
       @if (user()?.imageShortUrl) {
         <img
@@ -37,7 +34,7 @@
         />
       } @else {
         <div
-          class="flex items-center justify-center w-9 h-9 font-bold text-xs rounded-full bg-primary/10 text-primary border border-primary/20"
+          class="flex items-center justify-center w-9 h-9 text-xs rounded-full bg-primary/80 text-accent border border-accent/50"
         >
           {{ userInitials() }}
         </div>
@@ -48,24 +45,21 @@
 
 <p-popover
   #profilePopover
-  styleClass="w-64 p-2 rounded-card border border-border dark:border-border-dark bg-surface dark:bg-surface-dark shadow-lg"
+  styleClass="w-64 p-2 rounded-card border border-border bg-surface shadow-lg"
 >
   <div class="flex flex-col gap-2">
-    <div class="flex flex-col px-3 py-2.5 rounded-card border-border dark:border-border-dark">
-      <span class="text-xs font-bold text-heading dark:text-white truncate">
+    <div class="flex flex-col px-3 py-2.5 rounded-card border-b border-border">
+      <span class="text-xs font-bold text-heading truncate">
         {{ user()?.fullName }}
       </span>
-      <span class="text-xxs font-medium text-muted dark:text-zinc-400 truncate mt-0.5">
+      <span class="text-xxs font-medium text-muted truncate mt-0.5">
         {{ user()?.email }}
       </span>
     </div>
-
-    <div class="h-px bg-border dark:bg-zinc-800 my-1"></div>
-
     <a
       routerLink="/settings"
       (click)="profilePopover.hide()"
-      class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-card text-paragraph dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-all cursor-pointer"
+      class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-card text-paragraph border-b border-border hover:bg-zinc-50 transition-all cursor-pointer"
     >
       <i class="pi pi-cog text-sm text-muted"></i>
       <span>Account Settings</span>
@@ -74,10 +68,10 @@
     <button
       type="button"
       (click)="profilePopover.hide(); onLogout()"
-      class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-card text-danger hover:bg-danger/10 transition-all cursor-pointer text-left"
+      class="w-full flex items-center gap-2.5 px-3 py-2 text-xs rounded-card text-danger hover:bg-danger/10 transition-all cursor-pointer text-left"
     >
       <i class="pi pi-sign-out text-sm"></i>
-      <span>Logout Session</span>
+      <span>Logout</span>
     </button>
   </div>
 </p-popover>
