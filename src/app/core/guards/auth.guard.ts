@@ -1,15 +1,19 @@
-import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { inject } from '@angular/core';
 import { AuthState, User, VerifyMfaResponse } from '../models/auth.model';
 import { Toast } from '../services/toast/toast';
 import { authActions } from '../../features/auth/store/auth.actions';
 import { selectAccessToken } from '../../features/auth/store/auth.selectors';
+import { Auth } from '../../features/auth/service/auth';
+import { catchError, map, of, take } from 'rxjs';
 
 const getDependencies = () => {
   return {
     store: inject(Store<AuthState>),
     toast: inject(Toast),
+    authService: inject(Auth),
+    router: inject(Router),
   };
 };
 
@@ -22,31 +26,48 @@ const checkAuth = (route: ActivatedRouteSnapshot) => {
   const urlAccessToken = route.queryParamMap.get('access_token');
   const urlRefreshToken = route.queryParamMap.get('refresh_token');
 
-  const { store, toast } = getDependencies();
+  const { store, toast, authService, router } = getDependencies();
   const accessToken = store.selectSignal(selectAccessToken);
 
   if (urlAccessToken && urlRefreshToken) {
-    const oauthPayload: VerifyMfaResponse = {
-      message: 'Successfully authenticated via Google',
-      data: {
-        user: {} as User,
-        token: {
-          accessToken: urlAccessToken,
-          refreshToken: urlRefreshToken,
-        },
-      },
-    };
-    store.dispatch(authActions.verifyMfaSuccess({ loggedIn: oauthPayload }));
+    return authService.getAuthenticatedUser(urlAccessToken).pipe(
+      take(1),
+      map((response) => {
+        const userProfile: User = response?.data;
 
-    return true;
+        const oauthPayload: VerifyMfaResponse = {
+          message: 'Successfully authenticated via Google',
+          data: {
+            user: userProfile,
+            token: {
+              accessToken: urlAccessToken,
+              refreshToken: urlRefreshToken,
+            },
+          },
+        };
+
+        if (userProfile.settlementBankAccount) {
+          router.navigate(['/dashboard']);
+        } else {
+          router.navigate(['/onboarding']);
+        }
+
+        store.dispatch(authActions.verifyMfaSuccess({ loggedIn: oauthPayload }));
+        return true;
+      }),
+      catchError(() => {
+        handleUnauthorizedAccess(store, toast);
+        return of(false);
+      }),
+    );
   }
 
   if (!accessToken()) {
     handleUnauthorizedAccess(store, toast);
-    return false;
+    return of(false);
   }
 
-  return true;
+  return of(true);
 };
 
 export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
