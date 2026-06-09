@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import {
@@ -77,5 +78,13 @@ export class Auth {
 
   public refreshToken() {
     return this.http.get<RefreshToken>(`${this.api}auth/refresh-token`);
+  }
+
+  public getAuthenticatedUser(explicitToken?: string) {
+    let headers = new HttpHeaders();
+    if (explicitToken) {
+      headers = headers.set('Authorization', `Bearer ${explicitToken}`);
+    }
+    return this.http.get<{ data: any }>(`${this.api}auth/user`, { headers });
   }
 }
