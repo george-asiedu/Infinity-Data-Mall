@@ -133,7 +133,7 @@
 
             @if (verifiedAccountName()) {
               <div
-                class="absolute right-3 top-9.5 flex items-center justify-center text-success animate-fade-in"
+                class="absolute right-3 top-9.5 flex items-center justify-center text-primary animate-fade-in"
                 title="Verified Account"
               >
                 <i class="pi pi-check-circle text-xl"></i>
@@ -143,7 +143,7 @@
 
           @if (verifiedAccountName()) {
             <div
-              class="text-xs text-success font-semibold flex items-center gap-1.5 mt-1 bg-success/5 border border-success/20 p-2 rounded animate-slide-down"
+              class="text-xs text-primary font-semibold flex items-center gap-1.5 mt-1 bg-success/5 border border-success/20 p-2 rounded animate-slide-down"
             >
               <i class="pi pi-user text-xs"></i>
               <span>Account Name: {{ verifiedAccountName() }}</span>
@@ -223,7 +223,7 @@
           [rounded]="false"
           class="w-full block mt-2"
           customClass="w-full py-3.5 !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!opacity-50 font-semibold transition-colors text-base"
-          [disabled]="setupForm.invalid || isLoading() || !verifiedAccountName()"
+          [disabled]="setupForm.invalid || isLoading()"
           (clicked)="onSubmit()"
         ></app-button>
       </form>
