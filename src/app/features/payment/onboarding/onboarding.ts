@@ -17,6 +17,7 @@ import {
 import { Select } from '../../../shared/ui/select/select';
 import { Skeleton } from '../../../shared/ui/skeleton/skeleton';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { Toast } from '../../../core/services/toast/toast';
 
 @Component({
   selector: 'app-onboarding',
@@ -28,6 +29,7 @@ export class Onboarding implements OnInit {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly store = inject(Store);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toast = inject(Toast);
 
   protected readonly hasVendorKey = signal<boolean>(false);
   protected readonly isLoading = this.store.selectSignal(selectIsLoading);
@@ -140,6 +142,7 @@ export class Onboarding implements OnInit {
     }
 
     if (!this.verifiedAccountName()) {
+      this.toast.info('Account number is not verified');
       return;
     }
 
