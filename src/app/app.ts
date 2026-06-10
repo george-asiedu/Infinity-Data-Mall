@@ -9,6 +9,7 @@ import { constants } from './shared/utils/constants';
 import { authActions } from './features/auth/store/auth.actions';
 import { selectPaymentState } from './features/payment/store/payment.selectors';
 import { paymentActions } from './features/payment/store/payment.actions';
+import { selectUploadState } from './shared/uploads/store/uploads.selectors';
 
 @Component({
   selector: 'app-root',
@@ -24,12 +25,14 @@ export class App implements OnInit {
   private store = inject(Store);
   private authState = this.store.selectSignal(selectAuthState);
   private paymentState = this.store.selectSignal(selectPaymentState);
+  private uploadState = this.store.selectSignal(selectUploadState);
   private key: string = constants.storageKey;
 
   public beforeunloadHandler(): void {
     const combinedState = {
       auth: this.authState(),
       payment: this.paymentState(),
+      uploads: this.uploadState(),
     };
     localStorage.setItem(this.key, JSON.stringify(combinedState));
   }
