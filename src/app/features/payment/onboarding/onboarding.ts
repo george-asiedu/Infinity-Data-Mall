@@ -18,10 +18,11 @@ import { Select } from '../../../shared/ui/select/select';
 import { Skeleton } from '../../../shared/ui/skeleton/skeleton';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { Toast } from '../../../core/services/toast/toast';
+import { Uploads } from '../../../shared/uploads/uploads';
 
 @Component({
   selector: 'app-onboarding',
-  imports: [CommonModule, ReactiveFormsModule, Input, Button, Select, Skeleton],
+  imports: [CommonModule, ReactiveFormsModule, Input, Button, Select, Skeleton, Uploads],
   templateUrl: './onboarding.html',
   styleUrl: './onboarding.css',
 })
@@ -38,6 +39,8 @@ export class Onboarding implements OnInit {
 
   protected readonly banks = this.store.selectSignal(selectBanks);
   private readonly paymentState = this.store.selectSignal(selectPaymentState);
+
+  protected isUploadModalOpen = signal<boolean>(false);
 
   protected readonly verifiedAccountName = computed(() => {
     const state = this.paymentState() as any;
@@ -174,5 +177,13 @@ export class Onboarding implements OnInit {
 
   protected getControl(name: string) {
     return this.setupForm.get(name);
+  }
+
+  protected onLogoUploadFinalized(assetMetadata: {
+    key: string;
+    shortUrl: string;
+    longUrl: string;
+  }): void {
+    console.log('Database synchronization completed successfully for:', assetMetadata);
   }
 }

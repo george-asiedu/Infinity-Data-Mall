@@ -216,11 +216,19 @@
           }
         </div>
 
+        <button
+          type="button"
+          (click)="isUploadModalOpen.set(true)"
+          class="px-4 py-2 bg-transparent border border-primary text-heading font-semibold text-sm rounded-card cursor-pointer"
+        >
+          Upload Business Logo
+        </button>
+
         <app-button
           label="Complete Onboarding"
           [rounded]="false"
-          class="w-full block mt-2"
-          customClass="w-full py-3.5 !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!opacity-50 font-semibold transition-colors text-base"
+          class="w-full block"
+          customClass="w-full !bg-primary !border-primary text-white hover:!bg-primary-hover disabled:!bg-primary-hover disabled:!opacity-50 font-semibold transition-colors text-base"
           [disabled]="setupForm.invalid || isLoading()"
           (clicked)="onSubmit()"
         ></app-button>
@@ -228,3 +236,9 @@
     }
   </div>
 </div>
+
+<app-uploads
+  [(visible)]="isUploadModalOpen"
+  category="business_logo"
+  (uploadSuccess)="onLogoUploadFinalized($event)"
+></app-uploads>
