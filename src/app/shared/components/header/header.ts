@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { MenuItem } from 'primeng/api';
@@ -22,6 +22,7 @@ export class Header implements OnInit {
   private readonly store = inject(Store);
 
   public user = input<User | null>(null);
+  public toggleSidebar = output<void>();
 
   protected userInitials(): string {
     const name = this.user()?.fullName || '';
