@@ -42,12 +42,12 @@ export const paymentFeature = createFeature({
     on(paymentActions.completeSetupSuccess, (state, { response }) => ({
       ...state,
       isLoading: false,
-      setup: response.data || response,
+      setup: response,
     })),
     on(paymentActions.updateSetupSuccess, (state, { response }) => ({
       ...state,
       isLoading: false,
-      setup: response.data || response,
+      setup: response,
     })),
     on(paymentActions.verifyPaymentTransactionSuccess, (state) => ({
       ...state,

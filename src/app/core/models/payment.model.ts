@@ -1,3 +1,5 @@
+import { User } from './auth.model';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface VerifyBankAccountModel {
   accountNumber: string;
@@ -13,7 +15,6 @@ export interface CompleteSetupModel {
   businessName: string;
   bankCode: string;
   accountNumber: string;
-  accountName: string;
   vendorApiKey: string;
 }
 
@@ -21,7 +22,7 @@ export interface PaymentState {
   isLoading: boolean;
   error: string | null;
   reference: string | null;
-  setup: any | null;
+  setup: CompleteSetupResponse | null;
   banks: Banks[];
   accounts: any[];
 }
@@ -59,4 +60,9 @@ export interface VerifyAccountResponse {
     account_name: string;
     bank_id: number;
   };
+}
+
+export interface CompleteSetupResponse {
+  message: string;
+  data: User;
 }

@@ -6,6 +6,7 @@ import { Payment } from '../service/payment';
 import { Toast } from '../../../core/services/toast/toast';
 import { paymentActions } from './payment.actions';
 import { handleApiError } from '../../../shared/utils/errorHandler';
+import { Router } from '@angular/router';
 
 export const initializeTransactionEffect = createEffect(
   (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
@@ -31,8 +32,8 @@ export const verifyBankAccountEffect = createEffect(
       ofType(paymentActions.verifyBankAccount),
       switchMap(({ model }) =>
         paymentService.verifyBankAccount(model).pipe(
-          map((response: any) => {
-            toast.success(response.message || 'Bank account verified successfully!');
+          map((response) => {
+            toast.success(response.message);
             return paymentActions.verifyBankAccountSuccess({ response });
           }),
           handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
@@ -44,13 +45,19 @@ export const verifyBankAccountEffect = createEffect(
 );
 
 export const completeSetupEffect = createEffect(
-  (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
+  (
+    actions$ = inject(Actions),
+    paymentService = inject(Payment),
+    router = inject(Router),
+    toast = inject(Toast),
+  ) => {
     return actions$.pipe(
       ofType(paymentActions.completeSetup),
       switchMap(({ model }) =>
         paymentService.completeSetup(model).pipe(
-          map((response: any) => {
-            toast.success(response.message || 'Financial setup configuration completed!');
+          map((response) => {
+            toast.success(response.message);
+            router.navigate(['/dashboard']);
             return paymentActions.completeSetupSuccess({ response });
           }),
           handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
@@ -67,8 +74,8 @@ export const updateSetupEffect = createEffect(
       ofType(paymentActions.updateSetup),
       switchMap(({ model }) =>
         paymentService.updateSetup(model).pipe(
-          map((response: any) => {
-            toast.success(response.message || 'Financial setup configuration updated!');
+          map((response) => {
+            toast.success(response.message);
             return paymentActions.updateSetupSuccess({ response });
           }),
           handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
