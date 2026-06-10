@@ -1,6 +1,7 @@
 <div class="min-h-screen bg-background">
   <app-sidebar
     [(visible)]="isSidebarOpen"
+    [user]="user()"
     [subscription]="activeSub()"
     (logout)="handleLogoutAction()"
   ></app-sidebar>

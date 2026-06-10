@@ -4,6 +4,7 @@ import { Component, input, model, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { NavItem } from '../../../core/models/utility.model';
+import { User } from '../../../core/models/auth.model';
 
 @Component({
   selector: 'app-sidebar',
@@ -15,6 +16,7 @@ import { NavItem } from '../../../core/models/utility.model';
 export class Sidebar {
   public visible = model<boolean>(false);
   public subscription = input<any | null>(null);
+  public user = input<User | null>(null);
   public logout = output<void>();
 
   protected readonly menuGroups = signal<NavItem[]>([
