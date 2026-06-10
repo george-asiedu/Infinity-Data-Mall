@@ -20,8 +20,3 @@ export interface NavItem {
   route: string;
   badge?: number;
 }
-
-export interface NavGroup {
-  category: string;
-  items: NavItem[];
-}
