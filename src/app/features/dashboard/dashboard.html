@@ -6,7 +6,7 @@
   ></app-sidebar>
 
   <div class="lg:pl-72 min-h-screen flex flex-col">
-    <app-header [user]="user()" />
+    <app-header [user]="user()" (toggleSidebar)="toggleMobileSidebar()" />
 
     <main class="flex-1 p-6 overflow-y-auto">
       <router-outlet></router-outlet>

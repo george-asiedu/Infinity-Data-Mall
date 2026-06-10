@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-1 w-full">
   @switch (type()) {
     @case ('number') {
-      <p-floatLabel variant="on">
+      <p-floatLabel>
         <p-inputNumber
           [inputId]="id() || label()"
           [ngModel]="innerValue"
@@ -19,7 +19,7 @@
       </p-floatLabel>
     }
     @case ('password') {
-      <p-floatLabel variant="on" class="w-full block">
+      <p-floatLabel class="w-full block">
         <p-password
           [inputId]="id() || label()"
           [ngModel]="innerValue"
@@ -39,7 +39,7 @@
       </p-floatLabel>
     }
     @case ('textarea') {
-      <p-floatLabel variant="on">
+      <p-floatLabel>
         <textarea
           [id]="id() || label()"
           pTextarea
@@ -76,7 +76,7 @@
       </div>
     }
     @default {
-      <p-floatLabel variant="on">
+      <p-floatLabel>
         <input
           [id]="id() || label()"
           pInputText

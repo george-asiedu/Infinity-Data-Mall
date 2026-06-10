@@ -1,14 +1,23 @@
 <header
   class="w-full h-16 flex items-center justify-between px-6 border-b border-border bg-surface sticky top-0 z-30 transition-colors shadow-2xs"
 >
-  <div class="flex items-center">
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      (click)="toggleSidebar.emit()"
+      class="flex lg:hidden items-center justify-center w-9 h-9 text-primary hover:text-primary rounded-lg transition-all focus:outline-none cursor-pointer"
+      aria-label="Open Navigation Menu"
+    >
+      <i class="pi pi-bars text-lg"></i>
+    </button>
+
     <p-breadcrumb
       [model]="breadcrumbItems()"
       styleClass="bg-transparent p-0 border-none text-sm font-medium"
     >
       <ng-template #item let-item>
         @if (item.routerLink) {
-          <a [routerLink]="item.routerLink" class="text-primary transition-colors cursor-pointer">
+          <a [routerLink]="item.routerLink" class="text-heading transition-colors cursor-pointer">
             {{ item.label }}
           </a>
         } @else {

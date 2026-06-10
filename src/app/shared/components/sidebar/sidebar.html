@@ -15,7 +15,7 @@
 
 <ng-template #sidebarContentTemplate>
   <div class="flex flex-col h-full w-full p-4 overflow-hidden select-none bg-primary">
-    <div class="flex items-center gap-3 px-2 py-3 mb-4">
+    <div class="flex items-center gap-3 px-2 py-3 mb-4 border-b border-border/30">
       <div class="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
         <img
           ngSrc="iData_logo.png"
@@ -26,46 +26,40 @@
         />
       </div>
       <div class="flex flex-col">
-        <span class="text-sm font-bold tracking-wide text-white"> Infinity Data Mall </span>
-        <span class="text-xs text-white/70 font-medium"> Agent Portal </span>
+        <span class="font-bold tracking-wide text-white"> Infinity Data Mall </span>
+        <span class="text-xs text-muted font-medium"> Agent Portal </span>
       </div>
     </div>
 
-    <nav class="flex-1 flex flex-col gap-5 progress-nav-scroller">
-      @for (group of menuGroups(); track group.category) {
+    <nav class="flex-1 flex flex-col gap-2 progress-nav-scroller">
+      @for (group of menuGroups(); track group.label) {
         <div class="flex flex-col gap-1.5">
-          <span class="px-3 text-xs tracking-wider uppercase text-white/50">
-            {{ group.category }}
-          </span>
+          <a
+            [routerLink]="group.route"
+            routerLinkActive="active-link"
+            (click)="closeSidebar()"
+            class="flex items-center gap-3 px-3 py-2.5 text-sm rounded-card text-white/70 transition-all group"
+          >
+            <i [class]="group.icon + ' text-base transition-colors group-hover:text-accent'"></i>
+            <span class="flex-1">{{ group.label }}</span>
 
-          @for (item of group.items; track item.label) {
-            <a
-              [routerLink]="item.route"
-              routerLinkActive="active-link"
-              (click)="closeSidebar()"
-              class="flex items-center gap-3 px-3 py-2.5 text-sm rounded-card text-white/70 transition-all group"
-            >
-              <i [class]="item.icon + ' text-base transition-colors group-hover:text-accent'"></i>
-              <span class="flex-1">{{ item.label }}</span>
-
-              @if (item.badge) {
-                <span class="px-2 py-0.5 text-xxs rounded-full text-white bg-danger">
-                  {{ item.badge }}
-                </span>
-              }
-            </a>
-          }
+            @if (group.badge) {
+              <span class="px-2 py-0.5 text-xxs rounded-full text-white bg-danger">
+                {{ group.badge }}
+              </span>
+            }
+          </a>
         </div>
       }
     </nav>
 
-    <div class="mt-auto flex flex-col gap-4 pt-4 border-t border-border/50">
+    <div class="mt-auto flex flex-col gap-4 pt-4 border-t border-border/30">
       @if (subscription()) {
-        <div class="p-4 border border-border bg-[#f7c12c4e] rounded-card">
-          <span class="text-xxs font-bold tracking-wide uppercase text-accent">SUBSCRIPTION</span>
+        <div class="p-4 border border-border bg-accent-hover/35 rounded-card">
+          <span class="text-xxs font-black tracking-wide uppercase text-accent">SUBSCRIPTION</span>
           <div class="flex items-center justify-between text-xs mt-1 mb-2">
             <span class="text-white">{{ subscription().planName }}</span>
-            <span class="text-xxs font-normal text-white/50">{{ subscription().timeLeftStr }}</span>
+            <span class="text-xxs font-normal text-muted">{{ subscription().timeLeftStr }}</span>
           </div>
 
           <div class="w-full h-1.5 rounded-full overflow-hidden bg-primary/40">
@@ -82,8 +76,8 @@
         (click)="triggerLogout()"
         class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-card border border-danger/30 bg-danger/10 text-danger hover:bg-danger hover:text-white transition-all cursor-pointer"
       >
-        <i class="pi pi-sign-out text-sm"></i>
-        <span class="text-lg">Logout</span>
+        <i class="pi pi-sign-out text-sm font-black"></i>
+        <span class="font-black">Logout</span>
       </button>
     </div>
   </div>

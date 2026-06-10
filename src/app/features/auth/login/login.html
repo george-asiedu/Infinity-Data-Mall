@@ -1,7 +1,9 @@
 <div class="w-full min-h-screen flex items-center justify-center bg-background px-4 py-12">
   <div class="w-full max-w-md flex flex-col items-center">
-    <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-6 shadow-sm">
-      <img ngSrc="iData_logo.png" width="48" height="48" alt="iData Logo" class="object-contain" />
+    <div
+      class="w-16 h-16 bg-transparent rounded-xl flex items-center justify-center mb-6 shadow-sm"
+    >
+      <img ngSrc="iData_logo.png" width="64" height="64" alt="iData Logo" class="object-contain" />
     </div>
 
     <h1 class="text-3xl font-bold mb-2 text-center tracking-tight">Welcome Back</h1>
@@ -11,7 +13,7 @@
       [formGroup]="loginForm"
       class="w-full bg-surface rounded-card p-6 flex flex-col gap-5 shadow-lg"
     >
-      <div>
+      <div class="my-3">
         <app-input
           label="Email Address"
           type="text"
@@ -83,7 +85,7 @@
       Don't have an account yet?
       <a
         routerLink="/register"
-        class="text-primary font-semibold hover:text-primary-hover transition-colors"
+        class="text-heading font-semibold hover:text-primary-hover transition-colors"
         >Create an account</a
       >
     </div>
