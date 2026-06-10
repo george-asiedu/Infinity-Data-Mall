@@ -32,10 +32,10 @@
     --color-net-at: #7C3AED;
 
     --color-background: #F5F9F7;
-    --color-surface: #FFFFFF;
-    --color-border: #E0EDE8;
-    --color-heading: #091A15;
-    --color-paragraph: #3A4D46;
+    --color-surface: #F7FCF9;
+    --color-border: #D4E8E0;
+    --color-heading: #0F1A16;
+    --color-paragraph: #818987;
     --color-muted: #7A8F85;
 
     --radius-card: 8px;
@@ -50,6 +50,7 @@ body {
     @apply bg-background text-heading min-h-screen;
     font-family: var(--font);
     line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* --- PrimeNG Component Styling Overrides --- */
@@ -59,13 +60,13 @@ body {
     @apply bg-surface border border-border;
 }
 
-.p-button {
-    border-radius: var(--radius-button);
+p-button {
+    border-radius: var(--radius-button) !important;
     font-size: 0.875rem !important;
     font-weight: 500 !important;
 }
 
-.p-button.p-button-primary:hover,
+p-button.p-button-primary:hover,
 .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-link):hover {
     @apply bg-primary-hover border-primary-hover;
 }
@@ -80,9 +81,15 @@ body {
 .p-multiselect,
 .p-autocomplete,
 .p-inputswitch {
-    border-radius: var(--radius-button);
+    border-radius: var(--radius-button) !important;
     font-size: 0.875rem !important;
     @apply bg-surface border border-border text-heading;
+}
+
+label {
+    background-color: transparent;
+    color: var(--color-heading);
+    margin-left: -10px;
 }
 
 .p.placeholder, .p-textarea::placeholder {
@@ -91,8 +98,8 @@ body {
 
 .p-inputtext:focus,
 .p-textarea:focus {
-    @apply border-primary;
-    box-shadow: 0 0 0 3px color-mix(in srgb, #4F46E5 20%, transparent) !important;
+    @apply border-success;
+    box-shadow: 0 0 0 3px color-mix(in srgb, #0D4F3C 20%, transparent) !important;
 }
 
 .error {
