@@ -105,7 +105,7 @@
             optionValue="code"
             [filter]="true"
             filterBy="name"
-            customClass="w-full control-base min-h-[46px]"
+            customClass="w-full min-h-[46px]"
             (selectionChanged)="
               setupForm.get('bankCode')?.setValue($event);
               setupForm.get('bankCode')?.markAsTouched()
@@ -116,7 +116,7 @@
           }
         </div>
 
-        <div class="flex flex-col gap-1 w-full relative mb-3">
+        <div class="flex flex-col gap-1 w-full relative">
           <div class="relative w-full">
             <app-input
               type="text"
@@ -157,8 +157,6 @@
             <small class="error">Please enter a valid (10-13 digits) account structure.</small>
           }
         </div>
-
-        <hr class="border-border my-1" />
 
         <div class="w-full flex flex-col gap-3 bg-background p-4 rounded-lg border border-border">
           <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-2">

@@ -1,4 +1,4 @@
-<p-floatLabel variant="on">
+<p-floatLabel>
   <p-select
     [(ngModel)]="value"
     [options]="options()"
@@ -12,5 +12,5 @@
     (onChange)="selectionChanged.emit($event.value)"
   >
   </p-select>
-  <label [attr.for]="label()">{{ label() }}</label>
+  <label [attr.for]="id() || label()">{{ label() }}</label>
 </p-floatLabel>

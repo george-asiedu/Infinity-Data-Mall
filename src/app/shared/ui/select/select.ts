@@ -10,6 +10,7 @@ import { SelectModule } from 'primeng/select';
   styleUrl: './select.css',
 })
 export class Select<T> {
+  public id = input<string>('');
   public label = input<string>('');
   public value = model<T | null>(null);
   public options = input<T[]>([]);
@@ -17,7 +18,7 @@ export class Select<T> {
   public optionValue = input<string>('value');
   public placeholder = input<string>('');
   public disabled = input<boolean>(false);
-  public customClass = input<string>('w-full control-base');
+  public customClass = input<string>('w-full');
 
   public filter = input<boolean>(false);
   public filterBy = input<string>('label');
