@@ -101,4 +101,6 @@ export interface User {
   settlementBankAccount: string;
   accountNumber: string;
   lastLoginAt: string;
+  logoLongUrl: string;
+  logoShortUrl: string;
 }
