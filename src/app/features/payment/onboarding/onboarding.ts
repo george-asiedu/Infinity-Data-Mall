@@ -41,15 +41,30 @@ export class Onboarding implements OnInit {
 
   protected readonly verifiedAccountName = computed(() => {
     const state = this.paymentState() as any;
-    const currentInputNumber = this.setupForm?.get('accountNumber')?.value?.trim();
+    const currentInputNumber = this.setupForm?.get('accountNumber')?.value?.toString().trim() || '';
     const currentBank = this.setupForm?.get('bankCode')?.value;
 
-    if (
-      state?.response?.data?.account_number === currentInputNumber &&
-      state?.response?.data?.bank_code === currentBank
-    ) {
-      return state?.response?.data?.account_name || null;
+    const resp = state?.response?.data;
+    if (!resp) return null;
+
+    const respAccountNumber = resp.account_number?.toString().trim() || '';
+
+    let respBankCode: string | null = null;
+    if (resp.bank_code) {
+      respBankCode = resp.bank_code;
+    } else if (resp.bank_id) {
+      const matched = this.banks()?.find(
+        (b: any) => b.id === resp.bank_id || b.code === resp.bank_id,
+      );
+      respBankCode = matched ? matched.code : null;
     }
+
+    const bankMatches = respBankCode ? respBankCode === currentBank : true;
+
+    if (respAccountNumber && respAccountNumber === currentInputNumber && bankMatches) {
+      return resp.account_name || null;
+    }
+
     return null;
   });
 
@@ -151,7 +166,6 @@ export class Onboarding implements OnInit {
       businessName: rawValues.businessName.trim(),
       bankCode: rawValues.bankCode,
       accountNumber: rawValues.accountNumber.trim(),
-      accountName: this.verifiedAccountName(),
       vendorApiKey: this.hasVendorKey() ? rawValues.vendorApiKey.trim() : null,
     };
 
