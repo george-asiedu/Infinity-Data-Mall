@@ -1,0 +1,129 @@
+@if (visible()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none"
+  >
+    <div
+      class="w-full max-w-md bg-surface border border-border rounded-card shadow-xl overflow-hidden transition-all flex flex-col"
+    >
+      <div class="flex items-center justify-between py-3 px-5 border-b border-border">
+        <h3 class="font-bold text-heading">Upload image</h3>
+        <button
+          type="button"
+          [disabled]="storeLoading() || isUploadingChunks()"
+          (click)="closeModal()"
+          class="text-muted hover:text-paragraph cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <i class="pi pi-times text-sm"></i>
+        </button>
+      </div>
+
+      <div class="p-6 flex flex-col gap-5">
+        @if (storeError()) {
+          <div
+            class="p-3 bg-danger/10 border border-danger/20 text-danger text-xs font-medium rounded-md flex items-center gap-2"
+          >
+            <i class="pi pi-exclamation-circle text-sm"></i>
+            <span>{{ storeError() }}</span>
+          </div>
+        }
+
+        @if (!selectedFile()) {
+          <div
+            (dragover)="onDragOver($event)"
+            (drop)="onFileDropped($event)"
+            (click)="fileFileInput.click()"
+            (keydown.enter)="fileFileInput.click()"
+            (keydown.space)="fileFileInput.click()"
+            role="button"
+            tabindex="0"
+            aria-label="Upload asset: click or press Enter or Space to select a file"
+            class="w-full py-10 border-2 border-dashed border-border hover:border-primary rounded-card flex flex-col items-center justify-center gap-3 bg-background/50 transition-all cursor-pointer group"
+          >
+            <input
+              #fileFileInput
+              type="file"
+              accept="image/*"
+              class="hidden"
+              (change)="onFileSelected($event)"
+            />
+
+            <div
+              class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-105 transition-transform"
+            >
+              <i class="pi pi-cloud-upload text-xl font-bold"></i>
+            </div>
+
+            <div class="text-center">
+              <p class="font-semibold text-heading!">Click to browse or drop asset here</p>
+              <p class="text-xxs! mt-1">Only image formats are supported (Max 5MB)</p>
+            </div>
+          </div>
+        } @else {
+          <div
+            class="w-full p-4 border border-border rounded-card bg-background/40 flex items-center justify-between gap-3"
+          >
+            <div class="flex items-center gap-3 overflow-hidden">
+              <div
+                class="w-10 h-10 bg-secondary/10 rounded-md text-secondary flex items-center justify-center shrink-0"
+              >
+                <i class="pi pi-image text-lg"></i>
+              </div>
+              <div class="flex flex-col overflow-hidden">
+                <span class="text-xs font-semibold text-heading truncate">
+                  {{ selectedFile()?.name }}
+                </span>
+                <span class="text-xxs text-paragraph mt-0.5">
+                  {{ selectedFile()!.size / (1024 * 1024) | number: '1.1-2' }} MB
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              [disabled]="storeLoading() || isUploadingChunks()"
+              (click)="removeSelectedFile()"
+              class="w-7 h-7 flex items-center justify-center rounded-full text-danger hover:bg-danger/10 disabled:opacity-20 cursor-pointer transition-all"
+            >
+              <i class="pi pi-trash text-xs"></i>
+            </button>
+          </div>
+        }
+
+        @if (storeLoading() || isUploadingChunks()) {
+          <div class="w-full flex flex-col gap-2">
+            <div
+              class="flex items-center justify-between text-xxs font-bold text-paragraph tracking-wide"
+            >
+              <span class="uppercase">
+                {{ isUploadingChunks() ? 'Streaming Parts to S3' : 'Initializing Node Session' }}
+              </span>
+              <span>{{ uploadProgress() }}%</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-border overflow-hidden">
+              <div
+                class="h-full bg-primary rounded-full transition-all duration-300"
+                [style.width.%]="uploadProgress()"
+              ></div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="p-4 border-t border-border flex items-center justify-end gap-2.5">
+        <app-button
+          label="Cancel"
+          [disabled]="storeLoading() || isUploadingChunks()"
+          customClass="text-xs font-semibold bg-transparent text-heading border border-primary hover:bg-background! rounded-md transition-colors"
+          (clicked)="closeModal()"
+        ></app-button>
+
+        <app-button
+          label="Upload image"
+          [disabled]="!selectedFile() || storeLoading() || isUploadingChunks()"
+          customClass="text-xs font-semibold text-white bg-primary hover:bg-primary-hover rounded-card disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          (clicked)="startUploadProcess()"
+        ></app-button>
+      </div>
+    </div>
+  </div>
+}

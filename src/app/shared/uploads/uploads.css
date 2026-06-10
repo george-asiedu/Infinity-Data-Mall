@@ -1,0 +1,8 @@
+:host {
+  display: block;
+}
+
+.backdrop-blur-xs {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
