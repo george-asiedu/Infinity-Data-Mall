@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, effect, inject, input, model, OnDestroy, output, signal } from '@angular/core';
 import { Button } from '../ui/button/button';
 import { CommonModule } from '@angular/common';
 import { Toast } from '../../core/services/toast/toast';
-import { forkJoin, Subscription } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { forkJoin, Subscription, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
+import { Upload } from './service/upload';
 import {
   CompleteUploadModel,
   InitiateUploadModel,
+  InitiateUploadResponse,
   UploadPartPart,
 } from '../../core/models/upload.model';
 import { uploadActions } from './store/uploads.actions';
@@ -27,30 +27,26 @@ import {
 })
 export class Uploads implements OnDestroy {
   private readonly store = inject(Store);
-  private readonly http = inject(HttpClient);
+  private readonly uploadService = inject(Upload);
   private readonly toast = inject(Toast);
 
-  // Modern Signal Inputs/Outputs matching project design patterns
   public visible = model<boolean>(false);
   public category = input.required<'business_logo' | 'user_logo'>();
   public uploadSuccess = output<{ key: string; shortUrl: string; longUrl: string }>();
 
-  // Component Local State Indicators
   protected selectedFile = signal<File | null>(null);
   protected uploadProgress = signal<number>(0);
   protected isUploadingChunks = signal<boolean>(false);
 
-  // Expose store selectors to your view layout via Signals
   protected storeLoading = this.store.selectSignal(selectIsLoading);
   protected storeError = this.store.selectSignal(selectError);
   protected activeUpload = this.store.selectSignal(selectActiveUpload);
   protected completedAsset = this.store.selectSignal(selectCompletedAsset);
 
   private activeUploadSubscription?: Subscription;
-  private constantChunkSize = 5 * 1024 * 1024; // Standard AWS S3 Minimum multi-part block size (5MB)
+  private constantChunkSize = 5 * 1024 * 1024;
 
   constructor() {
-    // Monitor the NgRx state tree for active upload configurations
     effect(() => {
       const activeSession = this.activeUpload();
       const file = this.selectedFile();
@@ -60,7 +56,6 @@ export class Uploads implements OnDestroy {
       }
     });
 
-    // Monitor for final backend synchronization resolution
     effect(() => {
       const completedData = this.completedAsset();
       if (completedData) {
@@ -101,7 +96,6 @@ export class Uploads implements OnDestroy {
     const file = this.selectedFile();
     if (!file) return;
 
-    // Calculate part distribution count based on S3 specifications
     const partCount = Math.ceil(file.size / this.constantChunkSize) || 1;
 
     const payload: InitiateUploadModel = {
@@ -111,37 +105,33 @@ export class Uploads implements OnDestroy {
       category: this.category(),
     };
 
-    // Stage 1: Call Backend Initiate Endpoint
     this.store.dispatch(uploadActions.initiateUpload({ model: payload }));
   }
 
-  private processS3ChunkUploads(session: any, file: File): void {
+  private processS3ChunkUploads(session: InitiateUploadResponse, file: File): void {
     this.isUploadingChunks.set(true);
-    const chunkRequests = [];
-    const totalParts = session.presignedUrls.length;
+    this.uploadProgress.set(0);
 
-    for (let i = 0; i < totalParts; i++) {
+    const totalParts = session.presignedUrls.length;
+    let completedParts = 0;
+
+    const chunkRequests = session.presignedUrls.map((targetUrl, i) => {
       const startByte = i * this.constantChunkSize;
       const endByte = Math.min(file.size, startByte + this.constantChunkSize);
       const fileChunk = file.slice(startByte, endByte, file.type);
-      const targetUrl = session.presignedUrls[i];
 
-      // Perform a standard HTTP PUT binary chunk payload upload to S3
-      // We explicitly request 'response' tracking to read S3 ETag headers
-      const uploadChunk$ = this.http.put(targetUrl, fileChunk, {
-        headers: { 'Content-Type': file.type },
-        observe: 'response',
-        responseType: 'text',
-      });
-
-      chunkRequests.push(uploadChunk$);
-    }
+      return this.uploadService.uploadPartToS3(targetUrl, fileChunk).pipe(
+        tap(() => {
+          completedParts += 1;
+          this.uploadProgress.set(Math.round((completedParts / totalParts) * 100));
+        }),
+      );
+    });
 
     // Process chunk sequence
     this.activeUploadSubscription = forkJoin(chunkRequests).subscribe({
       next: (responses) => {
-        const partsCollection: UploadPartPart[] = responses.map((res: any, index) => {
-          // Extract ETag from response header, removing escaping double quotes from standard S3 syntax
+        const partsCollection: UploadPartPart[] = responses.map((res, index) => {
           const rawETag = res.headers.get('ETag') || '';
           const cleanedETag = rawETag.replace(/"/g, '');
 
@@ -151,9 +141,6 @@ export class Uploads implements OnDestroy {
           };
         });
 
-        // Progress update visualization
-        this.uploadProgress.set(100);
-
         const finalizedPayload: CompleteUploadModel = {
           uploadId: session.uploadId,
           key: session.key,
@@ -161,17 +148,23 @@ export class Uploads implements OnDestroy {
           parts: partsCollection,
         };
 
-        // Stage 2: Call Backend Complete Endpoint to finalize merge transformations
         this.store.dispatch(uploadActions.completeUpload({ model: finalizedPayload }));
       },
       error: () => {
         this.isUploadingChunks.set(false);
+
         this.store.dispatch(
           uploadActions.uploadError({
             error: 'Direct S3 infrastructure streaming processing failed.',
           }),
         );
         this.toast.error('Failed processing chunks to S3 buckets.');
+
+        this.store.dispatch(
+          uploadActions.abortUpload({
+            model: { uploadId: session.uploadId, key: session.key },
+          }),
+        );
       },
     });
   }
