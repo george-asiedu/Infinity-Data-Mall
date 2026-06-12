@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { Toast } from '../../../core/services/toast/toast';
 import { handleApiError } from '../../../shared/utils/errorHandler';
 import { selectUser } from '../../../features/auth/store/auth.selectors';
@@ -82,6 +82,23 @@ export const handleCompletedLogoMappingEffect = createEffect(
         toast.success(response.message);
         return of(uploadActions.clearUploadState());
       }),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const abortUploadEffect = createEffect(
+  (actions$ = inject(Actions), uploadService = inject(Upload)) => {
+    return actions$.pipe(
+      ofType(uploadActions.abortUpload),
+      switchMap(({ model }) =>
+        uploadService.abortMultipart(model).pipe(
+          map(() => uploadActions.abortUploadSuccess()),
+          catchError((error) =>
+            of(uploadActions.abortUploadFailure({ error: error?.message ?? 'Abort failed.' })),
+          ),
+        ),
+      ),
     );
   },
   { dispatch: true, functional: true },
