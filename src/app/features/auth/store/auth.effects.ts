@@ -2,7 +2,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Auth } from '../service/auth';
 import { Router } from '@angular/router';
 import { Toast } from '../../../core/services/toast/toast';
-import { map, switchMap, tap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { inject } from '@angular/core';
 import { authActions } from './auth.actions';
 import { handleApiError } from '../../../shared/utils/errorHandler';
@@ -247,4 +247,14 @@ export const clearAuthStateEffect = createEffect(
     );
   },
   { dispatch: true, functional: true },
+);
+
+export const logoutServerEffect = createEffect(
+  (actions$ = inject(Actions), authService = inject(Auth)) => {
+    return actions$.pipe(
+      ofType(authActions.logout),
+      switchMap(() => authService.logout().pipe(catchError(() => of(null)))),
+    );
+  },
+  { functional: true, dispatch: false },
 );
