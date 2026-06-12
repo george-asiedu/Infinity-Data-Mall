@@ -34,6 +34,11 @@ export const uploadFeature = createFeature({
       isLoading: false,
       completedAsset: response.data,
     })),
+    on(uploadActions.abortUpload, (state) => ({
+      ...state,
+      isLoading: false,
+      activeUpload: null,
+    })),
     on(uploadActions.uploadError, (state, { error }) => ({
       ...state,
       isLoading: false,
