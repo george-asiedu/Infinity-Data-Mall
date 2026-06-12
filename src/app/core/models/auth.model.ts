@@ -68,9 +68,9 @@ export interface VerifyMfaResponse {
   message: string;
   data: {
     user: User;
+    isNew?: boolean;
     token: {
       accessToken: string;
-      refreshToken: string;
     };
   };
 }
