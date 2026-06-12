@@ -87,8 +87,12 @@ const handle401 = (
 };
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  if (shouldExcludeToken(req.url)) {
-    return next(req);
+  const apiReq = req.url.startsWith(environment.apiUrl)
+    ? req.clone({ withCredentials: true })
+    : req;
+
+  if (shouldExcludeToken(apiReq.url)) {
+    return next(apiReq);
   }
 
   const store = inject(Store<AuthState>);
@@ -97,12 +101,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return store.select(selectAccessToken).pipe(
     take(1),
     switchMap((token) => {
-      const authReq = token ? addBearerToken(req, token) : req;
+      const authReq = token ? addBearerToken(apiReq, token) : apiReq;
 
       return next(authReq).pipe(
         catchError((error: unknown) => {
           if (error instanceof HttpErrorResponse && error.status === 401) {
-            return handle401(req, next, store, authService);
+            return handle401(apiReq, next, store, authService);
           }
           return throwError(() => error);
         }),
