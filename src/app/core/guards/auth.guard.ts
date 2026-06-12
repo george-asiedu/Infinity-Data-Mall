@@ -23,28 +23,17 @@ const handleUnauthorizedAccess = (store: Store<AuthState>, toast: Toast) => {
 };
 
 const checkAuth = (route: ActivatedRouteSnapshot) => {
-  const urlAccessToken = route.queryParamMap.get('access_token');
-  const urlRefreshToken = route.queryParamMap.get('refresh_token');
+  const oauthCode = route.queryParamMap.get('code');
 
   const { store, toast, authService, router } = getDependencies();
   const accessToken = store.selectSignal(selectAccessToken);
 
-  if (urlAccessToken && urlRefreshToken) {
-    return authService.getAuthenticatedUser(urlAccessToken).pipe(
+  if (oauthCode) {
+    return authService.exchangeOAuthCode(oauthCode).pipe(
       take(1),
-      map((response) => {
-        const userProfile: User = response?.data;
-
-        const oauthPayload: VerifyMfaResponse = {
-          message: 'Successfully authenticated via Google',
-          data: {
-            user: userProfile,
-            token: {
-              accessToken: urlAccessToken,
-              refreshToken: urlRefreshToken,
-            },
-          },
-        };
+      map((loggedIn: VerifyMfaResponse) => {
+        const userProfile: User = loggedIn.data.user;
+        toast.success(loggedIn.message);
 
         if (userProfile.settlementBankAccount) {
           router.navigate(['/dashboard']);
@@ -52,7 +41,7 @@ const checkAuth = (route: ActivatedRouteSnapshot) => {
           router.navigate(['/onboarding']);
         }
 
-        store.dispatch(authActions.verifyMfaSuccess({ loggedIn: oauthPayload }));
+        store.dispatch(authActions.verifyMfaSuccess({ loggedIn }));
         return true;
       }),
       catchError(() => {
