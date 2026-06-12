@@ -77,7 +77,21 @@ export class Auth {
   }
 
   public refreshToken() {
-    return this.http.get<RefreshToken>(`${this.api}auth/refresh-token`);
+    return this.http.get<RefreshToken>(`${this.api}auth/refresh-token`, {
+      withCredentials: true,
+    });
+  }
+
+  public exchangeOAuthCode(code: string) {
+    return this.http.post<VerifyMfaResponse>(
+      `${this.api}auth/oauth/exchange`,
+      { code },
+      { withCredentials: true },
+    );
+  }
+
+  public logout() {
+    return this.http.post<MessageResponse>(`${this.api}auth/logout`, {}, { withCredentials: true });
   }
 
   public getAuthenticatedUser(explicitToken?: string) {
