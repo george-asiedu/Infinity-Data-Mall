@@ -11,11 +11,16 @@ import { AuthState } from '../../models/auth.model';
 import { Auth } from '../../../features/auth/service/auth';
 import { selectAccessToken } from '../../../features/auth/store/auth.selectors';
 import { inject } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 
 let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 const shouldExcludeToken = (url: string): boolean => {
+  if (!url.startsWith(environment.apiUrl)) {
+    return true;
+  }
+
   if (url.includes('/auth/user')) {
     return false;
   }
