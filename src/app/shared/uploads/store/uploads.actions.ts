@@ -1,5 +1,6 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import {
+  AbortUploadModel,
   CompleteUploadModel,
   CompleteUploadResponse,
   InitiateUploadModel,
@@ -17,6 +18,10 @@ export const uploadActions = createActionGroup({
     CompleteUploadSuccess: props<{ response: CompleteUploadResponse }>(),
 
     SaveLogoSuccess: props<{ response: SaveLogoResponse }>(),
+
+    AbortUpload: props<{ model: AbortUploadModel }>(),
+    AbortUploadSuccess: emptyProps(),
+    AbortUploadFailure: props<{ error: string }>(),
 
     UploadError: props<{ error: string }>(),
     ClearUploadState: emptyProps(),
