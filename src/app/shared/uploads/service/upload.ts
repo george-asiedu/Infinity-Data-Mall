@@ -39,6 +39,6 @@ export class Upload {
   }
 
   public uploadPartToS3(url: string, filePart: Blob) {
-    return this.http.put(url, filePart, { headers: { 'Content-Type': filePart.type } });
+    return this.http.put(url, filePart, { observe: 'response', responseType: 'text' });
   }
 }
