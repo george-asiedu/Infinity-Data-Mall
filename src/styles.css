@@ -411,10 +411,10 @@ p {
 }
 
 ::-webkit-scrollbar-track {
-  background: #4f46e5;
+  background: #0d4f3c;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4f46e5;
+  background: #0d4f3c;
   border-radius: 6px;
 }
