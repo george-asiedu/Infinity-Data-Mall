@@ -31,11 +31,11 @@ export class Upload {
   }
 
   public saveBusinessLogo(id: string, model: SaveLogoModel) {
-    return this.http.post<SaveLogoResponse>(`${this.api}${id}/business-logo`, model);
+    return this.http.post<SaveLogoResponse>(`${this.api}upload/${id}/business-logo`, model);
   }
 
   public saveProfileLogo(id: string, model: SaveLogoModel) {
-    return this.http.post<SaveLogoResponse>(`${this.api}${id}/profile-logo`, model);
+    return this.http.post<SaveLogoResponse>(`${this.api}upload/${id}/profile-logo`, model);
   }
 
   public uploadPartToS3(url: string, filePart: Blob) {
