@@ -69,6 +69,7 @@ export interface VerifyMfaResponse {
   data: {
     user: User;
     isNew?: boolean;
+    backupCode?: string;
     token: {
       accessToken: string;
     };
