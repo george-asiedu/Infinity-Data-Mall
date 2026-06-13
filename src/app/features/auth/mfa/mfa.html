@@ -61,7 +61,7 @@
             type="text"
             label="Backup Recovery Token"
             formControlName="backupCode"
-            placeholder="e.g. IDM-PQX0YH"
+            placeholder="e.g. IDM-3F9A-7C21-B0E4-9DA2-1F68"
             [required]="true"
             customClass="w-full text-center tracking-wider font-mono uppercase"
             [invalid]="
@@ -79,7 +79,9 @@
                 <span>Backup code is required.</span>
               }
               @if (getControl('backupCode')?.hasError('pattern')) {
-                <span>Format must match code layout exactly (e.g. IDM-PQX0YH).</span>
+                <span
+                  >Enter the full code exactly as issued (e.g. IDM-3F9A-7C21-B0E4-9DA2-1F68).</span
+                >
               }
             </div>
           }
@@ -138,3 +140,69 @@
     </div>
   </div>
 </div>
+
+<p-dialog
+  [visible]="showBackupCodeDialog()"
+  [modal]="true"
+  [closable]="false"
+  [closeOnEscape]="false"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="w-[90vw] max-w-md mx-auto"
+  maskStyleClass="backdrop-blur-sm bg-black/40"
+>
+  <ng-template pTemplate="header">
+    <div class="flex flex-col gap-2 pt-2 w-full items-center text-center">
+      <div class="w-14 h-14 rounded-full bg-primary/30 flex items-center justify-center mb-1">
+        <i class="pi pi-shield text-primary text-2xl"></i>
+      </div>
+      <h2 class="text-xl font-bold text-heading">Save Your New Backup Code</h2>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-col gap-5 py-2">
+    <p class="text-sm text-center text-paragraph leading-relaxed">
+      The code you just used has been retired. This is your
+      <span class="font-bold text-heading">new fail-safe</span> code — we will only show it once.
+      Please copy or download it and store it in a secure location.
+    </p>
+
+    <div
+      class="bg-background border border-border rounded-xl p-4 flex items-center justify-between gap-4 shadow-inner"
+    >
+      <code class="text-lg font-mono font-bold text-primary tracking-[0.15em] flex-1 text-center">
+        {{ newBackupCode() }}
+      </code>
+      <button
+        type="button"
+        class="p-2.5 rounded-lg bg-surface border border-border hover:border-primary transition-colors text-muted hover:text-primary shadow-sm"
+        (click)="this.utilityService.copyToClipboard(newBackupCode())"
+        title="Copy to clipboard"
+      >
+        <i class="pi pi-copy text-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex flex-col gap-3 w-full mt-4">
+      <app-button
+        label="Download as .txt"
+        icon="pi pi-download"
+        [outlined]="true"
+        [rounded]="false"
+        customClass="w-full bg-surface text-heading border-border hover:!bg-background transition-colors shadow-sm"
+        (clicked)="downloadBackupCode(newBackupCode())"
+      >
+      </app-button>
+
+      <app-button
+        label="I've saved it safely, continue"
+        [rounded]="false"
+        customClass="w-full !bg-primary !border-primary text-white hover:!bg-primary-hover transition-colors"
+        (clicked)="continueAfterBackup()"
+      >
+      </app-button>
+    </div>
+  </ng-template>
+</p-dialog>
