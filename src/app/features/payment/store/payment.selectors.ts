@@ -8,4 +8,8 @@ export const {
   selectSetup,
   selectBanks,
   selectAccounts,
+  selectWallet,
+  selectActiveTx,
+  selectTransactionRef,
+  selectTransactions,
 } = paymentFeature;
