@@ -33,7 +33,7 @@
     <button
       type="button"
       (click)="profilePopover.toggle($event)"
-      class="flex items-center justify-center p-0.5 rounded-full border border-border hover:border-primary/40 focus:outline-none transition-all cursor-pointer"
+      class="flex items-center justify-center p-0.5 rounded-full border border-primary hover:border-primary-hover animate-pulse focus:outline-none transition-all cursor-pointer"
     >
       @if (user()?.imageShortUrl) {
         <img
@@ -43,7 +43,7 @@
         />
       } @else {
         <div
-          class="flex items-center justify-center w-9 h-9 rounded-full bg-accent text-primary font-black border border-accent/50"
+          class="flex items-center justify-center w-9 h-9 rounded-full bg-accent text-primary font-black border border-primary animate-pulse"
         >
           {{ userInitials() }}
         </div>
