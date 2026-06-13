@@ -34,6 +34,18 @@ export const paymentActions = createActionGroup({
     GetAccounts: emptyProps(),
     GetAccountsSuccess: props<{ accounts: any[] }>(),
 
+    GetWallet: props<{ userId: string }>(),
+    GetWalletSuccess: props<{ wallet: any }>(),
+
+    GetActiveTransaction: props<{ id: string }>(),
+    GetActiveTransactionSuccess: props<{ activeTx: any }>(),
+
+    GetTransactions: props<{ userId: string }>(),
+    GetTransactionsSuccess: props<{ transactions: any[] }>(),
+
+    GetTransactionReference: props<{ ref: string }>(),
+    GetTransactionReferenceSuccess: props<{ transactionRef: any }>(),
+
     PaymentError: props<{ error: string }>(),
     clearPaymentState: emptyProps(),
     GetStorage: props<PaymentState>(),
