@@ -52,4 +52,20 @@ export class Payment {
   public getAccounts() {
     return this.http.get(`${this.api}payment/admin/subaccounts`);
   }
+
+  public getWallet(userId: string) {
+    return this.http.get(`${this.api}transactions/wallet/${userId}`);
+  }
+
+  public getTransaction(id: string) {
+    return this.http.get(`${this.api}transactions/${id}`);
+  }
+
+  public getTransactionByReference(ref: string) {
+    return this.http.get(`${this.api}transactions/${ref}`);
+  }
+
+  public getTransactions(userId: string) {
+    return this.http.get(`${this.api}transactions/${userId}`);
+  }
 }
