@@ -139,6 +139,77 @@ export const getAccountsEffect = createEffect(
   { dispatch: true, functional: true },
 );
 
+export const getActiveTransactionEffect = createEffect(
+  (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(paymentActions.getActiveTransaction),
+      switchMap(({ id }) =>
+        paymentService.getTransaction(id).pipe(
+          map((activeTx: any) => {
+            toast.success(activeTx.message);
+            return paymentActions.getActiveTransactionSuccess({ activeTx });
+          }),
+          handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const getWalletEffect = createEffect(
+  (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(paymentActions.getWallet),
+      switchMap(({ userId }) =>
+        paymentService.getWallet(userId).pipe(
+          map((wallet: any) => {
+            return paymentActions.getWalletSuccess({ wallet });
+          }),
+          handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const getTransactionReferenceEffect = createEffect(
+  (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(paymentActions.getTransactionReference),
+      switchMap(({ ref }) =>
+        paymentService.getTransactionByReference(ref).pipe(
+          map((transactionRef: any) => {
+            toast.success(transactionRef.message);
+            return paymentActions.getTransactionReferenceSuccess({ transactionRef });
+          }),
+          handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const getTransactionsEffect = createEffect(
+  (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(paymentActions.getTransactions),
+      switchMap(({ userId }) =>
+        paymentService.getTransactions(userId).pipe(
+          map((transactions: any) => {
+            toast.success(transactions.message);
+            return paymentActions.getTransactionsSuccess({ transactions });
+          }),
+          handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
 export const clearReferenceEffect = createEffect(
   (actions$ = inject(Actions)) => {
     return actions$.pipe(
@@ -146,6 +217,8 @@ export const clearReferenceEffect = createEffect(
         paymentActions.verifyPaymentTransactionSuccess,
         paymentActions.completeSetupSuccess,
         paymentActions.updateSetupSuccess,
+        paymentActions.getActiveTransactionSuccess,
+        paymentActions.getTransactionReferenceSuccess,
       ),
       map(() => paymentActions.clearPaymentState()),
     );
