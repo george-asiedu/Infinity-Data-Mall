@@ -50,25 +50,13 @@ export const loginEffect = createEffect(
 );
 
 export const loginWithCodeEffect = createEffect(
-  (
-    actions$ = inject(Actions),
-    authService = inject(Auth),
-    router = inject(Router),
-    toast = inject(Toast),
-  ) => {
+  (actions$ = inject(Actions), authService = inject(Auth), toast = inject(Toast)) => {
     return actions$.pipe(
       ofType(authActions.loginWithCode),
       switchMap(({ model }) =>
         authService.loginWithCode(model).pipe(
           map((loggedIn) => {
             toast.success(loggedIn.message);
-
-            if (loggedIn.data.user.settlementBankAccount) {
-              router.navigate(['/dashboard']);
-            } else {
-              router.navigate(['/onboarding']);
-            }
-
             return authActions.loginWithCodeSuccess({ loggedIn });
           }),
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
