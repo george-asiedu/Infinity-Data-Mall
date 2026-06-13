@@ -25,6 +25,10 @@ export interface PaymentState {
   setup: CompleteSetupResponse | null;
   banks: Banks[];
   accounts: any[];
+  wallet: any | null;
+  activeTx: any | null;
+  transactions: any[];
+  transactionRef: any | null;
 }
 
 export interface BanksResponse {
