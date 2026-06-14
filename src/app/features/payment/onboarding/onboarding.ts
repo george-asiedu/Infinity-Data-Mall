@@ -41,6 +41,7 @@ export class Onboarding implements OnInit {
   private readonly paymentState = this.store.selectSignal(selectPaymentState);
 
   protected isUploadModalOpen = signal<boolean>(false);
+  protected readonly uploadedLogoUrl = signal<string | null>(null);
 
   protected readonly verifiedAccountName = computed(() => {
     const state = this.paymentState() as any;
@@ -184,6 +185,7 @@ export class Onboarding implements OnInit {
     shortUrl: string;
     longUrl: string;
   }): void {
-    console.log('Database synchronization completed successfully for:', assetMetadata);
+    this.uploadedLogoUrl.set(assetMetadata.shortUrl);
+    this.toast.success('Business logo uploaded successfully.');
   }
 }

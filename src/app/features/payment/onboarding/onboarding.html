@@ -216,13 +216,45 @@
           }
         </div>
 
-        <button
-          type="button"
-          (click)="isUploadModalOpen.set(true)"
-          class="px-4 py-2 bg-transparent border border-primary text-heading font-semibold text-sm rounded-card cursor-pointer"
-        >
-          Upload Business Logo
-        </button>
+        <div class="w-full flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-heading">Business Logo</label>
+
+          @if (uploadedLogoUrl()) {
+            <div
+              class="w-full flex items-center gap-4 bg-background border border-success/30 rounded-card p-3 animate-fade-in"
+            >
+              <img
+                [src]="uploadedLogoUrl()"
+                alt="Your business logo"
+                class="h-16 w-16 rounded-lg object-cover border border-border bg-surface shrink-0"
+              />
+              <div class="flex flex-col min-w-0 flex-1">
+                <span class="flex items-center gap-1.5 text-sm font-semibold text-success">
+                  <i class="pi pi-check-circle"></i> Logo uploaded
+                </span>
+                <span class="text-xs text-muted leading-relaxed">
+                  This is how your logo will appear across your store.
+                </span>
+              </div>
+              <button
+                type="button"
+                (click)="isUploadModalOpen.set(true)"
+                class="shrink-0 px-3 py-1.5 text-xs font-semibold text-primary border border-primary rounded-card hover:bg-primary/5 transition-colors cursor-pointer"
+              >
+                Change
+              </button>
+            </div>
+          } @else {
+            <button
+              type="button"
+              (click)="isUploadModalOpen.set(true)"
+              class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border border-dashed border-primary/60 text-heading font-semibold text-sm rounded-card hover:bg-primary/5 transition-colors cursor-pointer"
+            >
+              <i class="pi pi-cloud-upload text-primary"></i>
+              Upload Business Logo
+            </button>
+          }
+        </div>
 
         <app-button
           label="Complete Onboarding"
