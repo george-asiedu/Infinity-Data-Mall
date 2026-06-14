@@ -72,11 +72,26 @@ export interface CompleteSetupResponse {
 }
 
 export interface WalletResponse {
+  wallet: Wallet;
+}
+
+export interface Wallet {
   id: string;
-  transactions: [];
   balance: number;
   lowBalanceAlert: number;
   isFrozen: boolean;
+  transactions: Transaction[];
+}
+
+export interface Transaction {
+  id: string;
+  type: string;
+  purpose: string;
+  amount: number;
+  balanceAfter: number;
+  reference: string;
+  paystackRef: string;
+  createdAt: string;
 }
 
 export interface TopUpResponse {
