@@ -8,6 +8,7 @@ import {
   InitializePaymentModel,
   VerifyAccountResponse,
   VerifyBankAccountModel,
+  WalletResponse,
 } from '../../../core/models/payment.model';
 
 @Injectable({
@@ -54,7 +55,7 @@ export class Payment {
   }
 
   public getWallet(userId: string) {
-    return this.http.get(`${this.api}transactions/wallet/${userId}`);
+    return this.http.get<WalletResponse>(`${this.api}transactions/wallet/${userId}`);
   }
 
   public getTransaction(id: string) {
