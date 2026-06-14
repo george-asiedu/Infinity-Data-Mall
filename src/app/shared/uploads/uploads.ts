@@ -1,4 +1,15 @@
-import { Component, effect, inject, input, model, OnDestroy, output, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  model,
+  OnDestroy,
+  output,
+  signal,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Button } from '../ui/button/button';
 import { CommonModule } from '@angular/common';
 import { Toast } from '../../core/services/toast/toast';
@@ -21,7 +32,7 @@ import {
 
 @Component({
   selector: 'app-uploads',
-  imports: [CommonModule, Button],
+  imports: [CommonModule, FormsModule, Button],
   templateUrl: './uploads.html',
   styleUrl: './uploads.css',
 })
@@ -37,6 +48,20 @@ export class Uploads implements OnDestroy {
   protected selectedFile = signal<File | null>(null);
   protected uploadProgress = signal<number>(0);
   protected isUploadingChunks = signal<boolean>(false);
+
+  // User-editable base name (without extension) shown after a file is selected.
+  protected editableFileName = signal<string>('');
+
+  /** Original extension of the selected file, kept regardless of renaming. */
+  protected readonly fileExtension = computed<string>(() => {
+    const name = this.selectedFile()?.name ?? '';
+    const dot = name.lastIndexOf('.');
+    return dot > 0 ? name.slice(dot) : '';
+  });
+
+  protected readonly isNameValid = computed<boolean>(
+    () => this.editableFileName().trim().length > 0,
+  );
 
   protected storeLoading = this.store.selectSignal(selectIsLoading);
   protected storeError = this.store.selectSignal(selectError);
@@ -90,16 +115,30 @@ export class Uploads implements OnDestroy {
     }
     this.selectedFile.set(file);
     this.uploadProgress.set(0);
+
+    // Seed the editable name with the file's base name (sans extension).
+    const dot = file.name.lastIndexOf('.');
+    this.editableFileName.set(dot > 0 ? file.name.slice(0, dot) : file.name);
   }
 
   protected startUploadProcess(): void {
     const file = this.selectedFile();
-    if (!file) return;
+    if (!file || !this.isNameValid()) return;
 
     const partCount = Math.ceil(file.size / this.constantChunkSize) || 1;
 
+    // Use the (possibly renamed) base name, sanitised for a safe object key,
+    // and re-attach the original extension.
+    const safeBaseName =
+      this.editableFileName()
+        .trim()
+        .replace(/[^a-zA-Z0-9-_ ]/g, '')
+        .replace(/\s+/g, '-')
+        .trim() || 'logo';
+    const finalFileName = `${safeBaseName}${this.fileExtension()}`;
+
     const payload: InitiateUploadModel = {
-      fileName: file.name,
+      fileName: finalFileName,
       contentType: file.type,
       partCount: partCount,
       category: this.category(),
@@ -173,6 +212,7 @@ export class Uploads implements OnDestroy {
     if (this.isUploadingChunks()) return;
     this.selectedFile.set(null);
     this.uploadProgress.set(0);
+    this.editableFileName.set('');
   }
 
   protected closeModal(): void {

@@ -60,32 +60,55 @@
           </div>
         } @else {
           <div
-            class="w-full p-4 border border-border rounded-card bg-background/40 flex items-center justify-between gap-3"
+            class="w-full p-4 border border-border rounded-card bg-background/40 flex flex-col gap-3"
           >
-            <div class="flex items-center gap-3 overflow-hidden">
-              <div
-                class="w-10 h-10 bg-secondary/10 rounded-md text-secondary flex items-center justify-center shrink-0"
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 overflow-hidden">
+                <div
+                  class="w-10 h-10 bg-secondary/10 rounded-md text-secondary flex items-center justify-center shrink-0"
+                >
+                  <i class="pi pi-image text-lg"></i>
+                </div>
+                <div class="flex flex-col overflow-hidden">
+                  <span class="text-xs font-semibold text-heading">Rename your image</span>
+                  <span class="text-xxs text-paragraph mt-0.5">
+                    {{ selectedFile()!.size / (1024 * 1024) | number: '1.1-2' }} MB
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                [disabled]="storeLoading() || isUploadingChunks()"
+                (click)="removeSelectedFile()"
+                class="w-7 h-7 flex items-center justify-center rounded-full text-danger hover:bg-danger/10 disabled:opacity-20 cursor-pointer transition-all shrink-0"
               >
-                <i class="pi pi-image text-lg"></i>
-              </div>
-              <div class="flex flex-col overflow-hidden">
-                <span class="text-xs font-semibold text-heading truncate">
-                  {{ selectedFile()?.name }}
-                </span>
-                <span class="text-xxs text-paragraph mt-0.5">
-                  {{ selectedFile()!.size / (1024 * 1024) | number: '1.1-2' }} MB
-                </span>
-              </div>
+                <i class="pi pi-trash text-xs"></i>
+              </button>
             </div>
 
-            <button
-              type="button"
-              [disabled]="storeLoading() || isUploadingChunks()"
-              (click)="removeSelectedFile()"
-              class="w-7 h-7 flex items-center justify-center rounded-full text-danger hover:bg-danger/10 disabled:opacity-20 cursor-pointer transition-all"
+            <div
+              class="flex items-center w-full bg-surface border border-border rounded-md overflow-hidden focus-within:border-primary transition-colors"
             >
-              <i class="pi pi-trash text-xs"></i>
-            </button>
+              <input
+                type="text"
+                [ngModel]="editableFileName()"
+                (ngModelChange)="editableFileName.set($event)"
+                [disabled]="storeLoading() || isUploadingChunks()"
+                placeholder="Enter a file name"
+                aria-label="File name"
+                class="flex-1 min-w-0 bg-transparent px-3 py-2 text-xs font-medium text-heading outline-none placeholder:text-muted disabled:opacity-50"
+              />
+              <span
+                class="px-3 py-2 text-xs font-semibold text-muted bg-background border-l border-border shrink-0"
+              >
+                {{ fileExtension() }}
+              </span>
+            </div>
+
+            @if (!isNameValid()) {
+              <span class="text-xxs text-danger font-medium">A file name is required.</span>
+            }
           </div>
         }
 
@@ -119,7 +142,7 @@
 
         <app-button
           label="Upload image"
-          [disabled]="!selectedFile() || storeLoading() || isUploadingChunks()"
+          [disabled]="!selectedFile() || !isNameValid() || storeLoading() || isUploadingChunks()"
           customClass="text-xs font-semibold text-white bg-primary hover:bg-primary-hover rounded-card disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           (clicked)="startUploadProcess()"
         ></app-button>
