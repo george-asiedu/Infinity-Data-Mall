@@ -78,3 +78,22 @@ export interface WalletResponse {
   lowBalanceAlert: number;
   isFrozen: boolean;
 }
+
+export interface TopUpResponse {
+  message: string;
+  data: {
+    authorization_url: string;
+    access_code: string;
+    reference: string;
+  };
+}
+
+export interface WithdrawalResponse {
+  message: string;
+  data: {
+    id: string;
+    amount: number;
+    status: string;
+    reference: string;
+  };
+}
