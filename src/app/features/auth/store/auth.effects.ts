@@ -5,6 +5,7 @@ import { Toast } from '../../../core/services/toast/toast';
 import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { inject } from '@angular/core';
 import { authActions } from './auth.actions';
+import { paymentActions } from '../../payment/store/payment.actions';
 import { handleApiError } from '../../../shared/utils/errorHandler';
 
 export const registerEffect = createEffect(
@@ -62,6 +63,20 @@ export const loginWithCodeEffect = createEffect(
           handleApiError((errorMsg) => authActions.authError({ error: errorMsg }), toast),
         ),
       ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const onLoadWalletEffect = createEffect(
+  () => {
+    const actions$ = inject(Actions);
+    return actions$.pipe(
+      ofType(authActions.loginWithCodeSuccess, authActions.verifyMfaSuccess),
+      map(({ loggedIn }) => {
+        const userId = loggedIn.data.user.id;
+        return paymentActions.getWallet({ userId });
+      }),
     );
   },
   { dispatch: true, functional: true },
