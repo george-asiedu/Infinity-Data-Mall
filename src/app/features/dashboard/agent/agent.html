@@ -45,6 +45,7 @@
         <div class="mt-2 flex items-center gap-2">
           <button
             type="button"
+            (click)="showTopUp.set(true)"
             class="flex flex-1 items-center cursor-pointer justify-center gap-1.5 rounded-card bg-accent px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-accent-hover"
           >
             <i class="pi pi-plus text-xs"></i>
@@ -52,6 +53,7 @@
           </button>
           <button
             type="button"
+            (click)="showWithdraw.set(true)"
             class="flex flex-1 items-center cursor-pointer justify-center gap-1.5 rounded-card border border-white/20 bg-white/5 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white/10"
           >
             <i class="pi pi-arrow-up-right text-xs"></i>
@@ -103,3 +105,34 @@
     }
   </section>
 </div>
+
+<!-- Top up wallet -->
+<app-amount-dialog
+  [(visible)]="showTopUp"
+  header="Top Up Wallet"
+  subheader="Add funds to your wallet via Paystack"
+  icon="pi pi-plus-circle"
+  confirmLabel="Continue to Pay"
+  confirmIcon="pi pi-arrow-right"
+  [min]="10"
+  [presets]="presets"
+  helperText="You'll be redirected to a secure Paystack window to complete payment."
+  [loading]="topUpLoading()"
+  (confirm)="onTopUp($event)"
+></app-amount-dialog>
+
+<!-- Withdraw funds -->
+<app-amount-dialog
+  [(visible)]="showWithdraw"
+  header="Withdraw Funds"
+  subheader="Request a payout to your settlement account"
+  icon="pi pi-arrow-up-right"
+  confirmLabel="Request Withdrawal"
+  confirmIcon="pi pi-check"
+  [min]="10"
+  [max]="balance()"
+  [presets]="presets"
+  helperText="Requests are reviewed before payout. Funds are held until approved."
+  [loading]="withdrawLoading()"
+  (confirm)="onWithdraw($event)"
+></app-amount-dialog>
