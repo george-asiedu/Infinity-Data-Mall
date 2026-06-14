@@ -28,7 +28,9 @@ export class Agent implements OnInit, OnDestroy {
   private pollTimers: ReturnType<typeof setTimeout>[] = [];
 
   protected readonly user = this.store.selectSignal(selectUser);
-  private readonly wallet = this.store.selectSignal(selectWallet);
+  private readonly walletResponse = this.store.selectSignal(selectWallet);
+
+  protected wallet = computed(() => this.walletResponse()?.wallet);
 
   protected readonly today = new Date();
 
