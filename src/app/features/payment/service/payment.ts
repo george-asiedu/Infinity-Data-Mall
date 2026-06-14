@@ -59,14 +59,26 @@ export class Payment {
   }
 
   public getTransaction(id: string) {
-    return this.http.get(`${this.api}transactions/${id}`);
+    return this.http.get(`${this.api}transactions/detail/${id}`);
   }
 
   public getTransactionByReference(ref: string) {
-    return this.http.get(`${this.api}transactions/${ref}`);
+    return this.http.get(`${this.api}transactions/reference/${ref}`);
   }
 
   public getTransactions(userId: string) {
-    return this.http.get(`${this.api}transactions/${userId}`);
+    return this.http.get(`${this.api}transactions/user/${userId}`);
+  }
+
+  public topUpWallet(amount: number) {
+    return this.http.post(`${this.api}transactions/top-up`, { amount });
+  }
+
+  public requestWithdrawal(amount: number) {
+    return this.http.post(`${this.api}transactions/withdrawals`, { amount });
+  }
+
+  public getMyWithdrawals() {
+    return this.http.get(`${this.api}transactions/withdrawals`);
   }
 }
