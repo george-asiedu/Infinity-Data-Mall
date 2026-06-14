@@ -6,9 +6,11 @@ import {
   CompleteSetupResponse,
   InitializePaymentModel,
   PaymentState,
+  TopUpResponse,
   VerifyAccountResponse,
   VerifyBankAccountModel,
   WalletResponse,
+  WithdrawalResponse,
 } from '../../../core/models/payment.model';
 
 export const paymentActions = createActionGroup({
@@ -37,6 +39,12 @@ export const paymentActions = createActionGroup({
 
     GetWallet: props<{ userId: string }>(),
     GetWalletSuccess: props<{ wallet: WalletResponse }>(),
+
+    TopUpWallet: props<{ amount: number }>(),
+    TopUpWalletSuccess: props<{ response: TopUpResponse }>(),
+
+    RequestWithdrawal: props<{ amount: number }>(),
+    RequestWithdrawalSuccess: props<{ response: WithdrawalResponse }>(),
 
     GetActiveTransaction: props<{ id: string }>(),
     GetActiveTransactionSuccess: props<{ activeTx: any }>(),
