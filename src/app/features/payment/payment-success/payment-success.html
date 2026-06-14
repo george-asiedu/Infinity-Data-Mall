@@ -3,26 +3,17 @@
     <div
       class="w-full bg-surface border border-border rounded-card p-8 flex flex-col items-center text-center shadow-xs"
     >
-      @if (isVerifying()) {
-        <div
-          class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 animate-pulse"
-        >
-          <i class="pi pi-spin pi-spinner text-2xl text-primary"></i>
-        </div>
-        <h1 class="text-2xl font-semibold mb-2 text-heading">Verifying Payment</h1>
-        <p class="text-sm text-paragraph">
-          Please wait while we confirm your registration fee with the payment gateway gateway...
-        </p>
-      } @else if (verificationFailed()) {
+      @if (missingReference()) {
         <div class="w-16 h-16 rounded-full bg-danger/10 flex items-center justify-center mb-6">
           <i class="pi pi-times-circle text-3xl text-danger"></i>
         </div>
-        <h1 class="text-2xl font-semibold mb-2 text-heading">Verification Failed</h1>
+        <h1 class="text-2xl font-semibold mb-2 text-heading">Something went wrong</h1>
         <p class="text-sm text-paragraph mb-6">
-          We encountered an issue confirming your transaction reference tracking token.
+          We couldn't find your transaction reference. If you were charged, your account will still
+          be activated automatically — please try logging in shortly.
         </p>
         <app-button
-          label="Try Log In Manually"
+          label="Go to Login"
           [rounded]="false"
           customClass="w-full !bg-primary !border-primary text-white hover:!bg-primary-hover transition-colors"
           (clicked)="goToLogin()"
@@ -33,10 +24,10 @@
         >
           <i class="pi pi-check-circle text-3xl text-success"></i>
         </div>
-        <h1 class="text-2xl font-semibold mb-2 text-heading">Account Activated!</h1>
+        <h1 class="text-2xl font-semibold mb-2 text-heading">Payment Received!</h1>
         <p class="text-sm text-paragraph mb-6">
-          Thank you! Your registration fee has been successfully processed. Your agent account is
-          now fully active.
+          Thank you! We've received your registration payment and are activating your agent account.
+          This usually takes a few seconds — you can log in now to get started.
         </p>
         <app-button
           label="Proceed to Login"
