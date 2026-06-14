@@ -174,6 +174,42 @@ export const getWalletEffect = createEffect(
   { dispatch: true, functional: true },
 );
 
+export const topUpWalletEffect = createEffect(
+  (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(paymentActions.topUpWallet),
+      switchMap(({ amount }) =>
+        paymentService.topUpWallet(amount).pipe(
+          map((response: any) => {
+            // The Paystack inline modal is launched by the component on success.
+            return paymentActions.topUpWalletSuccess({ response });
+          }),
+          handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
+export const requestWithdrawalEffect = createEffect(
+  (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
+    return actions$.pipe(
+      ofType(paymentActions.requestWithdrawal),
+      switchMap(({ amount }) =>
+        paymentService.requestWithdrawal(amount).pipe(
+          map((response: any) => {
+            toast.success(response.message);
+            return paymentActions.requestWithdrawalSuccess({ response });
+          }),
+          handleApiError((errorMsg) => paymentActions.paymentError({ error: errorMsg }), toast),
+        ),
+      ),
+    );
+  },
+  { dispatch: true, functional: true },
+);
+
 export const getTransactionReferenceEffect = createEffect(
   (actions$ = inject(Actions), paymentService = inject(Payment), toast = inject(Toast)) => {
     return actions$.pipe(
