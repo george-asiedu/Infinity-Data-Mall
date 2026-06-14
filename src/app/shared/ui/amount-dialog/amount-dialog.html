@@ -1,0 +1,99 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  (onHide)="onHide()"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="!loading()"
+  [closable]="!loading()"
+  styleClass="w-[92vw] max-w-md mx-auto"
+  maskStyleClass="backdrop-blur-sm bg-black/40"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3 pt-1 w-full">
+      <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+        <i [class]="icon()" class="text-primary text-lg"></i>
+      </div>
+      <div class="flex flex-col min-w-0">
+        <h2 class="text-lg font-bold text-heading leading-tight">{{ header() }}</h2>
+        @if (subheader()) {
+          <span class="text-xs text-paragraph leading-snug">{{ subheader() }}</span>
+        }
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-col gap-4 py-2">
+    <!-- Amount input -->
+    <div class="flex flex-col gap-1.5">
+      <label for="amount" class="text-sm font-medium text-heading">Amount</label>
+      <p-inputNumber
+        [ngModel]="amount()"
+        (ngModelChange)="amount.set($event); touched.set(true)"
+        inputId="amount"
+        mode="currency"
+        [currency]="currency()"
+        currencyDisplay="code"
+        [min]="0"
+        [disabled]="loading()"
+        placeholder="0.00"
+        styleClass="w-full"
+        inputStyleClass="w-full text-lg font-semibold"
+        [invalid]="showError()"
+      ></p-inputNumber>
+
+      @if (showError()) {
+        <span class="text-danger text-xs mt-0.5">{{ error() }}</span>
+      } @else if (helperText()) {
+        <span class="text-muted text-xs mt-0.5">{{ helperText() }}</span>
+      }
+    </div>
+
+    <!-- Quick presets -->
+    @if (presets().length) {
+      <div class="flex flex-wrap gap-2">
+        @for (preset of presets(); track preset) {
+          <button
+            type="button"
+            [disabled]="loading() || isPresetDisabled(preset)"
+            (click)="applyPreset(preset)"
+            class="px-3.5 py-1.5 rounded-full border text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            [ngClass]="
+              amount() === preset
+                ? 'bg-primary border-primary text-white'
+                : 'bg-surface border-border text-heading hover:border-primary'
+            "
+          >
+            {{ currency() }} {{ preset }}
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex items-center gap-3 w-full mt-3">
+      <app-button
+        label="Cancel"
+        [outlined]="true"
+        [rounded]="false"
+        [disabled]="loading()"
+        class="flex-1"
+        customClass="w-full bg-surface text-heading border-border hover:!bg-background transition-colors"
+        (clicked)="visible.set(false)"
+      ></app-button>
+
+      <app-button
+        [label]="confirmLabel()"
+        [icon]="confirmIcon()"
+        [rounded]="false"
+        [loading]="loading()"
+        [disabled]="loading()"
+        class="flex-1"
+        customClass="w-full !bg-primary !border-primary text-white hover:!bg-primary-hover transition-colors"
+        (clicked)="onConfirm()"
+      ></app-button>
+    </div>
+  </ng-template>
+</p-dialog>
