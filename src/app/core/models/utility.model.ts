@@ -20,3 +20,12 @@ export interface NavItem {
   route: string;
   badge?: number;
 }
+
+export interface StatCard {
+  label: string;
+  value: string;
+  icon: string;
+  iconClass: string;
+  trend: number | null;
+  badge?: string;
+}
