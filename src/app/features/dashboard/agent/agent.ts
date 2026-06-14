@@ -25,6 +25,7 @@ export class Agent implements OnInit, OnDestroy {
   private readonly actions$ = inject(Actions);
   private readonly toast = inject(Toast);
   private readonly destroy$ = new Subject<void>();
+  private pollTimers: ReturnType<typeof setTimeout>[] = [];
 
   protected readonly user = this.store.selectSignal(selectUser);
   private readonly wallet = this.store.selectSignal(selectWallet);
@@ -94,7 +95,7 @@ export class Agent implements OnInit, OnDestroy {
       .subscribe(({ response }) => {
         this.topUpLoading.set(false);
         this.showTopUp.set(false);
-        this.launchPaystack(response.data.access_code, response.data.reference);
+        this.launchPaystack(response.data.access_code);
       });
 
     // Withdrawal request accepted (funds held, pending approval).
@@ -125,21 +126,48 @@ export class Agent implements OnInit, OnDestroy {
     this.store.dispatch(paymentActions.requestWithdrawal({ amount }));
   }
 
-  private launchPaystack(accessCode: string, reference: string): void {
+  private launchPaystack(accessCode: string): void {
     try {
       const paystack = new PaystackPop();
       paystack.resumeTransaction(accessCode, {
         key: environment.paystackPublicKey,
         onSuccess: () => {
-          this.store.dispatch(paymentActions.verifyPaymentTransaction({ reference }));
-          this.toast.success('Payment received — your balance will update shortly.');
-          this.refreshWallet();
+          // The Paystack webhook is the source of truth and credits the wallet
+          // server-side. We do NOT call verify here — we just poll the wallet a
+          // few times to pick up the webhook-applied balance.
+          this.toast.success('Payment received — updating your balance…');
+          this.pollWalletForCredit();
         },
         onCancel: () => this.toast.info('Payment window closed.'),
       } as any);
     } catch {
       this.toast.error('Could not open the payment window. Please try again.');
     }
+  }
+
+  /**
+   * Polls the wallet a few times after a successful payment to absorb the small
+   * delay before the webhook credits the balance. Stops early once the balance
+   * goes up. All timers are cleared on destroy.
+   */
+  private pollWalletForCredit(): void {
+    const startingBalance = this.balance();
+    const delays = [2000, 4000, 7000, 12000];
+
+    delays.forEach((delay) => {
+      const timer = setTimeout(() => {
+        this.refreshWallet();
+        if (this.balance() > startingBalance) {
+          this.clearWalletPolls();
+        }
+      }, delay);
+      this.pollTimers.push(timer);
+    });
+  }
+
+  private clearWalletPolls(): void {
+    this.pollTimers.forEach((timer) => clearTimeout(timer));
+    this.pollTimers = [];
   }
 
   private refreshWallet(): void {
@@ -150,6 +178,7 @@ export class Agent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.clearWalletPolls();
     this.destroy$.next();
     this.destroy$.complete();
   }
