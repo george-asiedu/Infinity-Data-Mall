@@ -62,5 +62,11 @@ export const routes: Routes = [
     title: 'Infinity Data Mall | Agent Dashboard',
     loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
     canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/dashboard/agent/agent').then((m) => m.Agent),
+      },
+    ],
   },
 ];
