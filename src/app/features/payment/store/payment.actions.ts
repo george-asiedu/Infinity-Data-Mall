@@ -8,6 +8,7 @@ import {
   PaymentState,
   VerifyAccountResponse,
   VerifyBankAccountModel,
+  WalletResponse,
 } from '../../../core/models/payment.model';
 
 export const paymentActions = createActionGroup({
@@ -35,7 +36,7 @@ export const paymentActions = createActionGroup({
     GetAccountsSuccess: props<{ accounts: any[] }>(),
 
     GetWallet: props<{ userId: string }>(),
-    GetWalletSuccess: props<{ wallet: any }>(),
+    GetWalletSuccess: props<{ wallet: WalletResponse }>(),
 
     GetActiveTransaction: props<{ id: string }>(),
     GetActiveTransactionSuccess: props<{ activeTx: any }>(),
