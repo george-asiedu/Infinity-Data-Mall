@@ -25,7 +25,7 @@ export interface PaymentState {
   setup: CompleteSetupResponse | null;
   banks: Banks[];
   accounts: any[];
-  wallet: any | null;
+  wallet: WalletResponse | null;
   activeTx: any | null;
   transactions: any[];
   transactionRef: any | null;
@@ -69,4 +69,12 @@ export interface VerifyAccountResponse {
 export interface CompleteSetupResponse {
   message: string;
   data: User;
+}
+
+export interface WalletResponse {
+  id: string;
+  transactions: [];
+  balance: number;
+  lowBalanceAlert: number;
+  isFrozen: boolean;
 }
