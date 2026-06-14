@@ -25,7 +25,14 @@ export class Agent implements OnInit, OnDestroy {
   private readonly actions$ = inject(Actions);
   private readonly toast = inject(Toast);
   private readonly destroy$ = new Subject<void>();
-  private pollTimers: ReturnType<typeof setTimeout>[] = [];
+
+  // Top-up reconciliation poll: issues ONE wallet call at a time and only
+  // requests another if the webhook hasn't credited yet, up to a small cap.
+  private walletPollTimer?: ReturnType<typeof setTimeout>;
+  private topUpPollActive = false;
+  private topUpAttempts = 0;
+  private topUpStartBalance = 0;
+  private static readonly MAX_TOPUP_POLLS = 4;
 
   protected readonly user = this.store.selectSignal(selectUser);
   private readonly walletResponse = this.store.selectSignal(selectWallet);
@@ -109,12 +116,18 @@ export class Agent implements OnInit, OnDestroy {
         this.refreshWallet();
       });
 
+    // Drives the sequential top-up reconciliation poll off each wallet response.
+    this.actions$
+      .pipe(ofType(paymentActions.getWalletSuccess), takeUntil(this.destroy$))
+      .subscribe(() => this.onWalletRefreshed());
+
     // Stop spinners if the request fails.
     this.actions$
       .pipe(ofType(paymentActions.paymentError), takeUntil(this.destroy$))
       .subscribe(() => {
         this.topUpLoading.set(false);
         this.withdrawLoading.set(false);
+        this.stopTopUpPolling();
       });
   }
 
@@ -135,10 +148,10 @@ export class Agent implements OnInit, OnDestroy {
         key: environment.paystackPublicKey,
         onSuccess: () => {
           // The Paystack webhook is the source of truth and credits the wallet
-          // server-side. We do NOT call verify here — we just poll the wallet a
-          // few times to pick up the webhook-applied balance.
+          // server-side. We do NOT call verify here — we reconcile by polling
+          // the wallet, one call at a time, until the balance reflects it.
           this.toast.success('Payment received — updating your balance…');
-          this.pollWalletForCredit();
+          this.beginTopUpReconciliation();
         },
         onCancel: () => this.toast.info('Payment window closed.'),
       } as any);
@@ -148,28 +161,55 @@ export class Agent implements OnInit, OnDestroy {
   }
 
   /**
-   * Polls the wallet a few times after a successful payment to absorb the small
-   * delay before the webhook credits the balance. Stops early once the balance
-   * goes up. All timers are cleared on destroy.
+   * Starts reconciling the wallet after a successful top-up. Records the
+   * pre-payment balance and schedules the first (single) wallet check; the
+   * getWalletSuccess handler decides whether another check is needed.
    */
-  private pollWalletForCredit(): void {
-    const startingBalance = this.balance();
-    const delays = [2000, 4000, 7000, 12000];
-
-    delays.forEach((delay) => {
-      const timer = setTimeout(() => {
-        this.refreshWallet();
-        if (this.balance() > startingBalance) {
-          this.clearWalletPolls();
-        }
-      }, delay);
-      this.pollTimers.push(timer);
-    });
+  private beginTopUpReconciliation(): void {
+    this.topUpStartBalance = this.balance();
+    this.topUpAttempts = 0;
+    this.topUpPollActive = true;
+    // First check is timed to land just after the webhook typically credits
+    // (~3s), so the happy path is usually a single wallet call.
+    this.scheduleWalletCheck(3000);
   }
 
-  private clearWalletPolls(): void {
-    this.pollTimers.forEach((timer) => clearTimeout(timer));
-    this.pollTimers = [];
+  /** Reacts to each wallet response while a top-up poll is active. */
+  private onWalletRefreshed(): void {
+    if (!this.topUpPollActive) return;
+
+    if (this.balance() > this.topUpStartBalance) {
+      this.stopTopUpPolling();
+      this.toast.success('Your wallet balance has been updated.');
+      return;
+    }
+
+    if (this.topUpAttempts >= Agent.MAX_TOPUP_POLLS) {
+      this.stopTopUpPolling();
+      return;
+    }
+
+    this.scheduleWalletCheck(2500);
+  }
+
+  private scheduleWalletCheck(delay: number): void {
+    this.clearWalletPollTimer();
+    this.walletPollTimer = setTimeout(() => {
+      this.topUpAttempts += 1;
+      this.refreshWallet();
+    }, delay);
+  }
+
+  private stopTopUpPolling(): void {
+    this.topUpPollActive = false;
+    this.clearWalletPollTimer();
+  }
+
+  private clearWalletPollTimer(): void {
+    if (this.walletPollTimer) {
+      clearTimeout(this.walletPollTimer);
+      this.walletPollTimer = undefined;
+    }
   }
 
   private refreshWallet(): void {
@@ -180,7 +220,7 @@ export class Agent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.clearWalletPolls();
+    this.stopTopUpPolling();
     this.destroy$.next();
     this.destroy$.complete();
   }
