@@ -28,6 +28,8 @@ export const paymentFeature = createFeature({
       paymentActions.getBanks,
       paymentActions.getAccounts,
       paymentActions.getWallet,
+      paymentActions.topUpWallet,
+      paymentActions.requestWithdrawal,
       paymentActions.getTransactionReference,
       paymentActions.getTransactions,
       paymentActions.getActiveTransaction,
@@ -81,6 +83,10 @@ export const paymentFeature = createFeature({
       ...state,
       isLoading: false,
       wallet,
+    })),
+    on(paymentActions.topUpWalletSuccess, paymentActions.requestWithdrawalSuccess, (state) => ({
+      ...state,
+      isLoading: false,
     })),
     on(paymentActions.getActiveTransactionSuccess, (state, { activeTx }) => ({
       ...state,
