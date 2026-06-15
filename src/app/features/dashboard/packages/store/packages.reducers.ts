@@ -13,21 +13,16 @@ export const packagesFeature = createFeature({
   name: 'Packages',
   reducer: createReducer(
     initialState,
-    on(packagesActions.loadPackages, packagesActions.saveAllPrices, (state) => ({
+    on(packagesActions.loadPackages, packagesActions.saveChanges, (state) => ({
       ...state,
       isLoading: true,
       error: null,
     })),
     on(
       packagesActions.loadPackagesSuccess,
-      packagesActions.saveAllPricesSuccess,
+      packagesActions.saveChangesSuccess,
       (state, { packages }) => ({ ...state, isLoading: false, packages }),
     ),
-    on(packagesActions.setVisibilitySuccess, (state, { pkg }) => ({
-      ...state,
-      isLoading: false,
-      packages: state.packages.map((p) => (p.id === pkg.id ? pkg : p)),
-    })),
     on(packagesActions.loadShopSuccess, packagesActions.updateShopSuccess, (state, { shop }) => ({
       ...state,
       shop,
