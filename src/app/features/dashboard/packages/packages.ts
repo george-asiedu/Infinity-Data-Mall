@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,13 +8,13 @@ import { Table } from '../../../shared/ui/table/table';
 import { TableColumn } from '../../../core/models/utility.model';
 import {
   BulkPriceItem,
+  BulkVisibilityItem,
   Package,
   PackageNetwork,
   PackageType,
 } from '../../../core/models/package.model';
 import { packagesActions } from './store/packages.actions';
 import { selectIsLoading, selectPackages, selectShop } from './store/packages.selectors';
-import { selectWallet } from '../../payment/store/payment.selectors';
 import { paymentActions } from '../../payment/store/payment.actions';
 import { selectUser } from '../../auth/store/auth.selectors';
 import { Toast } from '../../../core/services/toast/toast';
@@ -40,12 +39,7 @@ export class PackagesPage implements OnInit, OnDestroy {
   protected readonly packages = this.store.selectSignal(selectPackages);
   protected readonly isLoading = this.store.selectSignal(selectIsLoading);
   protected readonly shop = this.store.selectSignal(selectShop);
-  private readonly walletResponse = this.store.selectSignal(selectWallet);
   private readonly user = this.store.selectSignal(selectUser);
-
-  protected readonly walletBalance = computed<number>(() =>
-    Number((this.walletResponse() as any)?.wallet?.balance ?? 0),
-  );
 
   protected readonly activeNetwork = signal<NetworkFilter>('all');
   protected readonly activeType = signal<TypeFilter>('all');
@@ -55,8 +49,9 @@ export class PackagesPage implements OnInit, OnDestroy {
   protected readonly shopOnly = signal<boolean>(false);
   protected readonly viewMode = signal<'table' | 'grid'>('table');
 
-  // Local price drafts (packageId -> pesewas) overlaying the saved prices.
+  // Local drafts overlaying saved values; persisted together on Save.
   protected readonly drafts = signal<Record<string, number>>({});
+  protected readonly shopDrafts = signal<Record<string, boolean>>({});
 
   // Inline edit state.
   protected readonly editingId = signal<string | null>(null);
@@ -112,18 +107,29 @@ export class PackagesPage implements OnInit, OnDestroy {
   protected marginOf(p: Package): number {
     return p.wholesalePrice > 0 ? Math.round((this.profitOf(p) / p.wholesalePrice) * 100) : 0;
   }
+  protected inShopOf(p: Package): boolean {
+    return this.shopDrafts()[p.id] ?? p.inShop;
+  }
   protected isDirty(p: Package): boolean {
     const draft = this.drafts()[p.id];
     return draft !== undefined && draft !== p.retailPrice;
   }
 
-  protected readonly dirtyItems = computed<BulkPriceItem[]>(() => {
+  protected readonly priceDirtyItems = computed<BulkPriceItem[]>(() => {
     const d = this.drafts();
     return this.packages()
       .filter((p) => d[p.id] !== undefined && d[p.id] !== p.retailPrice)
       .map((p) => ({ packageId: p.id, retailPrice: d[p.id] }));
   });
-  protected readonly unsaved = computed(() => this.dirtyItems().length > 0);
+  protected readonly shopDirtyItems = computed<BulkVisibilityItem[]>(() => {
+    const d = this.shopDrafts();
+    return this.packages()
+      .filter((p) => d[p.id] !== undefined && d[p.id] !== p.inShop)
+      .map((p) => ({ packageId: p.id, inShop: d[p.id] }));
+  });
+  protected readonly unsaved = computed(
+    () => this.priceDirtyItems().length > 0 || this.shopDirtyItems().length > 0,
+  );
 
   protected readonly filtered = computed<Package[]>(() => {
     const net = this.activeNetwork();
@@ -158,7 +164,9 @@ export class PackagesPage implements OnInit, OnDestroy {
   }
 
   protected readonly totalCount = computed(() => this.packages().length);
-  protected readonly inShopCount = computed(() => this.packages().filter((p) => p.inShop).length);
+  protected readonly inShopCount = computed(
+    () => this.packages().filter((p) => this.inShopOf(p)).length,
+  );
   protected readonly avgMargin = computed(() => {
     const list = this.packages();
     if (!list.length) return 0;
@@ -179,8 +187,11 @@ export class PackagesPage implements OnInit, OnDestroy {
 
     // After a successful save the server values catch up — clear local drafts.
     this.actions$
-      .pipe(ofType(packagesActions.saveAllPricesSuccess), takeUntil(this.destroy$))
-      .subscribe(() => this.drafts.set({}));
+      .pipe(ofType(packagesActions.saveChangesSuccess), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.drafts.set({});
+        this.shopDrafts.set({});
+      });
   }
 
   // ── Display helpers ──────────────────────────────────────────
@@ -256,10 +267,30 @@ export class PackagesPage implements OnInit, OnDestroy {
     this.cancelEdit();
   }
 
-  // ── Shop visibility (immediate) ──────────────────────────────
+  // ── Shop visibility (staged, saved in bulk) ──────────────────
 
   protected toggleShop(p: Package, inShop: boolean): void {
-    this.store.dispatch(packagesActions.setVisibility({ packageId: p.id, inShop }));
+    this.shopDrafts.update((d) => ({ ...d, [p.id]: inShop }));
+  }
+
+  /** Stages every package in the current filtered view as in/out of shop. */
+  private stageShopForVisible(inShop: boolean): void {
+    const ids = this.filtered().map((p) => p.id);
+    if (!ids.length) return;
+    this.shopDrafts.update((d) => {
+      const next = { ...d };
+      for (const id of ids) next[id] = inShop;
+      return next;
+    });
+    this.toast.info(
+      `${ids.length} package${ids.length > 1 ? 's' : ''} staged — review and Save changes.`,
+    );
+  }
+  protected addAllToShop(): void {
+    this.stageShopForVisible(true);
+  }
+  protected removeAllFromShop(): void {
+    this.stageShopForVisible(false);
   }
 
   protected toggleShopActive(isActive: boolean): void {
@@ -289,22 +320,24 @@ export class PackagesPage implements OnInit, OnDestroy {
       }
       return next;
     });
-    this.toast.info(`${pct}% margin staged — review and Save all prices.`);
+    this.toast.info(`${pct}% margin staged — review and Save changes.`);
   }
 
   // ── Persist / export ─────────────────────────────────────────
 
   protected saveAll(): void {
-    const items = this.dirtyItems();
-    if (!items.length) {
-      this.toast.info('No price changes to save.');
+    const priceItems = this.priceDirtyItems();
+    const visibilityItems = this.shopDirtyItems();
+    if (!priceItems.length && !visibilityItems.length) {
+      this.toast.info('No changes to save.');
       return;
     }
-    this.store.dispatch(packagesActions.saveAllPrices({ items }));
+    this.store.dispatch(packagesActions.saveChanges({ priceItems, visibilityItems }));
   }
 
   protected resetDrafts(): void {
     this.drafts.set({});
+    this.shopDrafts.set({});
   }
 
   protected exportCsv(): void {

@@ -1,9 +1,9 @@
-<div class="flex flex-col gap-5 w-full max-w-7xl mx-auto">
+<div class="flex flex-col gap-5 w-full">
   <!-- Header -->
   <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
     <div class="flex flex-col gap-1">
-      <h1 class="text-2xl font-bold tracking-tight text-heading">Packages &amp; Pricing</h1>
-      <p class="text-sm text-paragraph max-w-xl">
+      <h1 class="font-bold tracking-tight">Packages &amp; Pricing</h1>
+      <p class="max-w-xl">
         Set your retail prices for each bundle. Your profit is the difference between your retail
         price and the wholesale cost.
       </p>
@@ -54,7 +54,7 @@
         [disabled]="!unsaved() || isLoading()"
         class="flex items-center gap-2 px-4 py-2 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <i class="pi pi-check text-xs"></i> Save all prices
+        <i class="pi pi-check text-xs"></i> Save changes
       </button>
     </div>
   </div>
@@ -92,19 +92,6 @@
       <div>
         <div class="text-xl font-bold text-heading leading-none">{{ avgMargin() }}%</div>
         <div class="text-xs text-paragraph mt-1">Average margin</div>
-      </div>
-    </div>
-    <div
-      class="flex items-center gap-3 rounded-card border border-border bg-surface p-4 shadow-card"
-    >
-      <div class="w-10 h-10 rounded-lg bg-success/10 text-success flex items-center justify-center">
-        <i class="pi pi-wallet"></i>
-      </div>
-      <div>
-        <div class="text-xl font-bold text-heading leading-none">
-          GHS {{ walletBalance() | number: '1.2-2' }}
-        </div>
-        <div class="text-xs text-paragraph mt-1">Wallet balance</div>
       </div>
     </div>
   </div>
@@ -382,19 +369,47 @@
   </ng-template>
 
   <ng-template #shopCell let-pkg>
-    <label class="relative inline-flex items-center cursor-pointer">
-      <input
-        type="checkbox"
-        class="sr-only peer"
-        [checked]="pkg.inShop"
-        (change)="toggleShop(pkg, $any($event.target).checked)"
-      />
-      <div class="w-9 h-5 bg-border rounded-full peer-checked:bg-primary transition-colors"></div>
-      <div
-        class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"
-      ></div>
-    </label>
+    <div class="inline-flex items-center gap-1.5">
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input
+          type="checkbox"
+          class="sr-only peer"
+          [checked]="inShopOf(pkg)"
+          (change)="toggleShop(pkg, $any($event.target).checked)"
+        />
+        <div class="w-9 h-5 bg-border rounded-full peer-checked:bg-primary transition-colors"></div>
+        <div
+          class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"
+        ></div>
+      </label>
+      @if (shopDrafts()[pkg.id] !== undefined && shopDrafts()[pkg.id] !== pkg.inShop) {
+        <span class="w-1.5 h-1.5 rounded-full bg-accent" title="Unsaved"></span>
+      }
+    </div>
   </ng-template>
+
+  <!-- Bulk shop visibility actions (scoped to the current view) -->
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="text-xs text-muted">
+      Shop visibility for {{ filtered().length }} shown package{{
+        filtered().length === 1 ? '' : 's'
+      }}:
+    </span>
+    <button
+      type="button"
+      (click)="addAllToShop()"
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-card border border-border bg-surface text-xs font-medium text-paragraph hover:border-primary hover:text-primary transition-colors"
+    >
+      <i class="pi pi-plus text-[10px]"></i> Add all to shop
+    </button>
+    <button
+      type="button"
+      (click)="removeAllFromShop()"
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-card border border-border bg-surface text-xs font-medium text-paragraph hover:border-danger hover:text-danger transition-colors"
+    >
+      <i class="pi pi-minus text-[10px]"></i> Remove all
+    </button>
+  </div>
 
   <!-- Table view -->
   @if (viewMode() === 'table') {
