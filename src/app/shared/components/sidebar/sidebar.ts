@@ -20,14 +20,14 @@ export class Sidebar {
   public logout = output<void>();
 
   protected readonly menuGroups = signal<NavItem[]>([
-    { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard' },
-    { label: 'Orders', icon: 'pi pi-shopping-bag', route: '/orders', badge: 0 },
-    { label: 'Packages', icon: 'pi pi-box', route: '/packages' },
-    { label: 'Wallet', icon: 'pi pi-wallet', route: '/wallet' },
-    { label: 'Transactions', icon: 'pi pi-money-bill', route: '/transactions' },
-    { label: 'My Shop', icon: 'pi pi-shop', route: '/my-shop' },
-    { label: 'Sub-agents', icon: 'pi pi-users', route: '/sub-agents' },
-    { label: 'Reports', icon: 'pi pi-chart-bar', route: '/reports' },
+    { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard', exact: true },
+    { label: 'Orders', icon: 'pi pi-shopping-bag', route: '/dashboard/orders', badge: 0 },
+    { label: 'Packages', icon: 'pi pi-box', route: '/dashboard/packages' },
+    { label: 'Wallet', icon: 'pi pi-wallet', route: '/dashboard/wallet' },
+    { label: 'Transactions', icon: 'pi pi-money-bill', route: '/dashboard/transactions' },
+    { label: 'My Shop', icon: 'pi pi-shop', route: '/dashboard/my-shop' },
+    { label: 'Sub-agents', icon: 'pi pi-users', route: '/dashboard/sub-agents' },
+    { label: 'Reports', icon: 'pi pi-chart-bar', route: '/dashboard/reports' },
   ]);
 
   protected closeSidebar(): void {
