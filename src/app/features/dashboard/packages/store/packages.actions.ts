@@ -1,6 +1,7 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import {
   BulkPriceItem,
+  BulkVisibilityItem,
   Package,
   Shop,
   UpdateShopModel,
@@ -12,11 +13,11 @@ export const packagesActions = createActionGroup({
     LoadPackages: emptyProps(),
     LoadPackagesSuccess: props<{ packages: Package[] }>(),
 
-    SetVisibility: props<{ packageId: string; inShop: boolean }>(),
-    SetVisibilitySuccess: props<{ pkg: Package }>(),
-
-    SaveAllPrices: props<{ items: BulkPriceItem[] }>(),
-    SaveAllPricesSuccess: props<{ packages: Package[] }>(),
+    SaveChanges: props<{
+      priceItems: BulkPriceItem[];
+      visibilityItems: BulkVisibilityItem[];
+    }>(),
+    SaveChangesSuccess: props<{ packages: Package[] }>(),
 
     LoadShop: emptyProps(),
     LoadShopSuccess: props<{ shop: Shop }>(),
