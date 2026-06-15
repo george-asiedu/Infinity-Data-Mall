@@ -12,6 +12,8 @@ export interface ToastOptions {
 export interface TableColumn {
   field: string;
   header: string;
+  align?: 'left' | 'center' | 'right';
+  width?: string;
 }
 
 export interface NavItem {
@@ -19,6 +21,7 @@ export interface NavItem {
   icon: string;
   route: string;
   badge?: number;
+  exact?: boolean;
 }
 
 export interface StatCard {
