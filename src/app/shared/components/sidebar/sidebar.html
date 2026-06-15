@@ -51,6 +51,7 @@
           <a
             [routerLink]="group.route"
             routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: group.exact ?? false }"
             (click)="closeSidebar()"
             class="flex items-center gap-3 px-3 py-2.5 text-sm rounded-card text-white/70 transition-all group"
           >
