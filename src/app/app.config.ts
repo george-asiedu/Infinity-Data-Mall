@@ -19,6 +19,8 @@ import * as uploadEffects from './shared/uploads/store/uploads.effects';
 import { authInterceptor } from './core/interceptors/auth/auth-interceptor';
 import { paymentFeature } from './features/payment/store/payment.reducers';
 import { uploadFeature } from './shared/uploads/store/uploads.reducers';
+import { packagesFeature } from './features/dashboard/packages/store/packages.reducers';
+import * as packagesEffects from './features/dashboard/packages/store/packages.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -43,7 +45,8 @@ export const appConfig: ApplicationConfig = {
     provideState(authFeature),
     provideState(paymentFeature),
     provideState(uploadFeature),
-    provideEffects(AuthEffects, paymentEffects, uploadEffects),
+    provideState(packagesFeature),
+    provideEffects(AuthEffects, paymentEffects, uploadEffects, packagesEffects),
     provideSpinnerConfig({ type: 'line-scale-pulse-out' }),
     provideStoreDevtools({
       maxAge: 25,
