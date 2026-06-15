@@ -1,10 +1,11 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map, switchMap } from 'rxjs';
+import { map, of, switchMap } from 'rxjs';
 import { Packages } from '../service/packages';
 import { Toast } from '../../../../core/services/toast/toast';
 import { packagesActions } from './packages.actions';
 import { handleApiError } from '../../../../shared/utils/errorHandler';
+import { PackagesResponse } from '../../../../core/models/package.model';
 
 export const loadPackagesEffect = createEffect(
   (actions$ = inject(Actions), service = inject(Packages), toast = inject(Toast)) => {
@@ -21,37 +22,34 @@ export const loadPackagesEffect = createEffect(
   { dispatch: true, functional: true },
 );
 
-export const setVisibilityEffect = createEffect(
+/**
+ * Persists staged price + shop-visibility changes in a single user action.
+ * The two bulk endpoints run sequentially so the final response reflects every
+ * change; whichever runs last returns the authoritative package list.
+ */
+export const saveChangesEffect = createEffect(
   (actions$ = inject(Actions), service = inject(Packages), toast = inject(Toast)) => {
     return actions$.pipe(
-      ofType(packagesActions.setVisibility),
-      switchMap(({ packageId, inShop }) =>
-        service.setVisibility(packageId, inShop).pipe(
-          map((res) => {
-            toast.success(res.message);
-            return packagesActions.setVisibilitySuccess({ pkg: res.data });
-          }),
-          handleApiError((error) => packagesActions.packagesError({ error }), toast),
-        ),
-      ),
-    );
-  },
-  { dispatch: true, functional: true },
-);
+      ofType(packagesActions.saveChanges),
+      switchMap(({ priceItems, visibilityItems }) => {
+        const price$ = priceItems.length
+          ? service.bulkSetPrices(priceItems)
+          : of<PackagesResponse | null>(null);
 
-export const saveAllPricesEffect = createEffect(
-  (actions$ = inject(Actions), service = inject(Packages), toast = inject(Toast)) => {
-    return actions$.pipe(
-      ofType(packagesActions.saveAllPrices),
-      switchMap(({ items }) =>
-        service.bulkSetPrices(items).pipe(
+        return price$.pipe(
+          switchMap((priceRes) => {
+            if (!visibilityItems.length) {
+              return of(priceRes as PackagesResponse);
+            }
+            return service.bulkSetVisibility(visibilityItems);
+          }),
           map((res) => {
-            toast.success(res.message);
-            return packagesActions.saveAllPricesSuccess({ packages: res.data });
+            toast.success('Changes saved successfully');
+            return packagesActions.saveChangesSuccess({ packages: res.data });
           }),
           handleApiError((error) => packagesActions.packagesError({ error }), toast),
-        ),
-      ),
+        );
+      }),
     );
   },
   { dispatch: true, functional: true },
