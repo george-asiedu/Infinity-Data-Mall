@@ -1,0 +1,480 @@
+<div class="flex flex-col gap-5 w-full max-w-7xl mx-auto">
+  <!-- Header -->
+  <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
+    <div class="flex flex-col gap-1">
+      <h1 class="text-2xl font-bold tracking-tight text-heading">Packages &amp; Pricing</h1>
+      <p class="text-sm text-paragraph max-w-xl">
+        Set your retail prices for each bundle. Your profit is the difference between your retail
+        price and the wholesale cost.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      @if (unsaved()) {
+        <span
+          class="flex items-center gap-1.5 text-xs font-medium text-warning bg-warning/10 px-2.5 py-1.5 rounded-card"
+        >
+          <i class="pi pi-exclamation-circle text-xs"></i> Unsaved changes
+        </span>
+      }
+
+      @if (shop(); as s) {
+        <button
+          type="button"
+          (click)="toggleShopActive(!s.isActive)"
+          class="flex items-center gap-2 rounded-card border border-border bg-surface px-3 py-2 shadow-card hover:border-primary transition-colors"
+        >
+          <span class="relative inline-flex items-center">
+            <span
+              class="w-9 h-5 rounded-full transition-colors"
+              [ngClass]="s.isActive ? 'bg-primary' : 'bg-border'"
+            ></span>
+            <span
+              class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform"
+              [ngClass]="s.isActive ? 'translate-x-4' : ''"
+            ></span>
+          </span>
+          <span class="text-xs font-medium text-heading">
+            Shop {{ s.isActive ? 'Active' : 'Offline' }}
+          </span>
+        </button>
+      }
+
+      <button
+        type="button"
+        (click)="exportCsv()"
+        class="flex items-center gap-2 px-3.5 py-2 rounded-card border border-border bg-surface text-paragraph text-sm font-medium hover:border-primary hover:text-primary transition-colors"
+      >
+        <i class="pi pi-download text-xs"></i> Export prices
+      </button>
+
+      <button
+        type="button"
+        (click)="saveAll()"
+        [disabled]="!unsaved() || isLoading()"
+        class="flex items-center gap-2 px-4 py-2 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <i class="pi pi-check text-xs"></i> Save all prices
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary strip -->
+  <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+    <div
+      class="flex items-center gap-3 rounded-card border border-border bg-surface p-4 shadow-card"
+    >
+      <div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+        <i class="pi pi-box"></i>
+      </div>
+      <div>
+        <div class="text-xl font-bold text-heading leading-none">{{ totalCount() }}</div>
+        <div class="text-xs text-paragraph mt-1">Total packages</div>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-3 rounded-card border border-border bg-surface p-4 shadow-card"
+    >
+      <div class="w-10 h-10 rounded-lg bg-accent/15 text-accent flex items-center justify-center">
+        <i class="pi pi-shop"></i>
+      </div>
+      <div>
+        <div class="text-xl font-bold text-heading leading-none">{{ inShopCount() }}</div>
+        <div class="text-xs text-paragraph mt-1">Active in my shop</div>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-3 rounded-card border border-border bg-surface p-4 shadow-card"
+    >
+      <div class="w-10 h-10 rounded-lg bg-net-at/10 text-net-at flex items-center justify-center">
+        <i class="pi pi-percentage"></i>
+      </div>
+      <div>
+        <div class="text-xl font-bold text-heading leading-none">{{ avgMargin() }}%</div>
+        <div class="text-xs text-paragraph mt-1">Average margin</div>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-3 rounded-card border border-border bg-surface p-4 shadow-card"
+    >
+      <div class="w-10 h-10 rounded-lg bg-success/10 text-success flex items-center justify-center">
+        <i class="pi pi-wallet"></i>
+      </div>
+      <div>
+        <div class="text-xl font-bold text-heading leading-none">
+          GHS {{ walletBalance() | number: '1.2-2' }}
+        </div>
+        <div class="text-xs text-paragraph mt-1">Wallet balance</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick-set margin toolbar -->
+  <div
+    class="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface p-4 shadow-card"
+  >
+    <div class="flex flex-col">
+      <span class="text-sm font-semibold text-heading">Quick-set margin</span>
+      <span class="text-xs text-muted">
+        Stage a markup across {{ activeNetwork() === 'all' ? 'all' : activeNetwork() }} packages
+      </span>
+    </div>
+
+    <div class="flex items-center gap-1.5 flex-wrap">
+      @for (chip of marginChips; track chip) {
+        <button
+          type="button"
+          (click)="applyChip(chip)"
+          class="px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors"
+          [ngClass]="
+            marginPercent() === chip
+              ? 'bg-primary border-primary text-white'
+              : 'bg-background border-border text-paragraph hover:border-primary hover:text-primary'
+          "
+        >
+          {{ chip }}%
+        </button>
+      }
+    </div>
+
+    <div class="flex items-center border border-border rounded-full overflow-hidden bg-surface">
+      <input
+        type="number"
+        [ngModel]="marginPercent()"
+        (ngModelChange)="marginPercent.set($event)"
+        min="0"
+        max="300"
+        class="w-16 px-3 py-1.5 text-sm font-mono text-right outline-none bg-transparent text-heading"
+      />
+      <span class="pr-2 text-sm text-muted">%</span>
+    </div>
+
+    <button
+      type="button"
+      (click)="applyMargin()"
+      class="px-4 py-1.5 rounded-full bg-primary text-white text-xs font-semibold hover:bg-primary-hover transition-colors"
+    >
+      Apply to {{ activeNetwork() === 'all' ? 'all' : activeNetwork() }}
+    </button>
+
+    <div class="ml-auto flex items-center gap-2">
+      <span class="text-xs text-muted">Sort by</span>
+      <select
+        [ngModel]="sortBy()"
+        (ngModelChange)="sortBy.set($event)"
+        class="border border-border rounded-card px-2.5 py-1.5 text-xs text-paragraph bg-surface outline-none cursor-pointer"
+      >
+        @for (opt of sortOptions; track opt.key) {
+          <option [value]="opt.key">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-wrap items-center gap-2">
+    <div class="flex gap-1 flex-wrap">
+      @for (tab of networkTabs; track tab.key) {
+        <button
+          type="button"
+          (click)="setNetwork(tab.key)"
+          class="flex items-center gap-2 px-3 py-2 rounded-card border text-sm font-medium transition-colors"
+          [ngClass]="
+            activeNetwork() === tab.key
+              ? 'bg-primary border-primary text-white'
+              : 'bg-surface border-border text-paragraph hover:border-primary hover:text-primary'
+          "
+        >
+          {{ tab.label }}
+          @if (tab.key !== 'all') {
+            <span class="text-[10px] font-semibold opacity-70">{{ networkCount(tab.key) }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    <div class="flex gap-1 ml-1 flex-wrap">
+      @for (pill of typePills; track pill.key) {
+        <button
+          type="button"
+          (click)="setType(pill.key)"
+          class="px-3 py-1.5 rounded-full border text-xs font-medium transition-colors"
+          [ngClass]="
+            activeType() === pill.key
+              ? 'bg-primary/10 border-primary/30 text-primary'
+              : 'bg-surface border-border text-paragraph hover:border-primary'
+          "
+        >
+          {{ pill.label }}
+        </button>
+      }
+    </div>
+
+    <div class="ml-auto flex items-center gap-2">
+      <label class="flex items-center gap-2 text-xs text-paragraph cursor-pointer select-none px-2">
+        <input
+          type="checkbox"
+          [ngModel]="shopOnly()"
+          (ngModelChange)="shopOnly.set($event)"
+          class="cursor-pointer accent-primary"
+        />
+        Show shop-only
+      </label>
+
+      <div
+        class="flex items-center gap-2 bg-surface border border-border rounded-card px-3 py-2 w-44 sm:w-56"
+      >
+        <i class="pi pi-search text-xs text-muted"></i>
+        <input
+          type="text"
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event)"
+          placeholder="Search packages…"
+          class="bg-transparent outline-none text-sm text-heading w-full placeholder:text-muted"
+        />
+      </div>
+
+      <div class="flex border border-border rounded-card overflow-hidden">
+        <button
+          type="button"
+          (click)="viewMode.set('table')"
+          title="Table view"
+          class="w-9 h-9 flex items-center justify-center transition-colors"
+          [ngClass]="
+            viewMode() === 'table'
+              ? 'bg-primary text-white'
+              : 'bg-surface text-muted hover:bg-background'
+          "
+        >
+          <i class="pi pi-list text-xs"></i>
+        </button>
+        <button
+          type="button"
+          (click)="viewMode.set('grid')"
+          title="Grid view"
+          class="w-9 h-9 flex items-center justify-center transition-colors"
+          [ngClass]="
+            viewMode() === 'grid'
+              ? 'bg-primary text-white'
+              : 'bg-surface text-muted hover:bg-background'
+          "
+        >
+          <i class="pi pi-th-large text-xs"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cell templates -->
+  <ng-template #pkgCell let-pkg>
+    <div class="flex items-center gap-3">
+      <img
+        [src]="logo(pkg.network)"
+        [alt]="pkg.network"
+        class="w-8 h-8 rounded-md object-contain bg-white border border-border p-0.5 shrink-0"
+      />
+      <div class="flex flex-col min-w-0">
+        <span class="text-sm font-medium text-heading truncate">{{ packageName(pkg) }}</span>
+        <span class="text-[11px] text-muted">{{ providerLabel(pkg.network) }}</span>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #typeCell let-pkg>
+    <span
+      class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-medium"
+      [ngClass]="pkg.type === 'BIGTIME' ? 'bg-net-at/10 text-net-at' : 'bg-primary/10 text-primary'"
+    >
+      {{ typeLabel(pkg.type) }}
+    </span>
+  </ng-template>
+
+  <ng-template #sizeCell let-pkg>
+    <span class="font-mono font-medium text-heading text-sm">{{ pkg.sizeLabel }}</span>
+  </ng-template>
+
+  <ng-template #expiryCell let-pkg>
+    <span
+      class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium"
+      [ngClass]="{
+        'bg-primary/10 text-primary': pkg.expiryInfo === 'NON_EXPIRY',
+        'bg-accent/15 text-accent': pkg.expiryInfo === 'ROLLOVER_60_DAY',
+        'bg-border text-muted': pkg.expiryInfo === 'STANDARD',
+      }"
+    >
+      {{ expiryLabel(pkg) }}
+    </span>
+  </ng-template>
+
+  <ng-template #wholesaleCell let-pkg>
+    <span class="font-mono text-sm text-paragraph">GHS {{ ghs(pkg.wholesalePrice) }}</span>
+  </ng-template>
+
+  <ng-template #retailCell let-pkg>
+    @if (editingId() === pkg.id) {
+      <div class="flex items-center gap-1.5 justify-end">
+        <div class="flex items-center border border-primary rounded-md overflow-hidden bg-surface">
+          <span class="text-[11px] text-muted pl-2">GHS</span>
+          <input
+            type="number"
+            [ngModel]="editValue()"
+            (ngModelChange)="editValue.set($event)"
+            (keydown.enter)="saveEdit(pkg)"
+            (keydown.escape)="cancelEdit()"
+            step="0.1"
+            class="w-20 px-1.5 py-1 text-sm font-mono text-right outline-none bg-transparent text-heading"
+          />
+        </div>
+        <button
+          type="button"
+          (click)="saveEdit(pkg)"
+          title="Apply"
+          class="w-7 h-7 flex items-center justify-center rounded-md bg-primary text-white hover:bg-primary-hover"
+        >
+          <i class="pi pi-check text-[11px]"></i>
+        </button>
+        <button
+          type="button"
+          (click)="cancelEdit()"
+          title="Cancel"
+          class="w-7 h-7 flex items-center justify-center rounded-md bg-border text-paragraph hover:bg-background"
+        >
+          <i class="pi pi-times text-[11px]"></i>
+        </button>
+      </div>
+    } @else {
+      <button
+        type="button"
+        (click)="startEdit(pkg)"
+        class="group inline-flex items-center gap-2 justify-end w-full px-2 py-1 rounded-md border transition-colors font-mono text-sm font-medium text-heading"
+        [ngClass]="
+          isDirty(pkg)
+            ? 'border-accent/40 bg-accent/5'
+            : 'border-transparent hover:bg-primary/5 hover:border-primary/20'
+        "
+      >
+        GHS {{ ghs(retailOf(pkg)) }}
+        @if (isDirty(pkg)) {
+          <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+        }
+        <i class="pi pi-pencil text-[10px] text-muted opacity-0 group-hover:opacity-100"></i>
+      </button>
+    }
+  </ng-template>
+
+  <ng-template #profitCell let-pkg>
+    <div class="flex items-center gap-2">
+      <span
+        class="font-mono text-sm font-semibold"
+        [ngClass]="
+          profitOf(pkg) > 0 ? 'text-success' : profitOf(pkg) < 0 ? 'text-danger' : 'text-muted'
+        "
+      >
+        {{ profitOf(pkg) >= 0 ? '+' : '-' }}GHS {{ ghs(abs(profitOf(pkg))) }}
+      </span>
+      <span
+        class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold"
+        [ngClass]="marginBadgeClass(marginOf(pkg))"
+      >
+        {{ marginOf(pkg) }}%
+      </span>
+    </div>
+  </ng-template>
+
+  <ng-template #shopCell let-pkg>
+    <label class="relative inline-flex items-center cursor-pointer">
+      <input
+        type="checkbox"
+        class="sr-only peer"
+        [checked]="pkg.inShop"
+        (change)="toggleShop(pkg, $any($event.target).checked)"
+      />
+      <div class="w-9 h-5 bg-border rounded-full peer-checked:bg-primary transition-colors"></div>
+      <div
+        class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"
+      ></div>
+    </label>
+  </ng-template>
+
+  <!-- Table view -->
+  @if (viewMode() === 'table') {
+    <app-table
+      [data]="$any(filtered())"
+      [columns]="columns"
+      [rows]="15"
+      customClass="idm-packages-table"
+      emptyIcon="📦"
+      emptyTitle="No packages match your filters"
+      emptyMessage="Try adjusting the network tab or clearing your search query."
+      [cellTemplates]="{
+        package: pkgCell,
+        type: typeCell,
+        sizeLabel: sizeCell,
+        expiry: expiryCell,
+        wholesale: wholesaleCell,
+        retail: retailCell,
+        profit: profitCell,
+        inShop: shopCell,
+      }"
+    ></app-table>
+  } @else {
+    @if (filtered().length === 0) {
+      <div
+        class="flex flex-col items-center justify-center gap-2 rounded-card border border-border bg-surface px-6 py-16 text-center shadow-card"
+      >
+        <span class="text-4xl opacity-80">📦</span>
+        <h3 class="text-sm font-semibold text-heading">No packages match your filters</h3>
+        <p class="text-xs text-muted">Try adjusting the network tab or clearing your search.</p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+        @for (pkg of filtered(); track pkg.id) {
+          <div
+            class="flex flex-col gap-3 rounded-card border border-border bg-surface p-4 shadow-card"
+          >
+            <div class="flex items-center justify-between">
+              <ng-container
+                [ngTemplateOutlet]="pkgCell"
+                [ngTemplateOutletContext]="{ $implicit: pkg }"
+              ></ng-container>
+              <ng-container
+                [ngTemplateOutlet]="shopCell"
+                [ngTemplateOutletContext]="{ $implicit: pkg }"
+              ></ng-container>
+            </div>
+            <div class="flex items-center gap-2">
+              <ng-container
+                [ngTemplateOutlet]="typeCell"
+                [ngTemplateOutletContext]="{ $implicit: pkg }"
+              ></ng-container>
+              <ng-container
+                [ngTemplateOutlet]="expiryCell"
+                [ngTemplateOutletContext]="{ $implicit: pkg }"
+              ></ng-container>
+            </div>
+            <div class="flex items-center justify-between border-t border-border pt-3">
+              <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wide text-muted">Wholesale</span>
+                <ng-container
+                  [ngTemplateOutlet]="wholesaleCell"
+                  [ngTemplateOutletContext]="{ $implicit: pkg }"
+                ></ng-container>
+              </div>
+              <div class="flex flex-col items-end">
+                <span class="text-[10px] uppercase tracking-wide text-muted">My retail</span>
+                <ng-container
+                  [ngTemplateOutlet]="retailCell"
+                  [ngTemplateOutletContext]="{ $implicit: pkg }"
+                ></ng-container>
+              </div>
+            </div>
+            <ng-container
+              [ngTemplateOutlet]="profitCell"
+              [ngTemplateOutletContext]="{ $implicit: pkg }"
+            ></ng-container>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
