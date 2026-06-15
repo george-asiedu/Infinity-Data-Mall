@@ -40,6 +40,11 @@ export interface BulkPriceItem {
   retailPrice: number;
 }
 
+export interface BulkVisibilityItem {
+  packageId: string;
+  inShop: boolean;
+}
+
 export interface UpdateShopModel {
   name?: string;
   slug?: string;
