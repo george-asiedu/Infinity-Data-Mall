@@ -3,13 +3,23 @@
   [columns]="columns()"
   [paginator]="paginator()"
   [rows]="rows()"
+  [rowsPerPageOptions]="rowsPerPageOptions()"
+  [dataKey]="dataKey()"
   [class]="customClass()"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="Showing {first}–{last} of {totalRecords}"
   (onRowSelect)="rowSelected.emit($any($event.data))"
 >
   <ng-template pTemplate="header" let-columns>
     <tr>
       @for (col of columns; track col.field) {
-        <th class="font-semibold text-heading">{{ col.header }}</th>
+        <th
+          class="bg-primary! text-white! font-semibold border-0"
+          [ngClass]="alignClass(col)"
+          [style.width]="col.width"
+        >
+          {{ col.header }}
+        </th>
       }
     </tr>
   </ng-template>
@@ -17,15 +27,30 @@
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr [pSelectableRow]="rowData">
       @for (col of columns; track col.field) {
-        <td class="body-base">{{ rowData[col.field] }}</td>
+        <td class="body-base align-middle" [ngClass]="alignClass(col)">
+          @if (templateFor(col.field); as tpl) {
+            <ng-container
+              [ngTemplateOutlet]="tpl"
+              [ngTemplateOutletContext]="{ $implicit: rowData, row: rowData, col: col }"
+            ></ng-container>
+          } @else {
+            {{ rowData[col.field] }}
+          }
+        </td>
       }
     </tr>
   </ng-template>
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td [attr.colspan]="columns().length" class="text-center p-8 body-base text-muted">
-        No data available.
+      <td [attr.colspan]="columns().length" class="p-0">
+        <div class="flex flex-col items-center justify-center gap-2 px-6 py-12 text-center">
+          <span class="text-4xl mb-1 opacity-80">{{ emptyIcon() }}</span>
+          <h3 class="text-sm font-semibold text-heading">{{ emptyTitle() }}</h3>
+          @if (emptyMessage()) {
+            <p class="text-xs text-muted max-w-xs">{{ emptyMessage() }}</p>
+          }
+        </div>
       </td>
     </tr>
   </ng-template>
