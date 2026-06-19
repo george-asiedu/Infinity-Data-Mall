@@ -168,10 +168,17 @@
           class="flex items-center gap-2 px-3 py-2 rounded-card border text-sm font-medium transition-colors"
           [ngClass]="
             activeNetwork() === tab.key
-              ? 'bg-primary border-primary text-white'
+              ? tab.key === 'all'
+                ? 'bg-primary border-primary text-white'
+                : tab.key === 'MTN'
+                  ? 'bg-mtn-net border-net-mtn text-white'
+                  : tab.key === 'AT'
+                    ? 'bg-at-net border-net-at text-white'
+                    : 'bg-telecel-net border-net-telecel text-white'
               : 'bg-surface border-border text-paragraph hover:border-primary hover:text-primary'
           "
         >
+          <!-- <span class="w-1.5 h-1.5 rounded-full"></span> -->
           {{ tab.label }}
           @if (tab.key !== 'all') {
             <span class="text-[10px] font-semibold opacity-70">{{ networkCount(tab.key) }}</span>

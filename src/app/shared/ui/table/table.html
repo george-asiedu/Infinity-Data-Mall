@@ -7,14 +7,14 @@
   [dataKey]="dataKey()"
   [class]="customClass()"
   [showCurrentPageReport]="true"
-  currentPageReportTemplate="Showing {first}–{last} of {totalRecords}"
+  currentPageReportTemplate="Showing {first}-{last} of {totalRecords}"
   (onRowSelect)="rowSelected.emit($any($event.data))"
 >
   <ng-template pTemplate="header" let-columns>
     <tr>
       @for (col of columns; track col.field) {
         <th
-          class="bg-primary! text-white! font-semibold border-0"
+          class="bg-primary/90 text-white! font-semibold border-0"
           [ngClass]="alignClass(col)"
           [style.width]="col.width"
         >

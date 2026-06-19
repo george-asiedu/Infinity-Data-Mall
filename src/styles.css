@@ -155,6 +155,31 @@ label {
 .bg-surface {
   @apply bg-surface;
 }
+
+.bg-mtn-net {
+  background-color: var(--color-net-mtn);
+}
+
+.border-net-mtn {
+  border-color: var(--color-net-mtn);
+}
+
+.bg-at-net {
+  background-color: var(--color-net-at);
+}
+
+.border-net-at {
+  border-color: var(--color-net-at);
+}
+
+.bg-telecel-net {
+  background-color: var(--color-net-telecel);
+}
+
+.border-net-telecel {
+  border-color: var(--color-net-telecel);
+}
+
 .border-divider {
   @apply border-border;
 }
