@@ -147,9 +147,6 @@ export class Agent implements OnInit, OnDestroy {
       paystack.resumeTransaction(accessCode, {
         key: environment.paystackPublicKey,
         onSuccess: () => {
-          // The Paystack webhook is the source of truth and credits the wallet
-          // server-side. We do NOT call verify here — we reconcile by polling
-          // the wallet, one call at a time, until the balance reflects it.
           this.toast.success('Payment received — updating your balance…');
           this.beginTopUpReconciliation();
         },
