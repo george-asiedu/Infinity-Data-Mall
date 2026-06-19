@@ -1,22 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { Subject, takeUntil } from 'rxjs';
 import PaystackPop from '@paystack/inline-js';
 import { environment } from '../../../../environments/environment';
 import { paymentActions } from '../../payment/store/payment.actions';
-import { selectWallet } from '../../payment/store/payment.selectors';
+import { selectWallet, selectTransactions } from '../../payment/store/payment.selectors';
 import { selectUser } from '../../auth/store/auth.selectors';
 import { Toast } from '../../../core/services/toast/toast';
 import { AmountDialog } from '../../../shared/ui/amount-dialog/amount-dialog';
 import { StatCard } from '../../../core/models/utility.model';
+import { PurchaseModal } from '../orders/purchase-modal/purchase-modal';
+import { packagesActions } from '../packages/store/packages.actions';
+import { selectShop } from '../packages/store/packages.selectors';
+import { ordersActions } from '../orders/store/orders.actions';
+import { selectOrders } from '../orders/store/orders.selectors';
+import { PackageNetwork } from '../../../core/models/package.model';
+import { Order, OrderStatus } from '../../../core/models/order.model';
 
 @Component({
   selector: 'app-agent',
   standalone: true,
-  imports: [CommonModule, AmountDialog],
+  imports: [CommonModule, RouterLink, AmountDialog, PurchaseModal],
   templateUrl: './agent.html',
   styleUrl: './agent.css',
 })
@@ -36,8 +44,62 @@ export class Agent implements OnInit, OnDestroy {
 
   protected readonly user = this.store.selectSignal(selectUser);
   private readonly walletResponse = this.store.selectSignal(selectWallet);
+  protected readonly shop = this.store.selectSignal(selectShop);
+  private readonly allOrders = this.store.selectSignal(selectOrders);
+  private readonly allTransactions = this.store.selectSignal(selectTransactions);
 
   protected wallet = computed(() => this.walletResponse()?.wallet);
+
+  // Quick-sell network tiles (airtime excluded — not in our catalog).
+  protected readonly quickSell: {
+    network: PackageNetwork;
+    name: string;
+    desc: string;
+    logo: string;
+  }[] = [
+    { network: 'MTN', name: 'MTN Data', desc: 'Regular & BigTime · Non-expiry', logo: '/mtn.jpg' },
+    {
+      network: 'AT',
+      name: 'AirtelTigo (AT)',
+      desc: 'iShare & BigTime · 60-day rollover',
+      logo: '/airtel.png',
+    },
+    { network: 'TELECEL', name: 'Telecel Data', desc: '5GB – 100GB bundles', logo: '/telecel.png' },
+  ];
+
+  protected readonly showPurchase = signal<boolean>(false);
+  protected readonly purchaseNetwork = signal<PackageNetwork | null>(null);
+
+  protected readonly recentOrders = computed<Order[]>(() => this.allOrders().slice(0, 5));
+  protected readonly recentTransactions = computed<any[]>(() =>
+    (this.allTransactions() as any[]).slice(0, 5),
+  );
+
+  // Sample sub-agents — replaced with real data later.
+  protected readonly subAgents = [
+    {
+      initials: 'KA',
+      name: 'Kofi Acheampong',
+      orders: 34,
+      sales: 136,
+      color: 'bg-info/10 text-info',
+    },
+    {
+      initials: 'AB',
+      name: 'Ama Boateng',
+      orders: 28,
+      sales: 112,
+      color: 'bg-net-at/10 text-net-at',
+    },
+    {
+      initials: 'EO',
+      name: 'Efua Osei',
+      orders: 21,
+      sales: 84,
+      color: 'bg-success/10 text-success',
+    },
+    { initials: 'YD', name: 'Yaw Darko', orders: 19, sales: 76, color: 'bg-accent/15 text-accent' },
+  ];
 
   protected readonly today = new Date();
 
@@ -97,6 +159,13 @@ export class Agent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.refreshWallet();
+
+    // Dashboard data for the sections below the stats.
+    this.store.dispatch(packagesActions.loadPackages());
+    this.store.dispatch(packagesActions.loadShop());
+    this.store.dispatch(ordersActions.loadOrders());
+    const uid = this.user()?.id;
+    if (uid) this.store.dispatch(paymentActions.getTransactions({ userId: uid }));
 
     // Top-up: launch the Paystack inline modal once the gateway returns an access code.
     this.actions$
@@ -214,6 +283,41 @@ export class Agent implements OnInit, OnDestroy {
     if (userId) {
       this.store.dispatch(paymentActions.getWallet({ userId }));
     }
+  }
+
+  // Quick sell / dashboard sections
+
+  protected openPurchase(network: PackageNetwork): void {
+    this.purchaseNetwork.set(network);
+    this.showPurchase.set(true);
+  }
+
+  protected ghs(pesewas: number): string {
+    return (pesewas / 100).toFixed(2);
+  }
+  protected orderStatusClass(status: OrderStatus): string {
+    if (status === 'DELIVERED') return 'bg-success/10 text-success';
+    if (status === 'FAILED') return 'bg-danger/10 text-danger';
+    if (status === 'PROCESSING') return 'bg-info/10 text-info';
+    return 'bg-warning/10 text-warning';
+  }
+  protected orderStatusLabel(status: OrderStatus): string {
+    return status.charAt(0) + status.slice(1).toLowerCase();
+  }
+  protected formatPhone(num: string): string {
+    return num.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
+  }
+  protected logo(net: PackageNetwork): string {
+    if (net === 'MTN') return '/mtn.jpg';
+    if (net === 'AT') return '/airtel.png';
+    return '/telecel.png';
+  }
+  protected txnIsCredit(txn: { type?: string }): boolean {
+    return txn?.type === 'CREDIT';
+  }
+  protected txnLabel(txn: { purpose?: string }): string {
+    const p = (txn?.purpose ?? '').replace(/_/g, ' ').toLowerCase();
+    return p ? p.charAt(0).toUpperCase() + p.slice(1) : 'Transaction';
   }
 
   ngOnDestroy(): void {
