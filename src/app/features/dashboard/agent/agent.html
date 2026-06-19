@@ -104,7 +104,200 @@
       </div>
     }
   </section>
+
+  <!-- Below stats: main + side columns -->
+  <section class="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-4">
+    <!-- Main column -->
+    <div class="flex flex-col gap-4 min-w-0">
+      <!-- Quick sell -->
+      <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+        <div class="px-4 py-3 border-b border-border">
+          <h3 class="text-sm font-bold text-heading">Quick sell — data bundles</h3>
+          <p class="text-xs text-muted">Select a network to place an order for a customer</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 p-3">
+          @for (tile of quickSell; track tile.network) {
+            <button
+              type="button"
+              (click)="openPurchase(tile.network)"
+              class="flex items-center gap-3 p-3 rounded-card border border-border bg-background/40 hover:border-primary hover:shadow-card transition-all text-left"
+            >
+              <img
+                [src]="tile.logo"
+                [alt]="tile.network"
+                class="w-9 h-9 rounded-lg object-contain bg-white border border-border p-1 shrink-0"
+              />
+              <div class="min-w-0">
+                <div class="text-sm font-semibold text-heading truncate">{{ tile.name }}</div>
+                <div class="text-[10px] text-muted truncate">{{ tile.desc }}</div>
+              </div>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Recent orders -->
+      <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+        <div class="px-4 py-3 border-b border-border flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-heading">Recent orders</h3>
+            <p class="text-xs text-muted">Your last 5 bundle orders</p>
+          </div>
+          <a
+            routerLink="/dashboard/orders"
+            class="text-xs font-semibold text-primary hover:text-primary-hover flex items-center gap-1"
+          >
+            View all <i class="pi pi-arrow-right text-[10px]"></i>
+          </a>
+        </div>
+        @if (recentOrders().length === 0) {
+          <div class="px-4 py-8 text-center text-xs text-muted">
+            No orders yet — place one from Quick Sell above.
+          </div>
+        } @else {
+          <div class="divide-y divide-border">
+            @for (o of recentOrders(); track o.id) {
+              <div class="flex items-center gap-3 px-4 py-2.5">
+                <img
+                  [src]="logo(o.network)"
+                  [alt]="o.network"
+                  class="w-6 h-6 rounded object-contain bg-white border border-border p-0.5 shrink-0"
+                />
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-medium text-heading">
+                    {{ o.sizeLabel }} · {{ formatPhone(o.recipientNumber) }}
+                  </div>
+                  <div class="text-[10px] text-muted font-mono">{{ o.id }}</div>
+                </div>
+                <span class="text-xs font-semibold text-heading">GHS {{ ghs(o.amount) }}</span>
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0"
+                  [ngClass]="orderStatusClass(o.status)"
+                >
+                  {{ orderStatusLabel(o.status) }}
+                </span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Side column -->
+    <div class="flex flex-col gap-4">
+      <!-- My shop -->
+      <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+        <div class="px-4 py-3 border-b border-border flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-heading">My shop</h3>
+            <p class="text-xs text-muted">{{ shop()?.name || 'Your storefront' }}</p>
+          </div>
+          @if (shop()) {
+            <span
+              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
+              [ngClass]="shop()!.isActive ? 'bg-success/10 text-success' : 'bg-border text-muted'"
+            >
+              <span
+                class="w-1.5 h-1.5 rounded-full"
+                [ngClass]="shop()!.isActive ? 'bg-success' : 'bg-muted'"
+              ></span>
+              {{ shop()!.isActive ? 'Active' : 'Offline' }}
+            </span>
+          }
+        </div>
+        <div class="p-3 flex flex-col gap-3">
+          @if (shop(); as s) {
+            <span
+              class="inline-flex items-center gap-1.5 self-start bg-primary/10 text-primary text-[11px] font-mono px-2.5 py-1 rounded-full"
+            >
+              <i class="pi pi-link text-[9px]"></i> /shop/{{ s.slug }}
+            </span>
+          }
+          <div class="flex gap-2">
+            <a
+              routerLink="/dashboard/packages"
+              class="flex-1 text-center px-3 py-2 rounded-card bg-primary text-white text-xs font-semibold hover:bg-primary-hover transition-colors"
+            >
+              Manage shop
+            </a>
+            <a
+              routerLink="/dashboard/orders"
+              class="flex-1 text-center px-3 py-2 rounded-card border border-border text-heading text-xs font-semibold hover:bg-background transition-colors"
+            >
+              Orders
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-agents (sample) -->
+      <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+        <div class="px-4 py-3 border-b border-border">
+          <h3 class="text-sm font-bold text-heading">Sub-agents</h3>
+          <p class="text-xs text-muted">{{ subAgents.length }} active</p>
+        </div>
+        <div class="divide-y divide-border">
+          @for (a of subAgents; track a.initials) {
+            <div class="flex items-center gap-2.5 px-4 py-2.5">
+              <span
+                class="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                [ngClass]="a.color"
+              >
+                {{ a.initials }}
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-medium text-heading truncate">{{ a.name }}</div>
+                <div class="text-[10px] text-muted">{{ a.orders }} orders</div>
+              </div>
+              <span class="text-xs font-semibold text-primary">GHS {{ a.sales }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Recent transactions -->
+      <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+        <div class="px-4 py-3 border-b border-border">
+          <h3 class="text-sm font-bold text-heading">Recent transactions</h3>
+        </div>
+        @if (recentTransactions().length === 0) {
+          <div class="px-4 py-8 text-center text-xs text-muted">No transactions yet.</div>
+        } @else {
+          <div class="divide-y divide-border">
+            @for (t of recentTransactions(); track t.id) {
+              <div class="flex items-center gap-2.5 px-4 py-2.5">
+                <span
+                  class="w-7 h-7 rounded-md flex items-center justify-center shrink-0"
+                  [ngClass]="
+                    txnIsCredit(t) ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'
+                  "
+                >
+                  <i class="pi text-[11px]" [ngClass]="txnIsCredit(t) ? 'pi-arrow-down' : 'pi-arrow-up'"></i>
+                </span>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-medium text-heading truncate">{{ txnLabel(t) }}</div>
+                  <div class="text-[10px] text-muted">{{ t.createdAt | date: 'd MMM y' }}</div>
+                </div>
+                <span
+                  class="text-xs font-semibold"
+                  [ngClass]="txnIsCredit(t) ? 'text-success' : 'text-danger'"
+                >
+                  {{ txnIsCredit(t) ? '+' : '−' }}GHS {{ t.amount }}
+                </span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
 </div>
+
+<!-- Purchase order modal -->
+<app-purchase-modal
+  [(visible)]="showPurchase"
+  [network]="purchaseNetwork()"
+></app-purchase-modal>
 
 <!-- Top up wallet -->
 <app-amount-dialog
