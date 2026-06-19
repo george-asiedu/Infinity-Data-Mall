@@ -272,7 +272,10 @@
                     txnIsCredit(t) ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'
                   "
                 >
-                  <i class="pi text-[11px]" [ngClass]="txnIsCredit(t) ? 'pi-arrow-down' : 'pi-arrow-up'"></i>
+                  <i
+                    class="pi text-[11px]"
+                    [ngClass]="txnIsCredit(t) ? 'pi-arrow-down' : 'pi-arrow-up'"
+                  ></i>
                 </span>
                 <div class="min-w-0 flex-1">
                   <div class="text-xs font-medium text-heading truncate">{{ txnLabel(t) }}</div>
@@ -294,10 +297,7 @@
 </div>
 
 <!-- Purchase order modal -->
-<app-purchase-modal
-  [(visible)]="showPurchase"
-  [network]="purchaseNetwork()"
-></app-purchase-modal>
+<app-purchase-modal [(visible)]="showPurchase" [network]="purchaseNetwork()"></app-purchase-modal>
 
 <!-- Top up wallet -->
 <app-amount-dialog
