@@ -76,8 +76,8 @@ export class PackagesPage implements OnInit, OnDestroy {
   protected readonly networkTabs: { key: NetworkFilter; label: string }[] = [
     { key: 'all', label: 'All' },
     { key: 'MTN', label: 'MTN' },
-    { key: 'AT', label: 'AT (iShare)' },
-    { key: 'TELECEL', label: 'Telecel' },
+    { key: 'AT', label: 'AT' },
+    { key: 'TELECEL', label: 'TELECEL' },
   ];
 
   protected readonly typePills: { key: TypeFilter; label: string }[] = [
@@ -96,7 +96,7 @@ export class PackagesPage implements OnInit, OnDestroy {
     { key: 'size-asc', label: 'Data size (small → large)' },
   ];
 
-  // ── Derived per-package values (draft-aware) ─────────────────
+  // Derived per-package values (draft-aware)
 
   protected retailOf(p: Package): number {
     return this.drafts()[p.id] ?? p.retailPrice;
@@ -194,7 +194,7 @@ export class PackagesPage implements OnInit, OnDestroy {
       });
   }
 
-  // ── Display helpers ──────────────────────────────────────────
+  // Display helpers
 
   protected ghs(pesewas: number): string {
     return (pesewas / 100).toFixed(2);
@@ -217,8 +217,8 @@ export class PackagesPage implements OnInit, OnDestroy {
     return '/telecel.png';
   }
   protected expiryLabel(p: Package): string {
-    if (p.expiryInfo === 'NON_EXPIRY') return 'Non-expiry';
-    if (p.expiryInfo === 'ROLLOVER_60_DAY') return '60-day rollover';
+    if (p.expiryInfo === 'NON_EXPIRY') return '90 Days';
+    if (p.expiryInfo === 'ROLLOVER_60_DAY') return '60 Days';
     return 'Standard';
   }
   protected abs(n: number): number {
@@ -231,7 +231,7 @@ export class PackagesPage implements OnInit, OnDestroy {
     return 'bg-success/10 text-success';
   }
 
-  // ── Filters / view ───────────────────────────────────────────
+  // Filters / view
 
   protected setNetwork(net: NetworkFilter): void {
     this.activeNetwork.set(net);
@@ -240,7 +240,7 @@ export class PackagesPage implements OnInit, OnDestroy {
     this.activeType.set(type);
   }
 
-  // ── Inline retail editing (local draft) ──────────────────────
+  // Inline retail editing (local draft)
 
   protected startEdit(p: Package): void {
     this.editingId.set(p.id);
@@ -267,7 +267,7 @@ export class PackagesPage implements OnInit, OnDestroy {
     this.cancelEdit();
   }
 
-  // ── Shop visibility (staged, saved in bulk) ──────────────────
+  // Shop visibility (staged, saved in bulk)
 
   protected toggleShop(p: Package, inShop: boolean): void {
     this.shopDrafts.update((d) => ({ ...d, [p.id]: inShop }));
@@ -297,7 +297,7 @@ export class PackagesPage implements OnInit, OnDestroy {
     this.store.dispatch(packagesActions.updateShop({ model: { isActive } }));
   }
 
-  // ── Margin tools (local draft) ───────────────────────────────
+  // Margin tools (local draft)
 
   protected applyChip(pct: number): void {
     this.marginPercent.set(pct);
@@ -323,7 +323,7 @@ export class PackagesPage implements OnInit, OnDestroy {
     this.toast.info(`${pct}% margin staged — review and Save changes.`);
   }
 
-  // ── Persist / export ─────────────────────────────────────────
+  // Persist / export
 
   protected saveAll(): void {
     const priceItems = this.priceDirtyItems();
