@@ -21,6 +21,8 @@ import { paymentFeature } from './features/payment/store/payment.reducers';
 import { uploadFeature } from './shared/uploads/store/uploads.reducers';
 import { packagesFeature } from './features/dashboard/packages/store/packages.reducers';
 import * as packagesEffects from './features/dashboard/packages/store/packages.effects';
+import { ordersFeature } from './features/dashboard/orders/store/orders.reducers';
+import * as ordersEffects from './features/dashboard/orders/store/orders.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -46,7 +48,8 @@ export const appConfig: ApplicationConfig = {
     provideState(paymentFeature),
     provideState(uploadFeature),
     provideState(packagesFeature),
-    provideEffects(AuthEffects, paymentEffects, uploadEffects, packagesEffects),
+    provideState(ordersFeature),
+    provideEffects(AuthEffects, paymentEffects, uploadEffects, packagesEffects, ordersEffects),
     provideSpinnerConfig({ type: 'ball-spin-clockwise-fade' }),
     provideStoreDevtools({
       maxAge: 25,
