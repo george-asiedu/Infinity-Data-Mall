@@ -73,6 +73,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/packages/packages').then((m) => m.PackagesPage),
       },
+      {
+        path: 'orders',
+        title: 'Infinity Data Mall | Orders',
+        loadComponent: () => import('./features/dashboard/orders/orders').then((m) => m.OrdersPage),
+      },
     ],
   },
 ];
