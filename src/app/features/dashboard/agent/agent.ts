@@ -70,10 +70,14 @@ export class Agent implements OnInit, OnDestroy {
   protected readonly showPurchase = signal<boolean>(false);
   protected readonly purchaseNetwork = signal<PackageNetwork | null>(null);
 
-  protected readonly recentOrders = computed<Order[]>(() => this.allOrders().slice(0, 5));
-  protected readonly recentTransactions = computed<any[]>(() =>
-    (this.allTransactions() as any[]).slice(0, 5),
-  );
+  protected readonly recentOrders = computed<Order[]>(() => {
+    const orders = this.allOrders();
+    return Array.isArray(orders) ? orders.slice(0, 5) : [];
+  });
+  protected readonly recentTransactions = computed<any[]>(() => {
+    const transactions = this.allTransactions();
+    return Array.isArray(transactions) ? transactions.slice(0, 5) : [];
+  });
 
   // Sample sub-agents — replaced with real data later.
   protected readonly subAgents = [
