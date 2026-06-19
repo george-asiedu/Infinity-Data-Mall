@@ -1,0 +1,359 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  (onHide)="onHide()"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="step() !== 'success'"
+  [closable]="!placing()"
+  styleClass="w-[94vw] max-w-lg mx-auto"
+  maskStyleClass="backdrop-blur-sm bg-black/40"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3 w-full">
+      @if (network()) {
+        <img
+          [src]="logo(network()!)"
+          [alt]="network()!"
+          class="w-10 h-10 rounded-xl object-contain bg-white border border-border p-1"
+        />
+      }
+      <div class="flex flex-col">
+        <h2 class="text-base font-bold text-heading leading-tight">
+          {{ networkLabel(network()) }}
+        </h2>
+        <span class="text-xs text-muted">Buy a data bundle for a customer</span>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Stepper -->
+  @if (step() !== 'success') {
+    <div class="flex items-center gap-0 pb-4 mb-4 border-b border-border">
+      @for (s of [1, 2, 3]; track s; let i = $index) {
+        <div class="flex items-center" [class.flex-1]="s !== 3">
+          <div
+            class="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-semibold shrink-0"
+            [ngClass]="
+              $any(step()) > s
+                ? 'bg-primary text-white'
+                : step() === s
+                  ? 'bg-primary text-white ring-4 ring-primary/15'
+                  : 'bg-background text-muted border border-border'
+            "
+          >
+            @if ($any(step()) > s) {
+              <i class="pi pi-check text-[9px]"></i>
+            } @else {
+              {{ s }}
+            }
+          </div>
+          <span
+            class="text-[11px] font-medium ml-2 whitespace-nowrap"
+            [ngClass]="step() === s ? 'text-heading' : 'text-muted'"
+          >
+            {{ s === 1 ? 'Choose package' : s === 2 ? 'Recipient' : 'Confirm' }}
+          </span>
+          @if (s !== 3) {
+            <div
+              class="flex-1 h-0.5 mx-2 rounded-full"
+              [ngClass]="$any(step()) > s ? 'bg-primary' : 'bg-border'"
+            ></div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Wallet indicator -->
+  @if (step() !== 'success') {
+    <div
+      class="flex items-center justify-between bg-primary/5 border border-primary/15 rounded-card px-3 py-2.5 mb-4"
+    >
+      <div class="flex items-center gap-2">
+        <div
+          class="w-7 h-7 rounded-md bg-primary/10 text-primary flex items-center justify-center"
+        >
+          <i class="pi pi-wallet text-xs"></i>
+        </div>
+        <div>
+          <div class="text-[10px] text-muted leading-none">Paying with wallet</div>
+          <div class="text-sm font-bold text-primary">
+            GHS {{ walletBalance() | number: '1.2-2' }}
+          </div>
+        </div>
+      </div>
+      @if (selected() && step() !== 1) {
+        <div class="text-right">
+          <div class="text-[10px] text-muted leading-none">After purchase</div>
+          <div
+            class="text-sm font-semibold"
+            [ngClass]="insufficient() ? 'text-danger' : 'text-heading'"
+          >
+            {{ insufficient() ? 'Insufficient' : 'GHS ' + (balanceAfter() | number: '1.2-2') }}
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- STEP 1: choose package -->
+  @if (step() === 1) {
+    <div class="flex flex-col gap-3">
+      <span class="text-[11px] font-semibold uppercase tracking-wide text-muted">
+        Select bundle size
+      </span>
+      @if (packages().length === 0) {
+        <div class="text-sm text-muted text-center py-6">
+          No packages available for this network yet.
+        </div>
+      } @else {
+        <div class="grid grid-cols-3 gap-2 max-h-72 overflow-y-auto pr-1">
+          @for (p of packages(); track p.id) {
+            <button
+              type="button"
+              (click)="selectPackage(p)"
+              class="relative border rounded-card p-2.5 text-center transition-colors"
+              [ngClass]="
+                selected()?.id === p.id
+                  ? 'border-primary bg-primary/5 ring-2 ring-primary/10'
+                  : 'border-border bg-surface hover:border-primary/60 hover:bg-primary/5'
+              "
+            >
+              @if (selected()?.id === p.id) {
+                <span
+                  class="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-primary text-white flex items-center justify-center"
+                >
+                  <i class="pi pi-check text-[7px]"></i>
+                </span>
+              }
+              <div class="text-sm font-bold text-heading">{{ p.sizeLabel }}</div>
+              <div class="text-[11px] font-semibold text-primary mt-0.5">
+                GHS {{ ghs(p.wholesalePrice) }}
+              </div>
+              <div class="text-[9px] text-muted mt-0.5">{{ typeLabel(p) }}</div>
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- STEP 2: recipient -->
+  @if (step() === 2) {
+    <div class="flex flex-col gap-4">
+      <div
+        class="flex items-center justify-between bg-background border border-border rounded-card px-3 py-2.5"
+      >
+        <div>
+          <div class="text-[10px] text-muted">Selected package</div>
+          <div class="text-sm font-semibold text-heading">
+            {{ selected()?.sizeLabel }} · {{ networkLabel(network()) }}
+          </div>
+        </div>
+        <div class="text-sm font-bold text-primary">GHS {{ ghs(cost()) }}</div>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-heading">Recipient phone number</label>
+        <input
+          type="tel"
+          [ngModel]="recipient1()"
+          (ngModelChange)="recipient1.set($event)"
+          placeholder="e.g. 0554821034"
+          maxlength="10"
+          class="w-full border border-border rounded-card px-3 py-2.5 text-sm text-heading outline-none focus:border-primary bg-surface"
+        />
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-heading">Confirm recipient number</label>
+        <input
+          type="tel"
+          [ngModel]="recipient2()"
+          (ngModelChange)="recipient2.set($event)"
+          placeholder="Re-enter the number"
+          maxlength="10"
+          class="w-full border rounded-card px-3 py-2.5 text-sm text-heading outline-none bg-surface"
+          [ngClass]="recipientMismatch() ? 'border-danger' : 'border-border focus:border-primary'"
+        />
+        @if (recipientMismatch()) {
+          <span class="text-xs text-danger flex items-center gap-1">
+            <i class="pi pi-exclamation-circle text-[10px]"></i> Phone numbers do not match
+          </span>
+        } @else if (recipientValid()) {
+          <span class="text-xs text-success flex items-center gap-1">
+            <i class="pi pi-check-circle text-[10px]"></i> Numbers match
+          </span>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- STEP 3: confirm -->
+  @if (step() === 3) {
+    <div class="flex flex-col gap-4">
+      <p class="text-xs text-muted leading-relaxed">
+        Review your order carefully. Once confirmed, your wallet is debited immediately and the
+        bundle is dispatched to the recipient.
+      </p>
+
+      <div class="bg-primary text-white rounded-card px-4 py-3 flex items-center justify-between">
+        <div>
+          <div class="text-[10px] text-white/60">Total deduction</div>
+          <div class="text-xl font-bold">GHS {{ ghs(cost()) }}</div>
+        </div>
+        <div class="text-right">
+          <div class="text-[10px] text-white/60">Balance after</div>
+          <div class="text-sm font-medium text-white/85">
+            GHS {{ balanceAfter() | number: '1.2-2' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="border border-border rounded-card divide-y divide-border">
+        <div class="flex justify-between px-3.5 py-2.5 text-sm">
+          <span class="text-muted">Network</span>
+          <span class="font-medium text-heading">{{ networkLabel(network()) }}</span>
+        </div>
+        <div class="flex justify-between px-3.5 py-2.5 text-sm">
+          <span class="text-muted">Package</span>
+          <span class="font-semibold text-heading">
+            {{ selected()?.sizeLabel }} · {{ typeLabel(selected()!) }}
+          </span>
+        </div>
+        <div class="flex justify-between px-3.5 py-2.5 text-sm">
+          <span class="text-muted">Recipient</span>
+          <span class="font-mono text-heading">{{ formatPhone(recipient1()) }}</span>
+        </div>
+        <div class="flex justify-between px-3.5 py-2.5 text-sm">
+          <span class="text-muted">Expiry</span>
+          <span class="font-medium text-heading">{{ expiryLabel(selected()!) }}</span>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-2 text-[11px] text-muted leading-relaxed">
+        <i class="pi pi-exclamation-triangle text-warning text-xs mt-0.5"></i>
+        Bundle purchases are non-refundable once dispatched. Verify the recipient number is correct.
+      </div>
+    </div>
+  }
+
+  <!-- SUCCESS -->
+  @if (step() === 'success' && placedOrder(); as order) {
+    <div class="flex flex-col items-center text-center gap-2 py-2">
+      <div
+        class="w-16 h-16 rounded-full bg-success/10 text-success flex items-center justify-center mb-1"
+      >
+        <i class="pi pi-check-circle text-3xl"></i>
+      </div>
+      <h3 class="text-lg font-bold text-heading">Order placed!</h3>
+      <p class="text-sm text-muted">
+        {{
+          order.status === 'FAILED'
+            ? 'The bundle could not be dispatched — you can retry it from Orders.'
+            : 'Your data bundle is being dispatched to the recipient.'
+        }}
+      </p>
+
+      <div class="w-full bg-background border border-border rounded-card p-3.5 mt-2 text-left">
+        <div class="flex justify-between py-1 text-sm border-b border-border">
+          <span class="text-muted">Reference</span>
+          <span class="font-mono font-medium text-heading">{{ order.id }}</span>
+        </div>
+        <div class="flex justify-between py-1 text-sm border-b border-border">
+          <span class="text-muted">Package</span>
+          <span class="font-medium text-heading">{{ order.sizeLabel }}</span>
+        </div>
+        <div class="flex justify-between py-1 text-sm border-b border-border">
+          <span class="text-muted">Recipient</span>
+          <span class="font-mono text-heading">{{ formatPhone(order.recipientNumber) }}</span>
+        </div>
+        <div class="flex justify-between py-1 text-sm border-b border-border">
+          <span class="text-muted">Amount</span>
+          <span class="font-semibold text-danger">−GHS {{ ghs(order.amount) }}</span>
+        </div>
+        <div class="flex justify-between py-1 text-sm">
+          <span class="text-muted">Status</span>
+          <span
+            class="font-medium"
+            [ngClass]="order.status === 'FAILED' ? 'text-danger' : 'text-warning'"
+          >
+            {{ order.status === 'FAILED' ? 'Failed' : 'Pending dispatch' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <ng-template pTemplate="footer">
+    @if (step() === 1) {
+      <div class="flex gap-2.5 w-full">
+        <button
+          type="button"
+          (click)="close()"
+          class="flex-[0.45] px-4 py-2.5 rounded-card border border-border text-paragraph text-sm font-medium hover:bg-background"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          (click)="goTo(2)"
+          [disabled]="!selected() || insufficient()"
+          class="flex-1 px-4 py-2.5 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Continue
+        </button>
+      </div>
+    } @else if (step() === 2) {
+      <div class="flex gap-2.5 w-full">
+        <button
+          type="button"
+          (click)="goTo(1)"
+          class="flex-[0.45] px-4 py-2.5 rounded-card border border-border text-paragraph text-sm font-medium hover:bg-background"
+        >
+          Back
+        </button>
+        <button
+          type="button"
+          (click)="goTo(3)"
+          [disabled]="!recipientValid()"
+          class="flex-1 px-4 py-2.5 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Review order
+        </button>
+      </div>
+    } @else if (step() === 3) {
+      <div class="flex gap-2.5 w-full">
+        <button
+          type="button"
+          (click)="goTo(2)"
+          [disabled]="placing()"
+          class="flex-[0.45] px-4 py-2.5 rounded-card border border-border text-paragraph text-sm font-medium hover:bg-background disabled:opacity-50"
+        >
+          Back
+        </button>
+        <button
+          type="button"
+          (click)="confirm()"
+          [disabled]="placing() || insufficient()"
+          class="flex-1 px-4 py-2.5 rounded-card bg-accent text-heading text-sm font-bold hover:bg-accent-hover disabled:opacity-50 flex items-center justify-center gap-2"
+        >
+          @if (placing()) {
+            <i class="pi pi-spin pi-spinner text-xs"></i> Processing…
+          } @else {
+            <i class="pi pi-wallet text-xs"></i> Pay with Wallet
+          }
+        </button>
+      </div>
+    } @else {
+      <button
+        type="button"
+        (click)="close()"
+        class="w-full px-4 py-2.5 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover"
+      >
+        Done
+      </button>
+    }
+  </ng-template>
+</p-dialog>
