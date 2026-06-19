@@ -47,7 +47,7 @@ export const appConfig: ApplicationConfig = {
     provideState(uploadFeature),
     provideState(packagesFeature),
     provideEffects(AuthEffects, paymentEffects, uploadEffects, packagesEffects),
-    provideSpinnerConfig({ type: 'line-scale-pulse-out' }),
+    provideSpinnerConfig({ type: 'ball-spin-clockwise-fade' }),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
