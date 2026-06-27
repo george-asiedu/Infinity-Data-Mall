@@ -1,0 +1,32 @@
+<div class="min-h-screen flex items-center justify-center bg-background px-4">
+  <div class="w-full max-w-md flex flex-col items-center text-center gap-5">
+    <div class="relative">
+      <div class="absolute inset-0 bg-primary/10 blur-3xl rounded-full" aria-hidden="true"></div>
+      <div class="relative text-7xl sm:text-8xl font-black tracking-tight text-primary">404</div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <h1 class="text-xl font-bold text-heading">Page not found</h1>
+      <p class="text-sm text-paragraph max-w-sm">
+        The page you're looking for doesn't exist, was moved, or the link is broken.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3 mt-1">
+      <button
+        type="button"
+        (click)="goBack()"
+        class="flex items-center gap-2 px-4 py-2.5 rounded-card border border-border bg-surface text-paragraph text-sm font-medium hover:border-primary hover:text-primary transition-colors"
+      >
+        <i class="pi pi-arrow-left text-xs"></i> Go back
+      </button>
+      <button
+        type="button"
+        (click)="goHome()"
+        class="flex items-center gap-2 px-4 py-2.5 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors"
+      >
+        <i class="pi pi-home text-xs"></i> Back to home
+      </button>
+    </div>
+  </div>
+</div>
