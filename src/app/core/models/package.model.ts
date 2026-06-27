@@ -57,6 +57,13 @@ export interface Shop {
   name: string;
   slug: string;
   isActive: boolean;
+  tagline?: string | null;
+  welcomeMessage?: string | null;
+  contactPhone?: string | null;
+  whatsapp?: string | null;
+  facebook?: string | null;
+  instagram?: string | null;
+  logoUrl?: string | null;
 }
 
 export interface ShopResponse {
