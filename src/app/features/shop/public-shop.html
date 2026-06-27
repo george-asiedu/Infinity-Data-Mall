@@ -1,0 +1,328 @@
+@if (loading()) {
+  <div class="min-h-screen flex items-center justify-center bg-background">
+    <i class="pi pi-spin pi-spinner text-3xl text-primary"></i>
+  </div>
+} @else if (notFound()) {
+  <div
+    class="min-h-screen flex flex-col items-center justify-center gap-3 bg-background px-4 text-center"
+  >
+    <span class="text-5xl">🏪</span>
+    <h1 class="text-xl font-bold text-heading">Shop unavailable</h1>
+    <p class="text-sm text-paragraph max-w-sm">
+      This shop doesn't exist or is currently offline. Please check the link and try again.
+    </p>
+  </div>
+} @else if (shop(); as s) {
+  <div class="min-h-screen bg-background flex flex-col">
+    <!-- Branding header -->
+    <header class="bg-primary text-white">
+      <div class="max-w-3xl mx-auto px-4 py-8 flex flex-col items-center text-center gap-3">
+        <div
+          class="w-16 h-16 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden"
+        >
+          @if (s.logoUrl) {
+            <img [src]="s.logoUrl" alt="logo" class="w-full h-full object-cover" />
+          } @else {
+            <span class="text-2xl font-bold text-accent">{{ s.name.charAt(0) }}</span>
+          }
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight">{{ s.name }}</h1>
+          @if (s.tagline) {
+            <p class="text-sm text-white/60 mt-1">{{ s.tagline }}</p>
+          }
+        </div>
+        @if (s.contactPhone || s.whatsapp) {
+          <div class="flex items-center gap-3 text-xs text-white/70">
+            @if (s.contactPhone) {
+              <span class="flex items-center gap-1"
+                ><i class="pi pi-phone"></i> {{ s.contactPhone }}</span
+              >
+            }
+            @if (s.whatsapp) {
+              <a
+                [href]="'https://' + s.whatsapp"
+                target="_blank"
+                class="flex items-center gap-1 hover:text-white"
+                ><i class="pi pi-whatsapp"></i> WhatsApp</a
+              >
+            }
+          </div>
+        }
+      </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-3xl mx-auto px-4 py-6 flex flex-col gap-5">
+      @if (s.welcomeMessage) {
+        <div
+          class="rounded-card border border-border bg-surface p-4 text-sm text-paragraph text-center shadow-card"
+        >
+          {{ s.welcomeMessage }}
+        </div>
+      }
+
+      <!-- Network filter -->
+      <div class="flex gap-1.5 overflow-x-auto pb-1">
+        @for (net of networks; track net.key) {
+          <button
+            type="button"
+            (click)="activeNetwork.set(net.key)"
+            class="px-3.5 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors"
+            [ngClass]="
+              activeNetwork() === net.key
+                ? 'bg-primary border-primary text-white'
+                : 'bg-surface border-border text-paragraph hover:border-primary'
+            "
+          >
+            {{ net.label }}
+          </button>
+        }
+      </div>
+
+      <!-- Packages -->
+      @if (visiblePackages().length === 0) {
+        <div
+          class="rounded-card border border-border bg-surface p-10 text-center text-sm text-muted shadow-card"
+        >
+          No packages available right now. Please check back soon.
+        </div>
+      } @else {
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          @for (p of visiblePackages(); track p.id) {
+            <button
+              type="button"
+              (click)="openPurchase(p)"
+              class="flex flex-col gap-2 rounded-card border border-border bg-surface p-4 text-left shadow-card hover:border-primary hover:shadow-modal transition-all"
+            >
+              <div class="flex items-center justify-between">
+                <img
+                  [src]="logo(p.network)"
+                  [alt]="p.network"
+                  class="w-8 h-8 rounded-md object-contain bg-white border border-border p-0.5"
+                />
+                <span class="text-[10px] text-muted">{{ expiryLabel(p) }}</span>
+              </div>
+              <div>
+                <div class="text-lg font-bold text-heading">{{ p.sizeLabel }}</div>
+                <div class="text-[11px] text-muted">
+                  {{ networkLabel(p.network) }}{{ p.type === 'BIGTIME' ? ' BigTime' : '' }}
+                </div>
+              </div>
+              <div class="text-primary font-bold font-mono">GHS {{ ghs(p.price) }}</div>
+            </button>
+          }
+        </div>
+      }
+    </main>
+
+    <footer class="py-6 text-center text-xs text-muted">Powered by Infinity Data Mall</footer>
+  </div>
+
+  <!-- Purchase modal -->
+  @if (modalOpen() && selected(); as pkg) {
+    <div
+      class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4"
+      (click)="closeModal()"
+    >
+      <div
+        class="w-full sm:max-w-md bg-surface rounded-t-2xl sm:rounded-2xl shadow-modal overflow-hidden"
+        (click)="$event.stopPropagation()"
+      >
+        <!-- Header -->
+        <div class="flex items-center gap-3 p-4 border-b border-border">
+          <img
+            [src]="logo(pkg.network)"
+            [alt]="pkg.network"
+            class="w-10 h-10 rounded-lg object-contain bg-white border border-border p-1"
+          />
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-bold text-heading">
+              {{ networkLabel(pkg.network) }} {{ pkg.sizeLabel }}
+            </div>
+            <div class="text-xs text-muted">GHS {{ ghs(pkg.price) }} · {{ expiryLabel(pkg) }}</div>
+          </div>
+          <button
+            type="button"
+            (click)="closeModal()"
+            [disabled]="processing()"
+            class="w-8 h-8 flex items-center justify-center rounded-full bg-background text-muted hover:text-danger disabled:opacity-40"
+          >
+            <i class="pi pi-times text-xs"></i>
+          </button>
+        </div>
+
+        <!-- Step: details -->
+        @if (step() === 'details') {
+          <div class="p-5 flex flex-col gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-medium text-paragraph">Recipient phone number</label>
+              <input
+                type="tel"
+                [ngModel]="recipient()"
+                (ngModelChange)="recipient.set($event)"
+                placeholder="e.g. 0554821034"
+                class="border border-border rounded-card px-3 py-2.5 text-sm bg-surface outline-none focus:border-primary text-heading"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-medium text-paragraph">Confirm recipient number</label>
+              <input
+                type="tel"
+                [ngModel]="confirmRecipient()"
+                (ngModelChange)="confirmRecipient.set($event)"
+                placeholder="Re-enter number"
+                class="border border-border rounded-card px-3 py-2.5 text-sm bg-surface outline-none focus:border-primary text-heading"
+              />
+              @if (confirmRecipient() && recipient() !== confirmRecipient()) {
+                <span class="text-[11px] text-danger">Numbers do not match.</span>
+              }
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-medium text-paragraph">Your email (for receipt)</label>
+              <input
+                type="email"
+                [ngModel]="email()"
+                (ngModelChange)="email.set($event)"
+                placeholder="you@email.com"
+                class="border border-border rounded-card px-3 py-2.5 text-sm bg-surface outline-none focus:border-primary text-heading"
+              />
+            </div>
+            <button
+              type="button"
+              (click)="toConfirm()"
+              [disabled]="!detailsValid()"
+              class="w-full py-3 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50 transition-colors"
+            >
+              Continue
+            </button>
+          </div>
+        }
+
+        <!-- Step: confirm -->
+        @if (step() === 'confirm') {
+          <div class="p-5 flex flex-col gap-4">
+            <div class="rounded-card border border-border divide-y divide-border">
+              <div class="flex justify-between px-4 py-2.5 text-sm">
+                <span class="text-muted">Package</span
+                ><span class="font-medium text-heading"
+                  >{{ networkLabel(pkg.network) }} {{ pkg.sizeLabel }}</span
+                >
+              </div>
+              <div class="flex justify-between px-4 py-2.5 text-sm">
+                <span class="text-muted">Recipient</span
+                ><span class="font-mono text-heading">{{ recipient() }}</span>
+              </div>
+              <div class="flex justify-between px-4 py-2.5 text-sm">
+                <span class="text-muted">Email</span
+                ><span class="text-heading truncate ml-3">{{ email() }}</span>
+              </div>
+              <div class="flex justify-between px-4 py-3 text-sm bg-primary/5">
+                <span class="font-semibold text-heading">Total</span
+                ><span class="font-bold text-primary">GHS {{ ghs(pkg.price) }}</span>
+              </div>
+            </div>
+            <div class="flex items-start gap-2 text-[11px] text-muted">
+              <i class="pi pi-info-circle mt-0.5"></i>
+              <span
+                >Please confirm the recipient number is correct. Bundles are non-refundable once
+                delivered.</span
+              >
+            </div>
+            <div class="flex gap-2">
+              <button
+                type="button"
+                (click)="backToDetails()"
+                [disabled]="processing()"
+                class="px-4 py-3 rounded-card border border-border text-paragraph text-sm font-medium hover:bg-background disabled:opacity-50"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                (click)="payNow()"
+                [disabled]="processing()"
+                class="flex-1 py-3 rounded-card bg-accent text-heading text-sm font-bold hover:bg-accent-hover disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+              >
+                @if (processing()) {
+                  <i class="pi pi-spin pi-spinner text-xs"></i>
+                }
+                Pay GHS {{ ghs(pkg.price) }}
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Step: success -->
+        @if (step() === 'success') {
+          <div class="p-6 flex flex-col items-center text-center gap-3">
+            @if (placedOrder(); as o) {
+              <div class="w-14 h-14 rounded-full bg-success/10 flex items-center justify-center">
+                <i class="pi pi-check-circle text-3xl text-success"></i>
+              </div>
+              <h3 class="text-lg font-bold text-heading">Order placed!</h3>
+              <p class="text-sm text-paragraph">
+                Your bundle is being delivered to {{ o.recipientNumber }}.
+              </p>
+              <div
+                class="w-full rounded-card border border-border divide-y divide-border text-sm mt-1"
+              >
+                <div class="flex justify-between px-4 py-2.5">
+                  <span class="text-muted">Reference</span
+                  ><span class="font-mono text-heading">{{ o.id }}</span>
+                </div>
+                <div class="flex justify-between px-4 py-2.5 items-center">
+                  <span class="text-muted">Status</span>
+                  <span
+                    class="px-2 py-0.5 rounded-full text-[11px] font-semibold"
+                    [ngClass]="statusClass(o.status)"
+                    >{{ o.status }}</span
+                  >
+                </div>
+              </div>
+              @if (o.status === 'FAILED' || o.retryable) {
+                <button
+                  type="button"
+                  (click)="retryOrder()"
+                  [disabled]="processing()"
+                  class="w-full py-2.5 rounded-card border border-primary text-primary text-sm font-semibold hover:bg-primary/5 disabled:opacity-50"
+                >
+                  @if (processing()) {
+                    <i class="pi pi-spin pi-spinner text-xs"></i>
+                  }
+                  Retry delivery
+                </button>
+              }
+            } @else {
+              <div class="w-14 h-14 rounded-full bg-warning/10 flex items-center justify-center">
+                <i class="pi pi-exclamation-triangle text-2xl text-warning"></i>
+              </div>
+              <h3 class="text-lg font-bold text-heading">Payment received</h3>
+              <p class="text-sm text-paragraph">
+                We're finalising your order. If it doesn't complete, retry below — you won't be
+                charged again.
+              </p>
+              <button
+                type="button"
+                (click)="retryOrder()"
+                [disabled]="processing()"
+                class="w-full py-2.5 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover disabled:opacity-50"
+              >
+                @if (processing()) {
+                  <i class="pi pi-spin pi-spinner text-xs"></i>
+                }
+                Retry order
+              </button>
+            }
+            <button
+              type="button"
+              (click)="closeModal()"
+              class="text-xs text-muted hover:text-heading mt-1"
+            >
+              Close
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+}
