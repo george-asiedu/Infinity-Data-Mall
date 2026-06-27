@@ -78,6 +78,22 @@ export const routes: Routes = [
         title: 'Infinity Data Mall | Orders',
         loadComponent: () => import('./features/dashboard/orders/orders').then((m) => m.OrdersPage),
       },
+      {
+        path: 'my-shop',
+        title: 'Infinity Data Mall | My Shop',
+        loadComponent: () =>
+          import('./features/dashboard/my-shop/my-shop').then((m) => m.MyShopPage),
+      },
     ],
+  },
+  {
+    path: 'shop/:slug',
+    title: 'Infinity Data Mall | Shop',
+    loadComponent: () => import('./features/shop/public-shop').then((m) => m.PublicShopPage),
+  },
+  {
+    path: '**',
+    title: 'Infinity Data Mall | Page Not Found',
+    loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFoundPage),
   },
 ];
