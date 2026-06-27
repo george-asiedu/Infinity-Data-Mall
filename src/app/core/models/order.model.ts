@@ -13,6 +13,8 @@ export interface Order {
   sizeLabel: string;
   recipientNumber: string;
   amount: number;
+  wholesaleAmount: number;
+  profit: number;
   status: OrderStatus;
   channel: OrderChannel;
   paymentMethod: OrderPaymentMethod;
