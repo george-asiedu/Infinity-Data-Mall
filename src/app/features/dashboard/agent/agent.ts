@@ -12,6 +12,7 @@ import { selectWallet, selectTransactions } from '../../payment/store/payment.se
 import { selectUser } from '../../auth/store/auth.selectors';
 import { Toast } from '../../../core/services/toast/toast';
 import { AmountDialog } from '../../../shared/ui/amount-dialog/amount-dialog';
+import { PageSkeleton } from '../../../shared/ui/page-skeleton/page-skeleton';
 import { StatCard } from '../../../core/models/utility.model';
 import { PurchaseModal } from '../orders/purchase-modal/purchase-modal';
 import { packagesActions } from '../packages/store/packages.actions';
@@ -24,7 +25,7 @@ import { Order, OrderStatus } from '../../../core/models/order.model';
 @Component({
   selector: 'app-agent',
   standalone: true,
-  imports: [CommonModule, RouterLink, AmountDialog, PurchaseModal],
+  imports: [CommonModule, RouterLink, AmountDialog, PurchaseModal, PageSkeleton],
   templateUrl: './agent.html',
   styleUrl: './agent.css',
 })
@@ -47,6 +48,14 @@ export class Agent implements OnInit, OnDestroy {
   protected readonly shop = this.store.selectSignal(selectShop);
   private readonly allOrders = this.store.selectSignal(selectOrders);
   private readonly allTransactions = this.store.selectSignal(selectTransactions);
+
+  // Cleared once this entry's initial wallet load resolves (success or error).
+  // Reset per navigation (the component is recreated each visit), so the
+  // skeleton shows on entry even when the store is already warm.
+  private readonly loaded = signal<boolean>(false);
+
+  /** First-load skeleton until this entry's initial fetch resolves. */
+  protected readonly firstLoading = computed(() => !this.loaded());
 
   protected wallet = computed(() => this.walletResponse()?.wallet);
 
@@ -192,12 +201,16 @@ export class Agent implements OnInit, OnDestroy {
     // Drives the sequential top-up reconciliation poll off each wallet response.
     this.actions$
       .pipe(ofType(paymentActions.getWalletSuccess), takeUntil(this.destroy$))
-      .subscribe(() => this.onWalletRefreshed());
+      .subscribe(() => {
+        this.loaded.set(true);
+        this.onWalletRefreshed();
+      });
 
     // Stop spinners if the request fails.
     this.actions$
       .pipe(ofType(paymentActions.paymentError), takeUntil(this.destroy$))
       .subscribe(() => {
+        this.loaded.set(true);
         this.topUpLoading.set(false);
         this.withdrawLoading.set(false);
         this.stopTopUpPolling();

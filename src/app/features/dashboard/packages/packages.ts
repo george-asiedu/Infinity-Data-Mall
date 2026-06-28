@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
 import { Subject, takeUntil } from 'rxjs';
 import { Table } from '../../../shared/ui/table/table';
+import { PageSkeleton } from '../../../shared/ui/page-skeleton/page-skeleton';
 import { TableColumn } from '../../../core/models/utility.model';
 import {
   BulkPriceItem,
@@ -26,7 +27,7 @@ type SortKey = 'default' | 'profit-high' | 'profit-low' | 'margin-high' | 'size-
 @Component({
   selector: 'app-packages',
   standalone: true,
-  imports: [CommonModule, FormsModule, Table],
+  imports: [CommonModule, FormsModule, Table, PageSkeleton],
   templateUrl: './packages.html',
   styleUrl: './packages.css',
 })
@@ -40,6 +41,14 @@ export class PackagesPage implements OnInit, OnDestroy {
   protected readonly isLoading = this.store.selectSignal(selectIsLoading);
   protected readonly shop = this.store.selectSignal(selectShop);
   private readonly user = this.store.selectSignal(selectUser);
+
+  // Cleared once the first load on this screen entry resolves (success or
+  // error). Reset per navigation since the component is recreated each visit,
+  // so the skeleton shows on entry even when the store is already warm.
+  private readonly loaded = signal<boolean>(false);
+
+  /** First-load skeleton until this entry's initial fetch resolves. */
+  protected readonly firstLoading = computed(() => !this.loaded());
 
   protected readonly activeNetwork = signal<NetworkFilter>('all');
   protected readonly activeType = signal<TypeFilter>('all');
@@ -181,6 +190,14 @@ export class PackagesPage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.store.dispatch(packagesActions.loadPackages());
     this.store.dispatch(packagesActions.loadShop());
+
+    // Drop the skeleton as soon as packages arrive (or the request fails).
+    this.actions$
+      .pipe(
+        ofType(packagesActions.loadPackagesSuccess, packagesActions.packagesError),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(() => this.loaded.set(true));
 
     const userId = this.user()?.id;
     if (userId) this.store.dispatch(paymentActions.getWallet({ userId }));

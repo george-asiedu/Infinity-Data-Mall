@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Table } from '../../../shared/ui/table/table';
+import { PageSkeleton } from '../../../shared/ui/page-skeleton/page-skeleton';
 import { TableColumn } from '../../../core/models/utility.model';
 import { Order, OrderStatus } from '../../../core/models/order.model';
 import { PackageNetwork, PackageType } from '../../../core/models/package.model';
@@ -15,7 +16,7 @@ type StatusFilter = 'all' | OrderStatus;
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule, Table],
+  imports: [CommonModule, FormsModule, Table, PageSkeleton],
   templateUrl: './orders.html',
   styleUrl: './orders.css',
 })
@@ -24,6 +25,8 @@ export class OrdersPage implements OnInit {
 
   protected readonly orders = this.store.selectSignal(selectOrders);
   protected readonly isLoading = this.store.selectSignal(selectIsLoading);
+
+  protected readonly firstLoading = computed(() => this.isLoading() && this.orders().length === 0);
 
   protected readonly activeType = signal<TypeFilter>('all');
   protected readonly activeStatus = signal<StatusFilter>('all');

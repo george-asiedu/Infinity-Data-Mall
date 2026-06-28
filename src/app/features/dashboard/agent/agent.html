@@ -1,300 +1,311 @@
-<div class="flex flex-col gap-2 w-full">
-  <section class="relative overflow-hidden rounded-xl bg-primary text-white shadow-card">
-    <div
-      class="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-white/5 blur-2xl"
-      aria-hidden="true"
-    ></div>
-    <div
-      class="pointer-events-none absolute right-40 bottom-0 h-48 w-48 translate-y-1/2 rounded-full bg-accent/10 blur-2xl"
-      aria-hidden="true"
-    ></div>
-
-    <div class="relative flex flex-col gap-3 p-4 lg:flex-row lg:items-start lg:justify-between">
-      <div class="flex flex-col gap-2 min-w-0">
-        <div class="flex flex-col gap-1">
-          <h1 class="font-black tracking-tight text-white!">
-            Welcome back, {{ firstName() }} <span class="inline-block">👋</span>
-          </h1>
-          <p class="text-white/90">
-            {{ today | date: 'EEEE, d MMMM y' }} — here's your data sales overview
-          </p>
-        </div>
-      </div>
-
+@if (firstLoading()) {
+  <app-page-skeleton
+    [banner]="true"
+    [statCards]="4"
+    [blocks]="3"
+    [header]="false"
+  ></app-page-skeleton>
+} @else {
+  <div class="flex flex-col gap-2 w-full">
+    <section class="relative overflow-hidden rounded-xl bg-primary text-white shadow-card">
       <div
-        class="w-full lg:w-auto lg:min-w-75 shrink-0 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"
-      >
-        <div class="flex items-center justify-between">
-          <span class="text-[11px] font-semibold uppercase tracking-widest text-white/60">
-            Wallet Balance
-          </span>
-          <span class="rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-medium text-white/70">
-            {{ agentCode() }}
-          </span>
-        </div>
-
-        <div class="mt-2 flex items-end gap-1.5">
-          <span class="text-sm font-light text-white mb-1">GHS</span>
-          <span class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            {{ balance() | number: '1.2-2' }}
-          </span>
-        </div>
-
-        <p class="text-xs! text-white/70">Available for purchases &amp; withdrawals</p>
-
-        <div class="mt-2 flex items-center gap-2">
-          <button
-            type="button"
-            (click)="showTopUp.set(true)"
-            class="flex flex-1 items-center cursor-pointer justify-center gap-1.5 rounded-card bg-accent px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-accent-hover"
-          >
-            <i class="pi pi-plus text-xs"></i>
-            Top Up
-          </button>
-          <button
-            type="button"
-            (click)="showWithdraw.set(true)"
-            class="flex flex-1 items-center cursor-pointer justify-center gap-1.5 rounded-card border border-white/20 bg-white/5 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-          >
-            <i class="pi pi-arrow-up-right text-xs"></i>
-            Withdraw
-          </button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
-    @for (stat of stats; track stat.label) {
+        class="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-white/5 blur-2xl"
+        aria-hidden="true"
+      ></div>
       <div
-        class="flex flex-col gap-3 rounded-card border border-border bg-surface p-4 shadow-card transition-shadow hover:shadow-modal"
-      >
-        <div class="flex items-start justify-between">
-          <div
-            class="flex h-9 w-9 items-center justify-center rounded-xl"
-            [ngClass]="stat.iconClass"
-          >
-            <i class="pi text-lg" [ngClass]="stat.icon"></i>
+        class="pointer-events-none absolute right-40 bottom-0 h-48 w-48 translate-y-1/2 rounded-full bg-accent/10 blur-2xl"
+        aria-hidden="true"
+      ></div>
+
+      <div class="relative flex flex-col gap-3 p-4 lg:flex-row lg:items-start lg:justify-between">
+        <div class="flex flex-col gap-2 min-w-0">
+          <div class="flex flex-col gap-1">
+            <h1 class="font-black tracking-tight text-white!">
+              Welcome back, {{ firstName() }} <span class="inline-block">👋</span>
+            </h1>
+            <p class="text-white/90">
+              {{ today | date: 'EEEE, d MMMM y' }} — here's your data sales overview
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="w-full lg:w-auto lg:min-w-75 shrink-0 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-semibold uppercase tracking-widest text-white/60">
+              Wallet Balance
+            </span>
+            <span
+              class="rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-medium text-white/70"
+            >
+              {{ agentCode() }}
+            </span>
           </div>
 
-          @if (stat.trend !== null) {
-            <span
-              class="flex items-center gap-1 rounded-full px-2 py-2 text-xs font-semibold"
-              [ngClass]="
-                stat.trend >= 0 ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'
-              "
-            >
-              <i
-                class="pi text-[10px]"
-                [ngClass]="stat.trend >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"
-              ></i>
-              {{ stat.trend >= 0 ? '+' : '' }}{{ stat.trend }}%
+          <div class="mt-2 flex items-end gap-1.5">
+            <span class="text-sm font-light text-white mb-1">GHS</span>
+            <span class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+              {{ balance() | number: '1.2-2' }}
             </span>
-          } @else if (stat.badge) {
-            <span class="rounded-full bg-info/10 px-2.5 py-2 text-xs font-medium text-info">
-              {{ stat.badge }}
-            </span>
-          }
-        </div>
+          </div>
 
-        <div class="flex flex-col gap-0.5">
-          <span class="text-2xl font-bold tracking-tight text-heading">{{ stat.value }}</span>
-          <span class="text-sm text-paragraph">{{ stat.label }}</span>
-        </div>
-      </div>
-    }
-  </section>
+          <p class="text-xs! text-white/70">Available for purchases &amp; withdrawals</p>
 
-  <!-- Below stats: main + side columns -->
-  <section class="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-4">
-    <!-- Main column -->
-    <div class="flex flex-col gap-4 min-w-0">
-      <!-- Quick sell -->
-      <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
-        <div class="px-4 py-3 border-b border-border">
-          <h3 class="text-sm font-bold text-heading">Quick sell — data bundles</h3>
-          <p class="text-xs text-muted">Select a network to place an order for a customer</p>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 p-3">
-          @for (tile of quickSell; track tile.network) {
+          <div class="mt-2 flex items-center gap-2">
             <button
               type="button"
-              (click)="openPurchase(tile.network)"
-              class="flex items-center gap-3 p-3 rounded-card border border-border bg-background/40 hover:border-primary hover:shadow-card transition-all text-left"
+              (click)="showTopUp.set(true)"
+              class="flex flex-1 items-center cursor-pointer justify-center gap-1.5 rounded-card bg-accent px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-accent-hover"
             >
-              <img
-                [src]="tile.logo"
-                [alt]="tile.network"
-                class="w-9 h-9 rounded-lg object-contain bg-white border border-border p-1 shrink-0"
-              />
-              <div class="min-w-0">
-                <div class="text-sm font-semibold text-heading truncate">{{ tile.name }}</div>
-                <div class="text-[10px] text-muted truncate">{{ tile.desc }}</div>
-              </div>
+              <i class="pi pi-plus text-xs"></i>
+              Top Up
             </button>
-          }
+            <button
+              type="button"
+              (click)="showWithdraw.set(true)"
+              class="flex flex-1 items-center cursor-pointer justify-center gap-1.5 rounded-card border border-white/20 bg-white/5 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+            >
+              <i class="pi pi-arrow-up-right text-xs"></i>
+              Withdraw
+            </button>
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- Recent orders -->
-      <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
-        <div class="px-4 py-3 border-b border-border flex items-center justify-between">
-          <div>
-            <h3 class="text-sm font-bold text-heading">Recent orders</h3>
-            <p class="text-xs text-muted">Your last 5 bundle orders</p>
-          </div>
-          <a
-            routerLink="/dashboard/orders"
-            class="text-xs font-semibold text-primary hover:text-primary-hover flex items-center gap-1"
-          >
-            View all <i class="pi pi-arrow-right text-[10px]"></i>
-          </a>
-        </div>
-        @if (recentOrders().length === 0) {
-          <div class="px-4 py-8 text-center text-xs text-muted">
-            No orders yet — place one from Quick Sell above.
-          </div>
-        } @else {
-          <div class="divide-y divide-border">
-            @for (o of recentOrders(); track o.id) {
-              <div class="flex items-center gap-3 px-4 py-2.5">
-                <img
-                  [src]="logo(o.network)"
-                  [alt]="o.network"
-                  class="w-6 h-6 rounded object-contain bg-white border border-border p-0.5 shrink-0"
-                />
-                <div class="min-w-0 flex-1">
-                  <div class="text-xs font-medium text-heading">
-                    {{ o.sizeLabel }} · {{ formatPhone(o.recipientNumber) }}
-                  </div>
-                  <div class="text-[10px] text-muted font-mono">{{ o.id }}</div>
-                </div>
-                <span class="text-xs font-semibold text-heading">GHS {{ ghs(o.amount) }}</span>
-                <span
-                  class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0"
-                  [ngClass]="orderStatusClass(o.status)"
-                >
-                  {{ orderStatusLabel(o.status) }}
-                </span>
-              </div>
+    <section class="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+      @for (stat of stats; track stat.label) {
+        <div
+          class="flex flex-col gap-3 rounded-card border border-border bg-surface p-4 shadow-card transition-shadow hover:shadow-modal"
+        >
+          <div class="flex items-start justify-between">
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-xl"
+              [ngClass]="stat.iconClass"
+            >
+              <i class="pi text-lg" [ngClass]="stat.icon"></i>
+            </div>
+
+            @if (stat.trend !== null) {
+              <span
+                class="flex items-center gap-1 rounded-full px-2 py-2 text-xs font-semibold"
+                [ngClass]="
+                  stat.trend >= 0 ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'
+                "
+              >
+                <i
+                  class="pi text-[10px]"
+                  [ngClass]="stat.trend >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"
+                ></i>
+                {{ stat.trend >= 0 ? '+' : '' }}{{ stat.trend }}%
+              </span>
+            } @else if (stat.badge) {
+              <span class="rounded-full bg-info/10 px-2.5 py-2 text-xs font-medium text-info">
+                {{ stat.badge }}
+              </span>
             }
           </div>
-        }
-      </div>
-    </div>
 
-    <!-- Side column -->
-    <div class="flex flex-col gap-4">
-      <!-- My shop -->
-      <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
-        <div class="px-4 py-3 border-b border-border flex items-center justify-between">
-          <div>
-            <h3 class="text-sm font-bold text-heading">My shop</h3>
-            <p class="text-xs text-muted">{{ shop()?.name || 'Your storefront' }}</p>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-2xl font-bold tracking-tight text-heading">{{ stat.value }}</span>
+            <span class="text-sm text-paragraph">{{ stat.label }}</span>
           </div>
-          @if (shop()) {
-            <span
-              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
-              [ngClass]="shop()!.isActive ? 'bg-success/10 text-success' : 'bg-border text-muted'"
-            >
-              <span
-                class="w-1.5 h-1.5 rounded-full"
-                [ngClass]="shop()!.isActive ? 'bg-success' : 'bg-muted'"
-              ></span>
-              {{ shop()!.isActive ? 'Active' : 'Offline' }}
-            </span>
-          }
         </div>
-        <div class="p-3 flex flex-col gap-3">
-          @if (shop(); as s) {
-            <span
-              class="inline-flex items-center gap-1.5 self-start bg-primary/10 text-primary text-[11px] font-mono px-2.5 py-1 rounded-full"
-            >
-              <i class="pi pi-link text-[9px]"></i> /shop/{{ s.slug }}
-            </span>
-          }
-          <div class="flex gap-2">
-            <a
-              routerLink="/dashboard/packages"
-              class="flex-1 text-center px-3 py-2 rounded-card bg-primary text-white text-xs font-semibold hover:bg-primary-hover transition-colors"
-            >
-              Manage shop
-            </a>
+      }
+    </section>
+
+    <!-- Below stats: main + side columns -->
+    <section class="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-4">
+      <!-- Main column -->
+      <div class="flex flex-col gap-4 min-w-0">
+        <!-- Quick sell -->
+        <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+          <div class="px-4 py-3 border-b border-border">
+            <h3 class="text-sm font-bold text-heading">Quick sell — data bundles</h3>
+            <p class="text-xs text-muted">Select a network to place an order for a customer</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 p-3">
+            @for (tile of quickSell; track tile.network) {
+              <button
+                type="button"
+                (click)="openPurchase(tile.network)"
+                class="flex items-center gap-3 p-3 rounded-card border border-border bg-background/40 hover:border-primary hover:shadow-card transition-all text-left"
+              >
+                <img
+                  [src]="tile.logo"
+                  [alt]="tile.network"
+                  class="w-9 h-9 rounded-lg object-contain bg-white border border-border p-1 shrink-0"
+                />
+                <div class="min-w-0">
+                  <div class="text-sm font-semibold text-heading truncate">{{ tile.name }}</div>
+                  <div class="text-[10px] text-muted truncate">{{ tile.desc }}</div>
+                </div>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Recent orders -->
+        <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+          <div class="px-4 py-3 border-b border-border flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-heading">Recent orders</h3>
+              <p class="text-xs text-muted">Your last 5 bundle orders</p>
+            </div>
             <a
               routerLink="/dashboard/orders"
-              class="flex-1 text-center px-3 py-2 rounded-card border border-border text-heading text-xs font-semibold hover:bg-background transition-colors"
+              class="text-xs font-semibold text-primary hover:text-primary-hover flex items-center gap-1"
             >
-              Orders
+              View all <i class="pi pi-arrow-right text-[10px]"></i>
             </a>
           </div>
-        </div>
-      </div>
-
-      <!-- Sub-agents (sample) -->
-      <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
-        <div class="px-4 py-3 border-b border-border">
-          <h3 class="text-sm font-bold text-heading">Sub-agents</h3>
-          <p class="text-xs text-muted">{{ subAgents.length }} active</p>
-        </div>
-        <div class="divide-y divide-border">
-          @for (a of subAgents; track a.initials) {
-            <div class="flex items-center gap-2.5 px-4 py-2.5">
-              <span
-                class="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-                [ngClass]="a.color"
-              >
-                {{ a.initials }}
-              </span>
-              <div class="min-w-0 flex-1">
-                <div class="text-xs font-medium text-heading truncate">{{ a.name }}</div>
-                <div class="text-[10px] text-muted">{{ a.orders }} orders</div>
-              </div>
-              <span class="text-xs font-semibold text-primary">GHS {{ a.sales }}</span>
+          @if (recentOrders().length === 0) {
+            <div class="px-4 py-8 text-center text-xs text-muted">
+              No orders yet — place one from Quick Sell above.
+            </div>
+          } @else {
+            <div class="divide-y divide-border">
+              @for (o of recentOrders(); track o.id) {
+                <div class="flex items-center gap-3 px-4 py-2.5">
+                  <img
+                    [src]="logo(o.network)"
+                    [alt]="o.network"
+                    class="w-6 h-6 rounded object-contain bg-white border border-border p-0.5 shrink-0"
+                  />
+                  <div class="min-w-0 flex-1">
+                    <div class="text-xs font-medium text-heading">
+                      {{ o.sizeLabel }} · {{ formatPhone(o.recipientNumber) }}
+                    </div>
+                    <div class="text-[10px] text-muted font-mono">{{ o.id }}</div>
+                  </div>
+                  <span class="text-xs font-semibold text-heading">GHS {{ ghs(o.amount) }}</span>
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0"
+                    [ngClass]="orderStatusClass(o.status)"
+                  >
+                    {{ orderStatusLabel(o.status) }}
+                  </span>
+                </div>
+              }
             </div>
           }
         </div>
       </div>
 
-      <!-- Recent transactions -->
-      <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
-        <div class="px-4 py-3 border-b border-border">
-          <h3 class="text-sm font-bold text-heading">Recent transactions</h3>
+      <!-- Side column -->
+      <div class="flex flex-col gap-4">
+        <!-- My shop -->
+        <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+          <div class="px-4 py-3 border-b border-border flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-heading">My shop</h3>
+              <p class="text-xs text-muted">{{ shop()?.name || 'Your storefront' }}</p>
+            </div>
+            @if (shop()) {
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
+                [ngClass]="shop()!.isActive ? 'bg-success/10 text-success' : 'bg-border text-muted'"
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  [ngClass]="shop()!.isActive ? 'bg-success' : 'bg-muted'"
+                ></span>
+                {{ shop()!.isActive ? 'Active' : 'Offline' }}
+              </span>
+            }
+          </div>
+          <div class="p-3 flex flex-col gap-3">
+            @if (shop(); as s) {
+              <span
+                class="inline-flex items-center gap-1.5 self-start bg-primary/10 text-primary text-[11px] font-mono px-2.5 py-1 rounded-full"
+              >
+                <i class="pi pi-link text-[9px]"></i> /shop/{{ s.slug }}
+              </span>
+            }
+            <div class="flex gap-2">
+              <a
+                routerLink="/dashboard/packages"
+                class="flex-1 text-center px-3 py-2 rounded-card bg-primary text-white text-xs font-semibold hover:bg-primary-hover transition-colors"
+              >
+                Manage shop
+              </a>
+              <a
+                routerLink="/dashboard/orders"
+                class="flex-1 text-center px-3 py-2 rounded-card border border-border text-heading text-xs font-semibold hover:bg-background transition-colors"
+              >
+                Orders
+              </a>
+            </div>
+          </div>
         </div>
-        @if (recentTransactions().length === 0) {
-          <div class="px-4 py-8 text-center text-xs text-muted">No transactions yet.</div>
-        } @else {
+
+        <!-- Sub-agents (sample) -->
+        <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+          <div class="px-4 py-3 border-b border-border">
+            <h3 class="text-sm font-bold text-heading">Sub-agents</h3>
+            <p class="text-xs text-muted">{{ subAgents.length }} active</p>
+          </div>
           <div class="divide-y divide-border">
-            @for (t of recentTransactions(); track t.id) {
+            @for (a of subAgents; track a.initials) {
               <div class="flex items-center gap-2.5 px-4 py-2.5">
                 <span
-                  class="w-7 h-7 rounded-md flex items-center justify-center shrink-0"
-                  [ngClass]="
-                    txnIsCredit(t) ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'
-                  "
+                  class="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                  [ngClass]="a.color"
                 >
-                  <i
-                    class="pi text-[11px]"
-                    [ngClass]="txnIsCredit(t) ? 'pi-arrow-down' : 'pi-arrow-up'"
-                  ></i>
+                  {{ a.initials }}
                 </span>
                 <div class="min-w-0 flex-1">
-                  <div class="text-xs font-medium text-heading truncate">{{ txnLabel(t) }}</div>
-                  <div class="text-[10px] text-muted">{{ t.createdAt | date: 'd MMM y' }}</div>
+                  <div class="text-xs font-medium text-heading truncate">{{ a.name }}</div>
+                  <div class="text-[10px] text-muted">{{ a.orders }} orders</div>
                 </div>
-                <span
-                  class="text-xs font-semibold"
-                  [ngClass]="txnIsCredit(t) ? 'text-success' : 'text-danger'"
-                >
-                  {{ txnIsCredit(t) ? '+' : '−' }}GHS {{ t.amount }}
-                </span>
+                <span class="text-xs font-semibold text-primary">GHS {{ a.sales }}</span>
               </div>
             }
           </div>
-        }
+        </div>
+
+        <!-- Recent transactions -->
+        <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+          <div class="px-4 py-3 border-b border-border">
+            <h3 class="text-sm font-bold text-heading">Recent transactions</h3>
+          </div>
+          @if (recentTransactions().length === 0) {
+            <div class="px-4 py-8 text-center text-xs text-muted">No transactions yet.</div>
+          } @else {
+            <div class="divide-y divide-border">
+              @for (t of recentTransactions(); track t.id) {
+                <div class="flex items-center gap-2.5 px-4 py-2.5">
+                  <span
+                    class="w-7 h-7 rounded-md flex items-center justify-center shrink-0"
+                    [ngClass]="
+                      txnIsCredit(t) ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'
+                    "
+                  >
+                    <i
+                      class="pi text-[11px]"
+                      [ngClass]="txnIsCredit(t) ? 'pi-arrow-down' : 'pi-arrow-up'"
+                    ></i>
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <div class="text-xs font-medium text-heading truncate">{{ txnLabel(t) }}</div>
+                    <div class="text-[10px] text-muted">{{ t.createdAt | date: 'd MMM y' }}</div>
+                  </div>
+                  <span
+                    class="text-xs font-semibold"
+                    [ngClass]="txnIsCredit(t) ? 'text-success' : 'text-danger'"
+                  >
+                    {{ txnIsCredit(t) ? '+' : '−' }}GHS {{ t.amount }}
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        </div>
       </div>
-    </div>
-  </section>
-</div>
+    </section>
+  </div>
+}
 
 <!-- Purchase order modal -->
 <app-purchase-modal [(visible)]="showPurchase" [network]="purchaseNetwork()"></app-purchase-modal>

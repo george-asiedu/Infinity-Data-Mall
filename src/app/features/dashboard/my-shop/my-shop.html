@@ -1,611 +1,621 @@
-<div class="flex flex-col gap-5 w-full">
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-    <div class="flex flex-col gap-1">
-      <h1 class="text-2xl font-bold tracking-tight text-heading">My Shop</h1>
-      <p class="text-sm text-paragraph max-w-xl">
-        Manage your public storefront, track sales and withdraw your profits.
-      </p>
-    </div>
-    <button
-      type="button"
-      (click)="visitShop()"
-      class="flex items-center gap-2 px-3.5 py-2 rounded-card border border-border bg-surface text-paragraph text-sm font-medium hover:border-primary hover:text-primary transition-colors"
-    >
-      <i class="pi pi-external-link text-xs"></i> Preview shop
-    </button>
-  </div>
-
-  <!-- Shop identity card -->
-  @if (shop(); as s) {
-    <section class="relative overflow-hidden rounded-2xl bg-primary text-white shadow-card">
-      <div
-        class="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-white/5 blur-2xl"
-      ></div>
-      <div class="relative flex flex-col lg:flex-row">
-        <!-- Left -->
-        <div class="flex-1 p-6 flex flex-col gap-3 min-w-0">
-          <div class="flex items-center gap-3">
-            <span
-              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold"
-              [ngClass]="
-                s.isActive ? 'bg-success/20 text-emerald-200' : 'bg-danger/20 text-red-200'
-              "
-            >
-              <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-              {{ s.isActive ? 'Active' : 'Offline' }}
-            </span>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <span class="relative inline-flex items-center">
-                <input
-                  type="checkbox"
-                  class="sr-only peer"
-                  [checked]="s.isActive"
-                  (change)="toggleActive($any($event.target).checked)"
-                />
-                <span
-                  class="w-8 h-4.5 bg-white/20 rounded-full peer-checked:bg-success transition-colors"
-                ></span>
-                <span
-                  class="absolute left-0.5 top-0.5 w-3.5 h-3.5 bg-white rounded-full transition-transform peer-checked:translate-x-3.5"
-                ></span>
-              </span>
-              <span class="text-xs text-white/60">{{
-                s.isActive ? 'Shop is live' : 'Shop is offline'
-              }}</span>
-            </label>
-          </div>
-
-          <div>
-            <h2 class="text-2xl font-bold tracking-tight">{{ s.name }}</h2>
-            <p class="text-sm text-white/55 mt-0.5">
-              {{ s.tagline || 'Fast, reliable data bundles — MTN · AT · Telecel' }}
-            </p>
-          </div>
-
-          <div
-            class="flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 font-mono text-sm text-white/85 max-w-md"
-          >
-            <i class="pi pi-link text-xs text-white/40"></i>
-            <span class="truncate">{{ publicUrl() }}</span>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-2 mt-1">
-            <button
-              type="button"
-              (click)="copyLink()"
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-xs font-medium text-white/85 hover:bg-white/20 transition-colors"
-            >
-              <i class="pi pi-copy text-[11px]"></i> Copy link
-            </button>
-            <button
-              type="button"
-              (click)="shareWhatsApp()"
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-300/20 text-xs font-medium text-emerald-100 hover:bg-emerald-500/30 transition-colors"
-            >
-              <i class="pi pi-whatsapp text-[11px]"></i> Share on WhatsApp
-            </button>
-            <button
-              type="button"
-              (click)="visitShop()"
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent text-heading text-xs font-semibold hover:bg-accent-hover transition-colors"
-            >
-              <i class="pi pi-external-link text-[11px]"></i> Visit shop
-            </button>
-          </div>
-        </div>
-
-        <!-- Right: financials -->
-        <div
-          class="w-full lg:w-80 shrink-0 bg-white/5 border-t lg:border-t-0 lg:border-l border-white/10 p-6 flex flex-col gap-4"
-        >
-          <div>
-            <div class="text-[10px] font-semibold uppercase tracking-widest text-white/45">
-              Wallet balance
-            </div>
-            <div class="text-3xl font-bold mt-1">GHS {{ walletBalance() | number: '1.2-2' }}</div>
-            <div class="text-[11px] text-white/35 mt-0.5">Available to withdraw</div>
-          </div>
-          <button
-            type="button"
-            (click)="showWithdraw.set(true)"
-            class="flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-heading hover:bg-accent-hover transition-colors"
-          >
-            <i class="pi pi-arrow-up-right text-xs"></i> Withdraw profits
-          </button>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="rounded-lg bg-white/5 border border-white/10 p-2.5">
-              <div class="text-sm font-semibold">
-                GHS {{ ghs(overview()?.allTime?.profit ?? 0) }}
-              </div>
-              <div class="text-[10px] text-white/40">Total profit</div>
-            </div>
-            <div class="rounded-lg bg-white/5 border border-white/10 p-2.5">
-              <div class="text-sm font-semibold">{{ overview()?.allTime?.orders ?? 0 }}</div>
-              <div class="text-[10px] text-white/40">Shop orders</div>
-            </div>
-            <div class="rounded-lg bg-white/5 border border-white/10 p-2.5">
-              <div class="text-sm font-semibold">{{ overview()?.allTime?.customers ?? 0 }}</div>
-              <div class="text-[10px] text-white/40">Customers</div>
-            </div>
-            <div class="rounded-lg bg-white/5 border border-white/10 p-2.5">
-              <div class="text-sm font-semibold">
-                GHS {{ ghs(overview()?.allTime?.revenue ?? 0) }}
-              </div>
-              <div class="text-[10px] text-white/40">Revenue</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  }
-
-  <!-- Tabs -->
-  <div class="flex gap-1 bg-border/40 rounded-card p-1 w-fit">
-    @for (tab of tabs; track tab.key) {
-      <button
-        type="button"
-        (click)="setTab(tab.key)"
-        class="flex items-center gap-2 px-4 py-2 rounded-card text-sm font-medium transition-colors"
-        [ngClass]="
-          activeTab() === tab.key
-            ? 'bg-surface text-heading shadow-card'
-            : 'text-paragraph hover:text-heading'
-        "
-      >
-        <i class="pi {{ tab.icon }} text-xs"></i> {{ tab.label }}
-      </button>
-    }
-  </div>
-
-  <!-- OVERVIEW -->
-  @if (activeTab() === 'overview') {
-    <div class="flex flex-col gap-5">
-      <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
-        <div class="rounded-card border border-border bg-surface p-4 shadow-card">
-          <div class="text-xl font-bold text-heading">{{ overview()?.thisMonth?.orders ?? 0 }}</div>
-          <div class="text-xs text-paragraph mt-1">Shop orders this month</div>
-        </div>
-        <div class="rounded-card border border-border bg-surface p-4 shadow-card">
-          <div class="text-xl font-bold text-heading">
-            GHS {{ ghs(overview()?.thisMonth?.revenue ?? 0) }}
-          </div>
-          <div class="text-xs text-paragraph mt-1">Revenue this month</div>
-        </div>
-        <div class="rounded-card border border-border bg-surface p-4 shadow-card">
-          <div class="text-xl font-bold text-success">
-            GHS {{ ghs(overview()?.thisMonth?.profit ?? 0) }}
-          </div>
-          <div class="text-xs text-paragraph mt-1">Profit this month</div>
-        </div>
-        <div class="rounded-card border border-border bg-surface p-4 shadow-card">
-          <div class="text-xl font-bold text-heading">
-            {{ overview()?.thisMonth?.customers ?? 0 }}
-          </div>
-          <div class="text-xs text-paragraph mt-1">Customers this month</div>
-        </div>
-      </div>
-
-      <!-- Revenue chart -->
-      <div class="rounded-card border border-border bg-surface shadow-card p-5">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-heading">Shop revenue</h3>
-          <div class="flex items-center gap-4 text-xs text-paragraph">
-            <span class="flex items-center gap-1.5"
-              ><span class="w-2.5 h-2.5 rounded-full bg-primary"></span>Revenue</span
-            >
-            <span class="flex items-center gap-1.5"
-              ><span class="w-2.5 h-2.5 rounded-full bg-accent"></span>Profit</span
-            >
-          </div>
-        </div>
-        @if (chart().hasData) {
-          <svg
-            [attr.viewBox]="'0 0 ' + chart().w + ' ' + (chart().h + 22)"
-            class="w-full"
-            style="height: 200px"
-            preserveAspectRatio="none"
-          >
-            <defs>
-              <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="var(--color-primary)" stop-opacity="0.18" />
-                <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0" />
-              </linearGradient>
-            </defs>
-            <path [attr.d]="chart().revenueArea" fill="url(#revGrad)" />
-            <polyline
-              [attr.points]="chart().revenuePts"
-              fill="none"
-              stroke="var(--color-primary)"
-              stroke-width="2.5"
-              stroke-linejoin="round"
-              stroke-linecap="round"
-            />
-            <polyline
-              [attr.points]="chart().profitPts"
-              fill="none"
-              stroke="var(--color-accent)"
-              stroke-width="2"
-              stroke-dasharray="4,3"
-              stroke-linejoin="round"
-              stroke-linecap="round"
-            />
-            @for (lbl of chart().labels; track $index) {
-              <text
-                [attr.x]="
-                  chart().labels.length <= 1
-                    ? 0
-                    : ($index / (chart().labels.length - 1)) * chart().w
-                "
-                [attr.y]="chart().h + 16"
-                fill="var(--color-muted)"
-                font-size="10"
-                text-anchor="middle"
-              >
-                {{ lbl }}
-              </text>
-            }
-          </svg>
-        } @else {
-          <div class="flex flex-col items-center justify-center gap-1 py-12 text-center">
-            <i class="pi pi-chart-line text-3xl text-muted/50"></i>
-            <p class="text-sm text-muted">
-              No sales data yet — your revenue trend will appear here.
-            </p>
-          </div>
-        }
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <!-- Recent orders -->
-        <div
-          class="lg:col-span-2 rounded-card border border-border bg-surface shadow-card overflow-hidden"
-        >
-          <div class="px-4 py-3 border-b border-border">
-            <h3 class="text-sm font-semibold text-heading">Recent shop orders</h3>
-          </div>
-          @if ((overview()?.recentOrders?.length ?? 0) === 0) {
-            <div class="p-8 text-center text-sm text-muted">No shop orders yet.</div>
-          } @else {
-            <div class="divide-y divide-border">
-              @for (o of overview()?.recentOrders ?? []; track o.id) {
-                <div class="flex items-center gap-3 px-4 py-2.5">
-                  <img
-                    [src]="logo(o.network)"
-                    [alt]="o.network"
-                    class="w-7 h-7 rounded-md object-contain bg-white border border-border p-0.5"
-                  />
-                  <div class="min-w-0 flex-1">
-                    <div class="text-sm font-medium text-heading truncate">
-                      {{ packageName(o) }}
-                    </div>
-                    <div class="text-[11px] text-muted font-mono">
-                      {{ formatPhone(o.recipientNumber) }}
-                    </div>
-                  </div>
-                  <div class="text-sm font-mono font-medium text-heading">
-                    GHS {{ ghs(o.amount) }}
-                  </div>
-                  <span
-                    class="px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                    [ngClass]="statusClass(o.status)"
-                  >
-                    {{ statusLabel(o.status) }}
-                  </span>
-                </div>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Top packages + customers -->
-        <div class="flex flex-col gap-4">
-          <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
-            <div class="px-4 py-3 border-b border-border">
-              <h3 class="text-sm font-semibold text-heading">Top selling packages</h3>
-            </div>
-            @if ((overview()?.topPackages?.length ?? 0) === 0) {
-              <div class="p-6 text-center text-xs text-muted">No sales yet.</div>
-            } @else {
-              <div class="divide-y divide-border">
-                @for (
-                  p of overview()?.topPackages ?? [];
-                  track p.sizeLabel + p.network;
-                  let i = $index
-                ) {
-                  <div class="flex items-center gap-2.5 px-4 py-2.5">
-                    <span
-                      class="w-5 h-5 rounded-full bg-primary/10 text-primary text-[10px] font-bold flex items-center justify-center"
-                      >{{ i + 1 }}</span
-                    >
-                    <div class="flex-1 min-w-0">
-                      <div class="text-xs font-medium text-heading">
-                        {{ p.network }} {{ p.sizeLabel }}
-                      </div>
-                      <div class="text-[10px] text-muted">{{ p.orders }} sales</div>
-                    </div>
-                    <div class="text-xs font-semibold text-primary">GHS {{ ghs(p.revenue) }}</div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-
-          <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
-            <div class="px-4 py-3 border-b border-border">
-              <h3 class="text-sm font-semibold text-heading">Top customers</h3>
-            </div>
-            @if ((overview()?.topCustomers?.length ?? 0) === 0) {
-              <div class="p-6 text-center text-xs text-muted">No customers yet.</div>
-            } @else {
-              <div class="divide-y divide-border">
-                @for (c of overview()?.topCustomers ?? []; track c.recipientNumber) {
-                  <div class="flex items-center gap-2.5 px-4 py-2.5">
-                    <span
-                      class="w-7 h-7 rounded-full bg-accent/15 text-accent text-[10px] font-bold flex items-center justify-center"
-                      >{{ initials(c.recipientNumber) }}</span
-                    >
-                    <div class="flex-1 min-w-0">
-                      <div class="text-xs font-mono text-heading">
-                        {{ formatPhone(c.recipientNumber) }}
-                      </div>
-                      <div class="text-[10px] text-muted">{{ c.orders }} orders</div>
-                    </div>
-                    <div class="text-xs font-semibold text-primary">GHS {{ ghs(c.spent) }}</div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-  }
-
-  <!-- SHOP ORDERS -->
-  @if (activeTab() === 'orders') {
-    <ng-template #pkgCell let-o>
-      <div class="flex items-center gap-3">
-        <img
-          [src]="logo(o.network)"
-          [alt]="o.network"
-          class="w-8 h-8 rounded-md object-contain bg-white border border-border p-0.5 shrink-0"
-        />
-        <span class="text-sm font-medium text-heading truncate">{{ packageName(o) }}</span>
-      </div>
-    </ng-template>
-    <ng-template #customerCell let-o>
-      <span class="font-mono text-xs text-paragraph">{{ formatPhone(o.recipientNumber) }}</span>
-    </ng-template>
-    <ng-template #paidCell let-o>
-      <span class="font-mono text-sm font-medium text-heading">GHS {{ ghs(o.amount) }}</span>
-    </ng-template>
-    <ng-template #costCell let-o>
-      <span class="font-mono text-sm text-muted">GHS {{ ghs(o.wholesaleAmount) }}</span>
-    </ng-template>
-    <ng-template #profitCell let-o>
-      <span
-        class="font-mono text-sm font-semibold"
-        [ngClass]="o.profit >= 0 ? 'text-success' : 'text-danger'"
-      >
-        +GHS {{ ghs(o.profit) }}
-      </span>
-    </ng-template>
-    <ng-template #dateCell let-o>
-      <span class="text-xs text-paragraph">{{ o.createdAt | date: 'd MMM, HH:mm' }}</span>
-    </ng-template>
-    <ng-template #statusCell let-o>
-      <span
-        class="px-2 py-0.5 rounded-full text-[11px] font-semibold"
-        [ngClass]="statusClass(o.status)"
-      >
-        {{ statusLabel(o.status) }}
-      </span>
-    </ng-template>
-
-    <app-table
-      [data]="$any(orders())"
-      [columns]="orderColumns"
-      [rows]="15"
-      emptyIcon="🛍️"
-      emptyTitle="No shop orders yet"
-      emptyMessage="Orders placed by customers through your shop link will appear here."
-      [cellTemplates]="{
-        package: pkgCell,
-        customer: customerCell,
-        paid: paidCell,
-        cost: costCell,
-        profit: profitCell,
-        date: dateCell,
-        status: statusCell,
-      }"
-    ></app-table>
-  }
-
-  <!-- SETTINGS -->
-  @if (activeTab() === 'settings') {
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div class="lg:col-span-2 flex flex-col gap-4">
-        <div
-          class="rounded-card border border-border bg-surface shadow-card p-5 flex flex-col gap-4"
-        >
-          <h3 class="text-sm font-semibold text-heading">Shop identity</h3>
-          <div class="flex flex-col gap-1.5">
-            <label for="name" class="text-xs font-medium text-paragraph">Shop name</label>
-            <input
-              [ngModel]="form().name"
-              (ngModelChange)="patchForm('name', $event)"
-              class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
-            />
-          </div>
-          <div class="flex flex-col gap-1.5">
-            <label for="slug" class="text-xs font-medium text-paragraph">Shop link (slug)</label>
-            <div
-              class="flex items-stretch border border-border rounded-card overflow-hidden focus-within:border-primary"
-            >
-              <span
-                class="px-3 py-2 bg-background text-xs text-muted font-mono border-r border-border"
-                >/shop/</span
-              >
-              <input
-                [ngModel]="form().slug"
-                (ngModelChange)="patchForm('slug', $event)"
-                class="flex-1 px-3 py-2 text-sm font-mono bg-surface outline-none text-heading"
-              />
-            </div>
-            <span class="text-[11px] text-muted">Lowercase letters, numbers and hyphens only.</span>
-          </div>
-          <div class="flex flex-col gap-1.5">
-            <label for="tagline" class="text-xs font-medium text-paragraph">Tagline</label>
-            <input
-              [ngModel]="form().tagline"
-              (ngModelChange)="patchForm('tagline', $event)"
-              class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
-            />
-          </div>
-          <div class="flex flex-col gap-1.5">
-            <label for="welcomeMessage" class="text-xs font-medium text-paragraph"
-              >Welcome message</label
-            >
-            <textarea
-              [ngModel]="form().welcomeMessage"
-              (ngModelChange)="patchForm('welcomeMessage', $event)"
-              rows="3"
-              class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading resize-y"
-            ></textarea>
-          </div>
-        </div>
-
-        <div
-          class="rounded-card border border-border bg-surface shadow-card p-5 flex flex-col gap-4"
-        >
-          <h3 class="text-sm font-semibold text-heading">Contact &amp; social</h3>
-          <div class="flex flex-col gap-1.5">
-            <label for="contactPhone" class="text-xs font-medium text-paragraph"
-              >Contact phone</label
-            >
-            <input
-              [ngModel]="form().contactPhone"
-              (ngModelChange)="patchForm('contactPhone', $event)"
-              class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
-            />
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="flex flex-col gap-1.5">
-              <label for="whatsapp" class="text-xs font-medium text-paragraph">WhatsApp</label>
-              <input
-                [ngModel]="form().whatsapp"
-                (ngModelChange)="patchForm('whatsapp', $event)"
-                class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
-              />
-            </div>
-            <div class="flex flex-col gap-1.5">
-              <label for="facebook" class="text-xs font-medium text-paragraph">Facebook</label>
-              <input
-                [ngModel]="form().facebook"
-                (ngModelChange)="patchForm('facebook', $event)"
-                class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
-              />
-            </div>
-            <div class="flex flex-col gap-1.5">
-              <label for="instagram" class="text-xs font-medium text-paragraph">Instagram</label>
-              <input
-                [ngModel]="form().instagram"
-                (ngModelChange)="patchForm('instagram', $event)"
-                class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <button
-            type="button"
-            (click)="saveSettings()"
-            class="flex items-center gap-2 px-4 py-2 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors"
-          >
-            <i class="pi pi-check text-xs"></i> Save changes
-          </button>
-        </div>
-      </div>
-
-      <!-- Logo -->
-      <div class="flex flex-col gap-4">
-        <div
-          class="rounded-card border border-border bg-surface shadow-card p-5 flex flex-col gap-4"
-        >
-          <h3 class="text-sm font-semibold text-heading">Shop logo</h3>
-          <div class="flex items-center gap-4">
-            <div
-              class="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden border border-border"
-            >
-              @if (shop()?.logoUrl) {
-                <img [src]="shop()?.logoUrl" alt="Shop logo" class="w-full h-full object-cover" />
-              } @else {
-                <i class="pi pi-image text-2xl text-primary"></i>
-              }
-            </div>
-            <button
-              type="button"
-              (click)="showLogoUpload.set(true)"
-              class="px-3 py-1.5 rounded-card border border-primary text-primary text-xs font-semibold hover:bg-primary/5 transition-colors"
-            >
-              Upload logo
-            </button>
-          </div>
-          <p class="text-[11px] text-muted">PNG or JPG, shown on your public shop page.</p>
-        </div>
-
-        <div class="rounded-card border border-danger/30 bg-danger/5 p-5">
-          <h3 class="text-sm font-semibold text-danger">Shop status</h3>
-          <p class="text-xs text-danger/80 mt-1 mb-3">
-            Taking your shop offline removes it from public access immediately. Existing orders are
-            unaffected.
-          </p>
-          @if (shop(); as s) {
-            <button
-              type="button"
-              (click)="toggleActive(!s.isActive)"
-              class="px-3 py-1.5 rounded-card text-xs font-semibold transition-colors"
-              [ngClass]="
-                s.isActive ? 'bg-danger text-white hover:bg-danger/90' : 'bg-success text-white'
-              "
-            >
-              {{ s.isActive ? 'Take shop offline' : 'Bring shop online' }}
-            </button>
-          }
-        </div>
-      </div>
-    </div>
-  }
-
-  <!-- PAYOUTS -->
-  @if (activeTab() === 'payouts') {
-    <div
-      class="rounded-card border border-border bg-surface shadow-card p-6 flex flex-col gap-4 max-w-xl"
-    >
-      <h3 class="text-sm font-semibold text-heading">Withdraw funds</h3>
-      <div class="flex items-end gap-2">
-        <span class="text-sm text-muted mb-1">Wallet balance</span>
-      </div>
-      <div class="text-3xl font-bold text-heading">GHS {{ walletBalance() | number: '1.2-2' }}</div>
-      <div class="flex items-start gap-2 rounded-card bg-info/5 border border-info/20 p-3">
-        <i class="pi pi-info-circle text-info text-sm mt-0.5"></i>
-        <p class="text-xs text-paragraph leading-relaxed">
-          Payouts are requested from your wallet and reviewed before processing. A dedicated
-          shop-profit balance is coming soon.
+@if (firstLoading()) {
+  <app-page-skeleton [banner]="true" [statCards]="4" [tableRows]="5"></app-page-skeleton>
+} @else {
+  <div class="flex flex-col gap-5 w-full">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+      <div class="flex flex-col gap-1">
+        <h1 class="text-2xl font-bold tracking-tight text-heading">My Shop</h1>
+        <p class="text-sm text-paragraph max-w-xl">
+          Manage your public storefront, track sales and withdraw your profits.
         </p>
       </div>
       <button
         type="button"
-        (click)="showWithdraw.set(true)"
-        class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors w-fit"
+        (click)="visitShop()"
+        class="flex items-center gap-2 px-3.5 py-2 rounded-card border border-border bg-surface text-paragraph text-sm font-medium hover:border-primary hover:text-primary transition-colors"
       >
-        <i class="pi pi-arrow-up-right text-xs"></i> Request withdrawal
+        <i class="pi pi-external-link text-xs"></i> Preview shop
       </button>
     </div>
-  }
-</div>
+
+    <!-- Shop identity card -->
+    @if (shop(); as s) {
+      <section class="relative overflow-hidden rounded-2xl bg-primary text-white shadow-card">
+        <div
+          class="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-white/5 blur-2xl"
+        ></div>
+        <div class="relative flex flex-col lg:flex-row">
+          <!-- Left -->
+          <div class="flex-1 p-6 flex flex-col gap-3 min-w-0">
+            <div class="flex items-center gap-3">
+              <span
+                class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                [ngClass]="
+                  s.isActive ? 'bg-success/20 text-emerald-200' : 'bg-danger/20 text-red-200'
+                "
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                {{ s.isActive ? 'Active' : 'Offline' }}
+              </span>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <span class="relative inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    class="sr-only peer"
+                    [checked]="s.isActive"
+                    (change)="toggleActive($any($event.target).checked)"
+                  />
+                  <span
+                    class="w-8 h-4.5 bg-white/20 rounded-full peer-checked:bg-success transition-colors"
+                  ></span>
+                  <span
+                    class="absolute left-0.5 top-0.5 w-3.5 h-3.5 bg-white rounded-full transition-transform peer-checked:translate-x-3.5"
+                  ></span>
+                </span>
+                <span class="text-xs text-white/60">{{
+                  s.isActive ? 'Shop is live' : 'Shop is offline'
+                }}</span>
+              </label>
+            </div>
+
+            <div>
+              <h2 class="text-2xl font-bold tracking-tight text-white!">{{ s.name }}</h2>
+              <p class="text-sm text-white/55 mt-0.5">
+                {{ s.tagline || 'Fast, reliable data bundles — MTN · AT · Telecel' }}
+              </p>
+            </div>
+
+            <div
+              class="flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 font-mono text-sm text-white/85 max-w-md"
+            >
+              <i class="pi pi-link text-xs text-white/40"></i>
+              <span class="truncate">{{ publicUrl() }}</span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 mt-1">
+              <button
+                type="button"
+                (click)="copyLink()"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-xs font-medium text-white/85 hover:bg-white/20 transition-colors"
+              >
+                <i class="pi pi-copy text-[11px]"></i> Copy link
+              </button>
+              <button
+                type="button"
+                (click)="shareWhatsApp()"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-300/20 text-xs font-medium text-emerald-100 hover:bg-emerald-500/30 transition-colors"
+              >
+                <i class="pi pi-whatsapp text-[11px]"></i> Share on WhatsApp
+              </button>
+              <button
+                type="button"
+                (click)="visitShop()"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent text-heading text-xs font-semibold hover:bg-accent-hover transition-colors"
+              >
+                <i class="pi pi-external-link text-[11px]"></i> Visit shop
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: financials -->
+          <div
+            class="w-full lg:w-80 shrink-0 bg-white/5 border-t lg:border-t-0 lg:border-l border-white/10 p-6 flex flex-col gap-4"
+          >
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-widest text-white/45">
+                Wallet balance
+              </div>
+              <div class="text-3xl font-bold mt-1">GHS {{ walletBalance() | number: '1.2-2' }}</div>
+              <div class="text-[11px] text-white/35 mt-0.5">Available to withdraw</div>
+            </div>
+            <button
+              type="button"
+              (click)="showWithdraw.set(true)"
+              class="flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-heading hover:bg-accent-hover transition-colors"
+            >
+              <i class="pi pi-arrow-up-right text-xs"></i> Withdraw profits
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="rounded-lg bg-white/5 border border-white/10 p-2.5">
+                <div class="text-sm font-semibold">
+                  GHS {{ ghs(overview()?.allTime?.profit ?? 0) }}
+                </div>
+                <div class="text-[10px] text-white/40">Total profit</div>
+              </div>
+              <div class="rounded-lg bg-white/5 border border-white/10 p-2.5">
+                <div class="text-sm font-semibold">{{ overview()?.allTime?.orders ?? 0 }}</div>
+                <div class="text-[10px] text-white/40">Shop orders</div>
+              </div>
+              <div class="rounded-lg bg-white/5 border border-white/10 p-2.5">
+                <div class="text-sm font-semibold">{{ overview()?.allTime?.customers ?? 0 }}</div>
+                <div class="text-[10px] text-white/40">Customers</div>
+              </div>
+              <div class="rounded-lg bg-white/5 border border-white/10 p-2.5">
+                <div class="text-sm font-semibold">
+                  GHS {{ ghs(overview()?.allTime?.revenue ?? 0) }}
+                </div>
+                <div class="text-[10px] text-white/40">Revenue</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- Tabs -->
+    <div class="flex gap-1 bg-border/40 rounded-card p-1 w-fit">
+      @for (tab of tabs; track tab.key) {
+        <button
+          type="button"
+          (click)="setTab(tab.key)"
+          class="flex items-center gap-2 px-4 py-2 rounded-card text-sm font-medium transition-colors"
+          [ngClass]="
+            activeTab() === tab.key
+              ? 'bg-surface text-heading shadow-card'
+              : 'text-paragraph hover:text-heading'
+          "
+        >
+          <i class="pi {{ tab.icon }} text-xs"></i> {{ tab.label }}
+        </button>
+      }
+    </div>
+
+    <!-- OVERVIEW -->
+    @if (activeTab() === 'overview') {
+      <div class="flex flex-col gap-5">
+        <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+          <div class="rounded-card border border-border bg-surface p-4 shadow-card">
+            <div class="text-xl font-bold text-heading">
+              {{ overview()?.thisMonth?.orders ?? 0 }}
+            </div>
+            <div class="text-xs text-paragraph mt-1">Shop orders this month</div>
+          </div>
+          <div class="rounded-card border border-border bg-surface p-4 shadow-card">
+            <div class="text-xl font-bold text-heading">
+              GHS {{ ghs(overview()?.thisMonth?.revenue ?? 0) }}
+            </div>
+            <div class="text-xs text-paragraph mt-1">Revenue this month</div>
+          </div>
+          <div class="rounded-card border border-border bg-surface p-4 shadow-card">
+            <div class="text-xl font-bold text-success">
+              GHS {{ ghs(overview()?.thisMonth?.profit ?? 0) }}
+            </div>
+            <div class="text-xs text-paragraph mt-1">Profit this month</div>
+          </div>
+          <div class="rounded-card border border-border bg-surface p-4 shadow-card">
+            <div class="text-xl font-bold text-heading">
+              {{ overview()?.thisMonth?.customers ?? 0 }}
+            </div>
+            <div class="text-xs text-paragraph mt-1">Customers this month</div>
+          </div>
+        </div>
+
+        <!-- Revenue chart -->
+        <div class="rounded-card border border-border bg-surface shadow-card p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-semibold text-heading">Shop revenue</h3>
+            <div class="flex items-center gap-4 text-xs text-paragraph">
+              <span class="flex items-center gap-1.5"
+                ><span class="w-2.5 h-2.5 rounded-full bg-primary"></span>Revenue</span
+              >
+              <span class="flex items-center gap-1.5"
+                ><span class="w-2.5 h-2.5 rounded-full bg-accent"></span>Profit</span
+              >
+            </div>
+          </div>
+          @if (chart().hasData) {
+            <svg
+              [attr.viewBox]="'0 0 ' + chart().w + ' ' + (chart().h + 22)"
+              class="w-full"
+              style="height: 200px"
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--color-primary)" stop-opacity="0.18" />
+                  <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <path [attr.d]="chart().revenueArea" fill="url(#revGrad)" />
+              <polyline
+                [attr.points]="chart().revenuePts"
+                fill="none"
+                stroke="var(--color-primary)"
+                stroke-width="2.5"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              />
+              <polyline
+                [attr.points]="chart().profitPts"
+                fill="none"
+                stroke="var(--color-accent)"
+                stroke-width="2"
+                stroke-dasharray="4,3"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              />
+              @for (lbl of chart().labels; track $index) {
+                <text
+                  [attr.x]="
+                    chart().labels.length <= 1
+                      ? 0
+                      : ($index / (chart().labels.length - 1)) * chart().w
+                  "
+                  [attr.y]="chart().h + 16"
+                  fill="var(--color-muted)"
+                  font-size="10"
+                  text-anchor="middle"
+                >
+                  {{ lbl }}
+                </text>
+              }
+            </svg>
+          } @else {
+            <div class="flex flex-col items-center justify-center gap-1 py-12 text-center">
+              <i class="pi pi-chart-line text-3xl text-muted/50"></i>
+              <p class="text-sm text-muted">
+                No sales data yet — your revenue trend will appear here.
+              </p>
+            </div>
+          }
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <!-- Recent orders -->
+          <div
+            class="lg:col-span-2 rounded-card border border-border bg-surface shadow-card overflow-hidden"
+          >
+            <div class="px-4 py-3 border-b border-border">
+              <h3 class="text-sm font-semibold text-heading">Recent shop orders</h3>
+            </div>
+            @if ((overview()?.recentOrders?.length ?? 0) === 0) {
+              <div class="p-8 text-center text-sm text-muted">No shop orders yet.</div>
+            } @else {
+              <div class="divide-y divide-border">
+                @for (o of overview()?.recentOrders ?? []; track o.id) {
+                  <div class="flex items-center gap-3 px-4 py-2.5">
+                    <img
+                      [src]="logo(o.network)"
+                      [alt]="o.network"
+                      class="w-7 h-7 rounded-md object-contain bg-white border border-border p-0.5"
+                    />
+                    <div class="min-w-0 flex-1">
+                      <div class="text-sm font-medium text-heading truncate">
+                        {{ packageName(o) }}
+                      </div>
+                      <div class="text-[11px] text-muted font-mono">
+                        {{ formatPhone(o.recipientNumber) }}
+                      </div>
+                    </div>
+                    <div class="text-sm font-mono font-medium text-heading">
+                      GHS {{ ghs(o.amount) }}
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                      [ngClass]="statusClass(o.status)"
+                    >
+                      {{ statusLabel(o.status) }}
+                    </span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Top packages + customers -->
+          <div class="flex flex-col gap-4">
+            <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+              <div class="px-4 py-3 border-b border-border">
+                <h3 class="text-sm font-semibold text-heading">Top selling packages</h3>
+              </div>
+              @if ((overview()?.topPackages?.length ?? 0) === 0) {
+                <div class="p-6 text-center text-xs text-muted">No sales yet.</div>
+              } @else {
+                <div class="divide-y divide-border">
+                  @for (
+                    p of overview()?.topPackages ?? [];
+                    track p.sizeLabel + p.network;
+                    let i = $index
+                  ) {
+                    <div class="flex items-center gap-2.5 px-4 py-2.5">
+                      <span
+                        class="w-5 h-5 rounded-full bg-primary/10 text-primary text-[10px] font-bold flex items-center justify-center"
+                        >{{ i + 1 }}</span
+                      >
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-medium text-heading">
+                          {{ p.network }} {{ p.sizeLabel }}
+                        </div>
+                        <div class="text-[10px] text-muted">{{ p.orders }} sales</div>
+                      </div>
+                      <div class="text-xs font-semibold text-primary">GHS {{ ghs(p.revenue) }}</div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="rounded-card border border-border bg-surface shadow-card overflow-hidden">
+              <div class="px-4 py-3 border-b border-border">
+                <h3 class="text-sm font-semibold text-heading">Top customers</h3>
+              </div>
+              @if ((overview()?.topCustomers?.length ?? 0) === 0) {
+                <div class="p-6 text-center text-xs text-muted">No customers yet.</div>
+              } @else {
+                <div class="divide-y divide-border">
+                  @for (c of overview()?.topCustomers ?? []; track c.recipientNumber) {
+                    <div class="flex items-center gap-2.5 px-4 py-2.5">
+                      <span
+                        class="w-7 h-7 rounded-full bg-accent/15 text-accent text-[10px] font-bold flex items-center justify-center"
+                        >{{ initials(c.recipientNumber) }}</span
+                      >
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-mono text-heading">
+                          {{ formatPhone(c.recipientNumber) }}
+                        </div>
+                        <div class="text-[10px] text-muted">{{ c.orders }} orders</div>
+                      </div>
+                      <div class="text-xs font-semibold text-primary">GHS {{ ghs(c.spent) }}</div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- SHOP ORDERS -->
+    @if (activeTab() === 'orders') {
+      <ng-template #pkgCell let-o>
+        <div class="flex items-center gap-3">
+          <img
+            [src]="logo(o.network)"
+            [alt]="o.network"
+            class="w-8 h-8 rounded-md object-contain bg-white border border-border p-0.5 shrink-0"
+          />
+          <span class="text-sm font-medium text-heading truncate">{{ packageName(o) }}</span>
+        </div>
+      </ng-template>
+      <ng-template #customerCell let-o>
+        <span class="font-mono text-xs text-paragraph">{{ formatPhone(o.recipientNumber) }}</span>
+      </ng-template>
+      <ng-template #paidCell let-o>
+        <span class="font-mono text-sm font-medium text-heading">GHS {{ ghs(o.amount) }}</span>
+      </ng-template>
+      <ng-template #costCell let-o>
+        <span class="font-mono text-sm text-muted">GHS {{ ghs(o.wholesaleAmount) }}</span>
+      </ng-template>
+      <ng-template #profitCell let-o>
+        <span
+          class="font-mono text-sm font-semibold"
+          [ngClass]="o.profit >= 0 ? 'text-success' : 'text-danger'"
+        >
+          +GHS {{ ghs(o.profit) }}
+        </span>
+      </ng-template>
+      <ng-template #dateCell let-o>
+        <span class="text-xs text-paragraph">{{ o.createdAt | date: 'd MMM, HH:mm' }}</span>
+      </ng-template>
+      <ng-template #statusCell let-o>
+        <span
+          class="px-2 py-0.5 rounded-full text-[11px] font-semibold"
+          [ngClass]="statusClass(o.status)"
+        >
+          {{ statusLabel(o.status) }}
+        </span>
+      </ng-template>
+
+      <app-table
+        [data]="$any(orders())"
+        [columns]="orderColumns"
+        [rows]="15"
+        emptyIcon="🛍️"
+        emptyTitle="No shop orders yet"
+        emptyMessage="Orders placed by customers through your shop link will appear here."
+        [cellTemplates]="{
+          package: pkgCell,
+          customer: customerCell,
+          paid: paidCell,
+          cost: costCell,
+          profit: profitCell,
+          date: dateCell,
+          status: statusCell,
+        }"
+      ></app-table>
+    }
+
+    <!-- SETTINGS -->
+    @if (activeTab() === 'settings') {
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="lg:col-span-2 flex flex-col gap-4">
+          <div
+            class="rounded-card border border-border bg-surface shadow-card p-5 flex flex-col gap-4"
+          >
+            <h3 class="text-sm font-semibold text-heading">Shop identity</h3>
+            <div class="flex flex-col gap-1.5">
+              <label for="name" class="text-xs font-medium text-paragraph">Shop name</label>
+              <input
+                [ngModel]="form().name"
+                (ngModelChange)="patchForm('name', $event)"
+                class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="slug" class="text-xs font-medium text-paragraph">Shop link (slug)</label>
+              <div
+                class="flex items-stretch border border-border rounded-card overflow-hidden focus-within:border-primary"
+              >
+                <span
+                  class="px-3 py-2 bg-background text-xs text-muted font-mono border-r border-border"
+                  >/shop/</span
+                >
+                <input
+                  [ngModel]="form().slug"
+                  (ngModelChange)="patchForm('slug', $event)"
+                  class="flex-1 px-3 py-2 text-sm font-mono bg-surface outline-none text-heading"
+                />
+              </div>
+              <span class="text-[11px] text-muted"
+                >Lowercase letters, numbers and hyphens only.</span
+              >
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="tagline" class="text-xs font-medium text-paragraph">Tagline</label>
+              <input
+                [ngModel]="form().tagline"
+                (ngModelChange)="patchForm('tagline', $event)"
+                class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="welcomeMessage" class="text-xs font-medium text-paragraph"
+                >Welcome message</label
+              >
+              <textarea
+                [ngModel]="form().welcomeMessage"
+                (ngModelChange)="patchForm('welcomeMessage', $event)"
+                rows="3"
+                class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading resize-y"
+              ></textarea>
+            </div>
+          </div>
+
+          <div
+            class="rounded-card border border-border bg-surface shadow-card p-5 flex flex-col gap-4"
+          >
+            <h3 class="text-sm font-semibold text-heading">Contact &amp; social</h3>
+            <div class="flex flex-col gap-1.5">
+              <label for="contactPhone" class="text-xs font-medium text-paragraph"
+                >Contact phone</label
+              >
+              <input
+                [ngModel]="form().contactPhone"
+                (ngModelChange)="patchForm('contactPhone', $event)"
+                class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
+              />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="flex flex-col gap-1.5">
+                <label for="whatsapp" class="text-xs font-medium text-paragraph">WhatsApp</label>
+                <input
+                  [ngModel]="form().whatsapp"
+                  (ngModelChange)="patchForm('whatsapp', $event)"
+                  class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
+                />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="facebook" class="text-xs font-medium text-paragraph">Facebook</label>
+                <input
+                  [ngModel]="form().facebook"
+                  (ngModelChange)="patchForm('facebook', $event)"
+                  class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
+                />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="instagram" class="text-xs font-medium text-paragraph">Instagram</label>
+                <input
+                  [ngModel]="form().instagram"
+                  (ngModelChange)="patchForm('instagram', $event)"
+                  class="border border-border rounded-card px-3 py-2 text-sm bg-surface outline-none focus:border-primary text-heading"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              (click)="saveSettings()"
+              class="flex items-center gap-2 px-4 py-2 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors"
+            >
+              <i class="pi pi-check text-xs"></i> Save changes
+            </button>
+          </div>
+        </div>
+
+        <!-- Logo -->
+        <div class="flex flex-col gap-4">
+          <div
+            class="rounded-card border border-border bg-surface shadow-card p-5 flex flex-col gap-4"
+          >
+            <h3 class="text-sm font-semibold text-heading">Shop logo</h3>
+            <div class="flex items-center gap-4">
+              <div
+                class="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden border border-border"
+              >
+                @if (shop()?.logoUrl) {
+                  <img [src]="shop()?.logoUrl" alt="Shop logo" class="w-full h-full object-cover" />
+                } @else {
+                  <i class="pi pi-image text-2xl text-primary"></i>
+                }
+              </div>
+              <button
+                type="button"
+                (click)="showLogoUpload.set(true)"
+                class="px-3 py-1.5 rounded-card border border-primary text-primary text-xs font-semibold hover:bg-primary/5 transition-colors"
+              >
+                Upload logo
+              </button>
+            </div>
+            <p class="text-[11px] text-muted">PNG or JPG, shown on your public shop page.</p>
+          </div>
+
+          <div class="rounded-card border border-danger/30 bg-danger/5 p-5">
+            <h3 class="text-sm font-semibold text-danger">Shop status</h3>
+            <p class="text-xs text-danger/80 mt-1 mb-3">
+              Taking your shop offline removes it from public access immediately. Existing orders
+              are unaffected.
+            </p>
+            @if (shop(); as s) {
+              <button
+                type="button"
+                (click)="toggleActive(!s.isActive)"
+                class="px-3 py-1.5 rounded-card text-xs font-semibold transition-colors"
+                [ngClass]="
+                  s.isActive ? 'bg-danger text-white hover:bg-danger/90' : 'bg-success text-white'
+                "
+              >
+                {{ s.isActive ? 'Take shop offline' : 'Bring shop online' }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- PAYOUTS -->
+    @if (activeTab() === 'payouts') {
+      <div
+        class="rounded-card border border-border bg-surface shadow-card p-6 flex flex-col gap-4 max-w-xl"
+      >
+        <h3 class="text-sm font-semibold text-heading">Withdraw funds</h3>
+        <div class="flex items-end gap-2">
+          <span class="text-sm text-muted mb-1">Wallet balance</span>
+        </div>
+        <div class="text-3xl font-bold text-heading">
+          GHS {{ walletBalance() | number: '1.2-2' }}
+        </div>
+        <div class="flex items-start gap-2 rounded-card bg-info/5 border border-info/20 p-3">
+          <i class="pi pi-info-circle text-info text-sm mt-0.5"></i>
+          <p class="text-xs text-paragraph leading-relaxed">
+            Payouts are requested from your wallet and reviewed before processing. A dedicated
+            shop-profit balance is coming soon.
+          </p>
+        </div>
+        <button
+          type="button"
+          (click)="showWithdraw.set(true)"
+          class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors w-fit"
+        >
+          <i class="pi pi-arrow-up-right text-xs"></i> Request withdrawal
+        </button>
+      </div>
+    }
+  </div>
+}
 
 <!-- Logo upload modal -->
 <app-uploads

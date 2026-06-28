@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Table } from '../../../shared/ui/table/table';
+import { PageSkeleton } from '../../../shared/ui/page-skeleton/page-skeleton';
 import { TableColumn } from '../../../core/models/utility.model';
 import { Uploads } from '../../../shared/uploads/uploads';
 import { AmountDialog } from '../../../shared/ui/amount-dialog/amount-dialog';
@@ -11,7 +12,7 @@ import { Order, OrderStatus } from '../../../core/models/order.model';
 import { PackageNetwork } from '../../../core/models/package.model';
 import { UpdateShopModel } from '../../../core/models/shop.model';
 import { shopActions } from './store/shop.actions';
-import { selectOrders, selectOverview, selectShop } from './store/shop.selectors';
+import { selectIsLoading, selectOrders, selectOverview, selectShop } from './store/shop.selectors';
 import { selectWallet } from '../../payment/store/payment.selectors';
 import { paymentActions } from '../../payment/store/payment.actions';
 import { selectUser } from '../../auth/store/auth.selectors';
@@ -23,7 +24,7 @@ type ShopTab = 'overview' | 'orders' | 'settings' | 'payouts';
 @Component({
   selector: 'app-my-shop',
   standalone: true,
-  imports: [CommonModule, FormsModule, Table, Uploads, AmountDialog],
+  imports: [CommonModule, FormsModule, Table, Uploads, AmountDialog, PageSkeleton],
   templateUrl: './my-shop.html',
   styleUrl: './my-shop.css',
 })
@@ -34,8 +35,12 @@ export class MyShopPage implements OnInit {
   protected readonly shop = this.store.selectSignal(selectShop);
   protected readonly overview = this.store.selectSignal(selectOverview);
   protected readonly orders = this.store.selectSignal(selectOrders);
+  protected readonly isLoading = this.store.selectSignal(selectIsLoading);
   private readonly walletResponse = this.store.selectSignal(selectWallet);
   private readonly user = this.store.selectSignal(selectUser);
+
+  /** First-load skeleton until the shop + overview have arrived. */
+  protected readonly firstLoading = computed(() => !this.shop() && !this.overview());
 
   protected readonly activeTab = signal<ShopTab>('overview');
   protected readonly showLogoUpload = signal<boolean>(false);
