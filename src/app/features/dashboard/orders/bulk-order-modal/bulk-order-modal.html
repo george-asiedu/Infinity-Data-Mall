@@ -1,0 +1,134 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [dismissableMask]="true"
+  [style]="{ width: '46rem', maxWidth: '95vw' }"
+  styleClass="rounded-card"
+  header="Bulk order"
+>
+  <div class="flex flex-col gap-4">
+    @if (result(); as r) {
+      <!-- Results summary -->
+      <div class="flex flex-col gap-3">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-card border border-success/30 bg-success/5 p-3">
+            <div class="text-2xl font-bold text-success">{{ r.placed }}</div>
+            <div class="text-xs text-paragraph">Placed</div>
+          </div>
+          <div class="rounded-card border border-danger/30 bg-danger/5 p-3">
+            <div class="text-2xl font-bold text-danger">{{ r.failed }}</div>
+            <div class="text-xs text-paragraph">Failed</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1 max-h-64 overflow-y-auto">
+          @for (item of r.results; track $index) {
+            <div
+              class="flex items-center justify-between gap-2 px-3 py-2 rounded-card border border-border text-xs"
+            >
+              <span class="font-mono text-heading">{{ item.recipientNumber }}</span>
+              <span [ngClass]="item.success ? 'text-success' : 'text-danger'">
+                <i class="pi text-[10px]" [ngClass]="item.success ? 'pi-check' : 'pi-times'"></i>
+                {{ item.message }}
+              </span>
+            </div>
+          }
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            (click)="reset()"
+            class="px-4 py-2 rounded-card border border-border text-paragraph text-sm font-medium hover:border-primary hover:text-primary transition-colors"
+          >
+            Place more
+          </button>
+          <button
+            type="button"
+            (click)="close()"
+            class="px-4 py-2 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    } @else {
+      <!-- Entry form -->
+      <p class="text-xs text-paragraph">
+        Add up to 50 orders. Each is charged from your wallet and fulfilled independently — one
+        failure won't block the others.
+      </p>
+
+      <div class="flex flex-col gap-2">
+        <div
+          class="hidden sm:grid grid-cols-[1fr_1fr_auto] gap-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted"
+        >
+          <span>Package</span>
+          <span>Recipient number</span>
+          <span></span>
+        </div>
+
+        @for (row of rows(); track $index) {
+          <div class="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2 items-center">
+            <select
+              [ngModel]="row.packageId"
+              (ngModelChange)="setPackage($index, $event)"
+              class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none"
+            >
+              <option value="" disabled>Select package</option>
+              @for (p of availablePackages(); track p.id) {
+                <option [value]="p.id">{{ packageLabel(p) }}</option>
+              }
+            </select>
+
+            <input
+              type="tel"
+              [ngModel]="row.recipientNumber"
+              (ngModelChange)="setNumber($index, $event)"
+              placeholder="0554821034"
+              class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none placeholder:text-muted"
+            />
+
+            <button
+              type="button"
+              (click)="removeRow($index)"
+              [disabled]="rows().length === 1"
+              class="justify-self-start sm:justify-self-center w-9 h-9 flex items-center justify-center rounded-card border border-border text-muted hover:text-danger hover:border-danger/40 transition-colors disabled:opacity-40"
+            >
+              <i class="pi pi-trash text-xs"></i>
+            </button>
+          </div>
+        }
+      </div>
+
+      <button
+        type="button"
+        (click)="addRow()"
+        class="self-start flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover"
+      >
+        <i class="pi pi-plus text-xs"></i> Add another
+      </button>
+
+      <div class="flex justify-end gap-2 pt-1">
+        <button
+          type="button"
+          (click)="close()"
+          class="px-4 py-2 rounded-card border border-border text-paragraph text-sm font-medium hover:border-primary hover:text-primary transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          (click)="submit()"
+          [disabled]="submitting()"
+          class="flex items-center gap-2 px-4 py-2 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
+        >
+          <i class="pi text-xs" [ngClass]="submitting() ? 'pi-spin pi-spinner' : 'pi-send'"></i>
+          Place {{ rows().length }} order{{ rows().length === 1 ? '' : 's' }}
+        </button>
+      </div>
+    }
+  </div>
+</p-dialog>

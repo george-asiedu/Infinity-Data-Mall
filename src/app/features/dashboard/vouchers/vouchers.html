@@ -1,0 +1,110 @@
+@if (loading()) {
+  <app-page-skeleton [statCards]="3" [blocks]="1"></app-page-skeleton>
+} @else {
+  <div class="flex flex-col gap-5 w-full">
+    <!-- Header -->
+    <div class="flex flex-col gap-1">
+      <h1 class="text-2xl font-bold tracking-tight text-heading">Vouchers</h1>
+      <p class="text-sm text-paragraph">
+        Buy result checkers and other vouchers — delivered by SMS, WhatsApp or email.
+      </p>
+    </div>
+
+    @if (vouchers().length === 0) {
+      <div class="rounded-card border border-border bg-surface p-8 text-center text-sm text-muted">
+        No voucher types are available right now.
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Voucher type list -->
+        <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          @for (v of vouchers(); track v.slug) {
+            <button
+              type="button"
+              (click)="select(v.slug)"
+              class="text-left rounded-card border p-4 transition-colors"
+              [ngClass]="
+                selectedSlug() === v.slug
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border bg-surface hover:border-primary/50'
+              "
+            >
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-heading text-sm">{{ v.name }}</span>
+                @if (selectedSlug() === v.slug) {
+                  <i class="pi pi-check-circle text-primary"></i>
+                }
+              </div>
+              <p class="text-xs text-paragraph mt-1 line-clamp-2">{{ v.description }}</p>
+            </button>
+          }
+        </div>
+
+        <!-- Purchase form -->
+        <div
+          class="rounded-card border border-border bg-surface p-5 shadow-card flex flex-col gap-3"
+        >
+          <h2 class="text-base font-semibold text-heading">
+            {{ selected()?.name || 'Purchase voucher' }}
+          </h2>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-medium text-heading">Quantity</label>
+            <input
+              type="number"
+              min="1"
+              [ngModel]="quantity()"
+              (ngModelChange)="quantity.set($event)"
+              class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-medium text-heading">Delivery phone</label>
+            <input
+              type="tel"
+              [ngModel]="phone()"
+              (ngModelChange)="phone.set($event)"
+              placeholder="233241234567"
+              class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none placeholder:text-muted"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-medium text-heading">Delivery email</label>
+            <input
+              type="email"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+              placeholder="customer@example.com"
+              class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none placeholder:text-muted"
+            />
+          </div>
+
+          <label class="flex items-center gap-2 cursor-pointer mt-1">
+            <input
+              type="checkbox"
+              [ngModel]="sendViaWhatsApp()"
+              (ngModelChange)="sendViaWhatsApp.set($event)"
+              class="accent-primary"
+            />
+            <span class="text-xs text-paragraph">Also send via WhatsApp</span>
+          </label>
+
+          <button
+            type="button"
+            (click)="purchase()"
+            [disabled]="purchasing()"
+            class="mt-2 flex items-center justify-center gap-2 px-4 py-2.5 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
+          >
+            <i
+              class="pi text-xs"
+              [ngClass]="purchasing() ? 'pi-spin pi-spinner' : 'pi-shopping-cart'"
+            ></i>
+            Buy voucher
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+}

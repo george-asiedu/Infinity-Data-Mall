@@ -77,7 +77,13 @@ export class Onboarding implements OnInit {
     bankCode: ['', [Validators.required]],
     accountNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,13}$')]],
     vendorApiKey: [''],
+    vendorApiKeySupplier: ['XPRESS' as 'VERDEACCESS' | 'XPRESS'],
   });
+
+  protected readonly supplierOptions: { value: 'VERDEACCESS' | 'XPRESS'; label: string }[] = [
+    { value: 'XPRESS', label: 'XpresPortal' },
+    { value: 'VERDEACCESS', label: 'Verdeaccess' },
+  ];
 
   constructor() {
     effect(() => {
@@ -171,6 +177,7 @@ export class Onboarding implements OnInit {
       bankCode: rawValues.bankCode,
       accountNumber: rawValues.accountNumber.trim(),
       vendorApiKey: this.hasVendorKey() ? rawValues.vendorApiKey.trim() : null,
+      vendorApiKeySupplier: this.hasVendorKey() ? rawValues.vendorApiKeySupplier : undefined,
     };
 
     this.store.dispatch(paymentActions.completeSetup({ model }));

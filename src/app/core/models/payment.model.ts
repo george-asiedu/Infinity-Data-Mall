@@ -15,7 +15,8 @@ export interface CompleteSetupModel {
   businessName: string;
   bankCode: string;
   accountNumber: string;
-  vendorApiKey: string;
+  vendorApiKey: string | null;
+  vendorApiKeySupplier?: 'VERDEACCESS' | 'XPRESS';
 }
 
 export interface PaymentState {

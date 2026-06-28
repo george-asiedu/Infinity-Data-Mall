@@ -84,6 +84,23 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/my-shop/my-shop').then((m) => m.MyShopPage),
       },
+      {
+        path: 'vouchers',
+        title: 'Infinity Data Mall | Vouchers',
+        loadComponent: () =>
+          import('./features/dashboard/vouchers/vouchers').then((m) => m.VouchersPage),
+      },
+      {
+        path: 'afa',
+        title: 'Infinity Data Mall | AFA Registration',
+        loadComponent: () => import('./features/dashboard/afa/afa').then((m) => m.AfaPage),
+      },
+      {
+        path: 'settings',
+        title: 'Infinity Data Mall | Account Settings',
+        loadComponent: () =>
+          import('./features/dashboard/settings/settings').then((m) => m.SettingsPage),
+      },
     ],
   },
   {

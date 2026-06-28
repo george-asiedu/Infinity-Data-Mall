@@ -1,0 +1,99 @@
+<div class="flex flex-col gap-5 w-full max-w-2xl">
+  <!-- Header -->
+  <div class="flex flex-col gap-1">
+    <h1 class="text-2xl font-bold tracking-tight text-heading">AFA Registration</h1>
+    <p class="text-sm text-paragraph">
+      Register a customer for an AFA bundle. MTN numbers only — the registration fee is deducted
+      from your supplier wallet.
+    </p>
+  </div>
+
+  <div class="rounded-card border border-border bg-surface p-5 shadow-card flex flex-col gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5 sm:col-span-2">
+        <label class="text-xs font-medium text-heading">Full name</label>
+        <input
+          [ngModel]="form().name"
+          (ngModelChange)="patch('name', $event)"
+          placeholder="Kwame Asante"
+          class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none placeholder:text-muted"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-heading">MTN phone number</label>
+        <input
+          type="tel"
+          [ngModel]="form().phoneNumber"
+          (ngModelChange)="patch('phoneNumber', $event)"
+          placeholder="0241234567"
+          class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none placeholder:text-muted"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-heading">Ghana Card number</label>
+        <input
+          [ngModel]="form().idNumber"
+          (ngModelChange)="patch('idNumber', $event)"
+          placeholder="GHA-202501234-5"
+          class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none placeholder:text-muted"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-heading">Location</label>
+        <input
+          [ngModel]="form().location"
+          (ngModelChange)="patch('location', $event)"
+          placeholder="Kumasi"
+          class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none placeholder:text-muted"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-heading">Region</label>
+        <input
+          [ngModel]="form().region"
+          (ngModelChange)="patch('region', $event)"
+          placeholder="Ashanti"
+          class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none placeholder:text-muted"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-heading"
+          >Date of birth <span class="text-muted">(optional)</span></label
+        >
+        <input
+          type="date"
+          [ngModel]="form().dateOfBirth"
+          (ngModelChange)="patch('dateOfBirth', $event)"
+          class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-heading"
+          >Occupation <span class="text-muted">(optional)</span></label
+        >
+        <input
+          [ngModel]="form().occupation"
+          (ngModelChange)="patch('occupation', $event)"
+          placeholder="Farmer"
+          class="bg-background border border-border rounded-card px-3 py-2 text-sm text-heading outline-none placeholder:text-muted"
+        />
+      </div>
+    </div>
+
+    <button
+      type="button"
+      (click)="submit()"
+      [disabled]="submitting()"
+      class="self-start flex items-center gap-2 px-4 py-2.5 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
+    >
+      <i class="pi text-xs" [ngClass]="submitting() ? 'pi-spin pi-spinner' : 'pi-id-card'"></i>
+      Submit registration
+    </button>
+  </div>
+</div>

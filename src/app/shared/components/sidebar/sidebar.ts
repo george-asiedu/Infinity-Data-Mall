@@ -23,6 +23,8 @@ export class Sidebar {
     { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard', exact: true },
     { label: 'Orders', icon: 'pi pi-shopping-bag', route: '/dashboard/orders', badge: 0 },
     { label: 'Packages', icon: 'pi pi-box', route: '/dashboard/packages' },
+    { label: 'Vouchers', icon: 'pi pi-ticket', route: '/dashboard/vouchers' },
+    { label: 'AFA Registration', icon: 'pi pi-id-card', route: '/dashboard/afa' },
     { label: 'Wallet', icon: 'pi pi-wallet', route: '/dashboard/wallet' },
     { label: 'Transactions', icon: 'pi pi-money-bill', route: '/dashboard/transactions' },
     { label: 'My Shop', icon: 'pi pi-shop', route: '/dashboard/my-shop' },

@@ -1,0 +1,130 @@
+@if (loading()) {
+  <app-page-skeleton [statCards]="2" [blocks]="2"></app-page-skeleton>
+} @else {
+  <div class="flex flex-col gap-5 w-full max-w-3xl">
+    <!-- Header -->
+    <div class="flex flex-col gap-1">
+      <h1 class="text-2xl font-bold tracking-tight text-heading">Account Settings</h1>
+      <p class="text-sm text-paragraph">
+        Manage the supplier API key used to fulfil your data, airtime, voucher and AFA orders.
+      </p>
+    </div>
+
+    <!-- Supplier wallet balance -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="rounded-card border border-border bg-surface p-4 shadow-card">
+        <div class="text-[11px] font-semibold uppercase tracking-widest text-muted">
+          Supplier wallet
+        </div>
+        @if (balance(); as b) {
+          <div class="text-2xl font-bold text-heading mt-1">
+            {{ b.currency }} {{ b.balance | number: '1.2-2' }}
+          </div>
+          <div class="text-xs text-paragraph mt-0.5">{{ b.name }}</div>
+        } @else {
+          <div class="text-sm text-muted mt-2">Balance unavailable — check your API key.</div>
+        }
+      </div>
+
+      <div class="rounded-card border border-border bg-surface p-4 shadow-card">
+        <div class="text-[11px] font-semibold uppercase tracking-widest text-muted">
+          Active supplier
+        </div>
+        <div class="text-2xl font-bold text-heading mt-1">
+          {{ supplierLabel(status()?.supplier) }}
+        </div>
+        <div
+          class="text-xs mt-0.5"
+          [ngClass]="usingPlatformKey() ? 'text-warning' : 'text-success'"
+        >
+          {{
+            usingPlatformKey() ? 'Using platform key' : 'Using your own key · ' + status()?.preview
+          }}
+        </div>
+      </div>
+    </div>
+
+    <!-- API key form -->
+    <div class="rounded-card border border-border bg-surface p-5 shadow-card flex flex-col gap-4">
+      <div class="flex flex-col gap-1">
+        <h2 class="text-base font-semibold text-heading">Supplier API key</h2>
+        <p class="text-xs text-paragraph">
+          If you have your own account with a supplier, add its API key here. Otherwise orders use
+          the platform key (XpresPortal) by default.
+        </p>
+      </div>
+
+      <!-- Supplier select -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-heading">Supplier</label>
+        <div class="flex gap-2">
+          @for (s of suppliers; track s.value) {
+            <button
+              type="button"
+              (click)="supplier.set(s.value)"
+              class="px-3.5 py-2 rounded-card border text-sm font-medium transition-colors"
+              [ngClass]="
+                supplier() === s.value
+                  ? 'bg-primary border-primary text-white'
+                  : 'bg-surface border-border text-paragraph hover:border-primary hover:text-primary'
+              "
+            >
+              {{ s.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Key input -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-heading" for="apiKey">API key</label>
+        <div
+          class="flex items-center gap-2 bg-background border border-border rounded-card px-3 py-2"
+        >
+          <i class="pi pi-key text-xs text-muted"></i>
+          <input
+            id="apiKey"
+            [type]="showKey() ? 'text' : 'password'"
+            [ngModel]="apiKey()"
+            (ngModelChange)="apiKey.set($event)"
+            placeholder="Paste your supplier API key"
+            class="bg-transparent outline-none text-sm text-heading w-full placeholder:text-muted"
+          />
+          <button
+            type="button"
+            (click)="showKey.set(!showKey())"
+            class="text-muted hover:text-heading"
+          >
+            <i class="pi text-xs" [ngClass]="showKey() ? 'pi-eye-slash' : 'pi-eye'"></i>
+          </button>
+        </div>
+        @if (supplier() === 'XPRESS') {
+          <span class="text-[11px] text-muted">XpresPortal keys are validated before saving.</span>
+        }
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <button
+          type="button"
+          (click)="save()"
+          [disabled]="saving()"
+          class="flex items-center gap-2 px-4 py-2 rounded-card bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
+        >
+          <i class="pi text-xs" [ngClass]="saving() ? 'pi-spin pi-spinner' : 'pi-check'"></i>
+          {{ status()?.hasOwnKey ? 'Update key' : 'Save key' }}
+        </button>
+
+        @if (status()?.hasOwnKey) {
+          <button
+            type="button"
+            (click)="remove()"
+            [disabled]="saving()"
+            class="flex items-center gap-2 px-4 py-2 rounded-card border border-danger/30 text-danger text-sm font-medium hover:bg-danger/10 transition-colors disabled:opacity-50"
+          >
+            <i class="pi pi-trash text-xs"></i> Remove key
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}

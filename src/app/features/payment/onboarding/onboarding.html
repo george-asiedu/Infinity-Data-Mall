@@ -190,7 +190,15 @@
           </div>
 
           @if (hasVendorKey()) {
-            <div class="w-full mt-2 animate-slide-down">
+            <div class="w-full mt-2 animate-slide-down flex flex-col gap-3">
+              <app-select
+                label="Supplier"
+                [options]="supplierOptions"
+                optionLabel="label"
+                optionValue="value"
+                customClass="w-full min-h-[46px]"
+                (selectionChanged)="setupForm.get('vendorApiKeySupplier')?.setValue($event)"
+              ></app-select>
               <app-input
                 type="password"
                 label="Vendor Api Key"

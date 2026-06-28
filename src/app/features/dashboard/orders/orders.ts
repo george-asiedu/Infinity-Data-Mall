@@ -4,11 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Table } from '../../../shared/ui/table/table';
 import { PageSkeleton } from '../../../shared/ui/page-skeleton/page-skeleton';
+import { BulkOrderModal } from './bulk-order-modal/bulk-order-modal';
 import { TableColumn } from '../../../core/models/utility.model';
 import { Order, OrderStatus } from '../../../core/models/order.model';
 import { PackageNetwork, PackageType } from '../../../core/models/package.model';
+import { SupplierBalance } from '../../../core/models/xpress.model';
 import { ordersActions } from './store/orders.actions';
 import { selectIsLoading, selectOrders } from './store/orders.selectors';
+import { Xpress } from '../xpress/service/xpress';
 
 type TypeFilter = 'all' | PackageType;
 type StatusFilter = 'all' | OrderStatus;
@@ -16,17 +19,22 @@ type StatusFilter = 'all' | OrderStatus;
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule, Table, PageSkeleton],
+  imports: [CommonModule, FormsModule, Table, PageSkeleton, BulkOrderModal],
   templateUrl: './orders.html',
   styleUrl: './orders.css',
 })
 export class OrdersPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly xpress = inject(Xpress);
 
   protected readonly orders = this.store.selectSignal(selectOrders);
   protected readonly isLoading = this.store.selectSignal(selectIsLoading);
 
   protected readonly firstLoading = computed(() => this.isLoading() && this.orders().length === 0);
+
+  /** Supplier wallet balance, shown as a chip and refreshed with the list. */
+  protected readonly balance = signal<SupplierBalance | null>(null);
+  protected readonly showBulk = signal<boolean>(false);
 
   protected readonly activeType = signal<TypeFilter>('all');
   protected readonly activeStatus = signal<StatusFilter>('all');
@@ -76,6 +84,20 @@ export class OrdersPage implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(ordersActions.loadOrders());
+    this.loadBalance();
+  }
+
+  private loadBalance(): void {
+    this.xpress.getBalance().subscribe({
+      next: (res) => this.balance.set(res.data),
+      error: () => this.balance.set(null),
+    });
+  }
+
+  /** Called after a bulk submission to refresh the list and balance. */
+  protected onBulkPlaced(): void {
+    this.store.dispatch(ordersActions.loadOrders());
+    this.loadBalance();
   }
 
   // ── Helpers ──────────────────────────────────────────────────
